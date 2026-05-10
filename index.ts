@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
@@ -51,13 +52,23 @@ async function startBot() {
     }
   });
 
-  sock.ev.on("messages.upsert", ({ messages }) => {
+  sock.ev.on("messages.upsert", async ({ messages }) => {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
-      const parse = parseMessage(sock, msg);
-      if (!parse.body.startsWith(config.prefix)) continue;
 
-      const [cmdName] = parse.body.slice(config.prefix.length).split(" ");
+      await writeFile("message.txt", JSON.stringify(msg, null, 2));
+
+      const parse = await parseMessage(sock, msg);
+
+      let cmdName: string | undefined;
+      if (parse.body.startsWith("=> ") || parse.body === "=>") {
+        cmdName = "=>";
+      } else if (parse.body.startsWith("> ") || parse.body === ">") {
+        cmdName = ">";
+      } else if (parse.body.startsWith(config.prefix)) {
+        [cmdName] = parse.body.slice(config.prefix.length).split(" ");
+      }
+
       if (!cmdName) continue;
       const cmd = commands.get(cmdName);
       if (cmd) cmd.handler(sock, parse).catch((e) => logger.error(e));

@@ -1,0 +1,13 @@
+import { defineCommand } from "@/types";
+
+export default defineCommand({
+  name: "link",
+  description: "Dapatkan link invite grup",
+  handler: async (sock, msg) => {
+    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
+    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
+    if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
+    const code = await sock.groupInviteCode(msg.lid);
+    await msg.reply(`https://chat.whatsapp.com/${code}`);
+  },
+});

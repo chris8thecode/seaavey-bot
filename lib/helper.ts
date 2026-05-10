@@ -12,6 +12,9 @@ export interface ParsedMessage {
   isBotAdmin: boolean;
   fromMe: boolean;
   isOwner: boolean;
+  mentioned: string[];
+  quoted: string | undefined;
+  args: string[];
   reply: (text: string) => Promise<void>;
   send: (content: AnyMessageContent) => Promise<void>;
 }
@@ -46,17 +49,26 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     isBotAdmin = adminIds.includes(botId) || adminIds.includes(botLid || "");
   }
 
+  const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
+  const mentioned = contextInfo?.mentionedJid || [];
+  const quoted = contextInfo?.participant || undefined;
+  const body = extractBody(msg.message);
+  const args = body.split(" ").slice(1);
+
   return {
     id: key.id ?? undefined,
     jid: key.remoteJidAlt || key.remoteJid || "",
     lid: key.remoteJid || "",
     sender: sender || "",
-    body: extractBody(msg.message),
+    body,
     fromMe: !!key.fromMe,
     isGroup,
     isAdmin,
     isBotAdmin,
     isOwner: (sender?.replace(/@.+/, "") || "") === config.owner,
+    mentioned,
+    quoted,
+    args,
     reply: async (text) => {
       await sock.sendMessage(jid, { text }, { quoted: msg });
     },
