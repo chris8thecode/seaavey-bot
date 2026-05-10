@@ -1,4 +1,10 @@
-import type { proto, WAMessage, WAMessageKey, WASocket } from "baileys";
+import type {
+  AnyMessageContent,
+  proto,
+  WAMessage,
+  WAMessageKey,
+  WASocket,
+} from "baileys";
 import { config } from "@/config";
 
 export interface ParsedMessage {
@@ -11,6 +17,7 @@ export interface ParsedMessage {
   fromMe: boolean;
   isOwner: boolean;
   reply: (text: string) => Promise<void>;
+  send: (content: AnyMessageContent) => Promise<void>;
 }
 
 function extractBody(m: proto.IMessage | null | undefined): string {
@@ -40,6 +47,9 @@ export function parseMessage(sock: WASocket, msg: WAMessage): ParsedMessage {
     isOwner: sender?.replace(/@.+/, "") === config.owner,
     reply: async (text) => {
       await sock.sendMessage(jid as string, { text }, { quoted: msg });
+    },
+    send: async (content) => {
+      await sock.sendMessage(jid as string, content, { quoted: msg });
     },
   };
 }

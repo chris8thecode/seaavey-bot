@@ -60,7 +60,7 @@ async function startBot() {
       const [cmdName] = parse.body.slice(config.prefix.length).split(" ");
       if (!cmdName) continue;
       const cmd = commands.get(cmdName);
-      if (cmd) cmd.handler(sock, parse);
+      if (cmd) cmd.handler(sock, parse).catch((e) => logger.error(e));
     }
   });
 }
