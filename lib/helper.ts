@@ -1,10 +1,4 @@
-import type {
-  AnyMessageContent,
-  proto,
-  WAMessage,
-  WAMessageKey,
-  WASocket,
-} from "baileys";
+import type { AnyMessageContent, proto, WAMessage, WAMessageKey, WASocket } from "baileys";
 import { config } from "@/config";
 
 export interface ParsedMessage {
