@@ -1,13 +1,15 @@
-import type { AnyMessageContent, proto, WAMessage, WAMessageKey, WASocket } from "baileys";
+import type { AnyMessageContent, proto, WAMessage, WASocket } from "baileys";
 import { config } from "@/config";
 
 export interface ParsedMessage {
-  id: WAMessageKey["id"];
-  jid: WAMessageKey["remoteJidAlt"];
-  lid: WAMessageKey["remoteJid"];
-  sender: WAMessageKey["remoteJidAlt"];
+  id: string | undefined;
+  jid: string;
+  lid: string;
+  sender: string;
   body: string;
   isGroup: boolean;
+  isAdmin: boolean;
+  isBotAdmin: boolean;
   fromMe: boolean;
   isOwner: boolean;
   reply: (text: string) => Promise<void>;
@@ -24,26 +26,42 @@ function extractBody(m: proto.IMessage | null | undefined): string {
   );
 }
 
-export function parseMessage(sock: WASocket, msg: WAMessage): ParsedMessage {
-  const sender = msg.key.participant || msg.key.remoteJidAlt;
-  const isGroup = !!msg.key.remoteJid?.endsWith("@g.us");
+export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<ParsedMessage> {
   const key = msg.key;
-  const jid = key.remoteJidAlt;
+  const isGroup = !!key.remoteJid?.endsWith("@g.us");
+  const sender = key.participantAlt || key.participant || key.remoteJidAlt || key.remoteJid;
+  const jid = key.remoteJid || "";
+
+  let isAdmin = false;
+  let isBotAdmin = false;
+
+  if (isGroup) {
+    const metadata = await sock.groupMetadata(jid);
+    const adminIds = metadata.participants.filter((p) => p.admin).map((p) => p.id);
+    const senderLid = key.participant;
+    const senderJid = key.participantAlt;
+    isAdmin = adminIds.includes(senderLid || "") || adminIds.includes(senderJid || "");
+    const botId = `${sock.user?.id?.replace(/:\d+/, "")}@s.whatsapp.net`;
+    const botLid = sock.user?.lid;
+    isBotAdmin = adminIds.includes(botId) || adminIds.includes(botLid || "");
+  }
 
   return {
-    id: key.id,
-    jid,
-    lid: key.remoteJid,
-    sender,
+    id: key.id ?? undefined,
+    jid: key.remoteJidAlt || key.remoteJid || "",
+    lid: key.remoteJid || "",
+    sender: sender || "",
     body: extractBody(msg.message),
-    fromMe: !!msg.key.fromMe,
+    fromMe: !!key.fromMe,
     isGroup,
-    isOwner: sender?.replace(/@.+/, "") === config.owner,
+    isAdmin,
+    isBotAdmin,
+    isOwner: (sender?.replace(/@.+/, "") || "") === config.owner,
     reply: async (text) => {
-      await sock.sendMessage(jid as string, { text }, { quoted: msg });
+      await sock.sendMessage(jid, { text }, { quoted: msg });
     },
     send: async (content) => {
-      await sock.sendMessage(jid as string, content, { quoted: msg });
+      await sock.sendMessage(jid, content, { quoted: msg });
     },
   };
 }
