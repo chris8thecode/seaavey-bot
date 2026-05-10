@@ -31,32 +31,34 @@ async function startBot() {
 
   sock.ev.on("creds.update", saveCreds);
 
-  sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
-    if (qr) {
-      if (pairingNumber) {
-        const code = await sock.requestPairingCode(pairingNumber);
-        logger.info(`Pairing code: ${code}`);
-      } else {
-        await QRCode.toFile("qr.png", qr);
-        logger.info("QR code saved to qr.png");
+  sock.ev.on(
+    "connection.update",
+    async ({ connection, lastDisconnect, qr }) => {
+      if (qr) {
+        if (pairingNumber) {
+          const code = await sock.requestPairingCode(pairingNumber);
+          logger.info(`Pairing code: ${code}`);
+        } else {
+          await QRCode.toFile("qr.png", qr);
+          logger.info("QR code saved to qr.png");
+        }
       }
-    }
 
-    if (connection === "close") {
-      const error = lastDisconnect?.error as Boom | undefined;
-      const shouldReconnect = error?.output?.statusCode !== DisconnectReason.loggedOut;
-      if (shouldReconnect) startBot();
-      else logger.info("Logged out.");
-    } else if (connection === "open") {
-      logger.info("Connected to WhatsApp!");
-    }
-  });
+      if (connection === "close") {
+        const error = lastDisconnect?.error as Boom | undefined;
+        const shouldReconnect =
+          error?.output?.statusCode !== DisconnectReason.loggedOut;
+        if (shouldReconnect) startBot();
+        else logger.info("Logged out.");
+      } else if (connection === "open") {
+        logger.info("Connected to WhatsApp!");
+      }
+    },
+  );
 
   sock.ev.on("messages.upsert", async ({ messages }) => {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
-
-      await writeFile("message.txt", JSON.stringify(msg, null, 2));
 
       const parse = await parseMessage(sock, msg);
 
