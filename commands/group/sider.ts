@@ -20,6 +20,13 @@ export default defineCommand({
       .query("SELECT memberJid FROM group_members WHERE groupJid = ?")
       .all(msg.jid) as { memberJid: string }[];
     const trackedSet = new Set(tracked.map((t) => t.memberJid));
+
+    if (!trackedSet.size) {
+      return msg.reply(
+        `⚠️ Bot baru masuk group ini, belum ada data chat.\nTunggu ${days} hari untuk hasil yang akurat.`,
+      );
+    }
+
     const neverChatted = allMembers.filter((m) => !trackedSet.has(m));
 
     const allSiders = [...new Set([...inactive, ...neverChatted])];
