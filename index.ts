@@ -4,7 +4,7 @@ import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
 import QRCode from "qrcode";
 import { config } from "@/config";
-import { addHit, getGroup, isBanned } from "@/database";
+import { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
@@ -57,6 +57,8 @@ async function startBot() {
       if (msg.key.fromMe) continue;
 
       const parse = await parseMessage(sock, msg);
+
+      if (parse.isGroup) updateMemberChat(parse.jid, parse.sender);
 
       let cmdName: string | undefined;
       if (parse.body.startsWith("=> ") || parse.body === "=>") {

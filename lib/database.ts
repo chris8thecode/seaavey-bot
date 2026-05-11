@@ -97,4 +97,29 @@ export function setGroup(jid: string, key: keyof Omit<Group, "jid">, value: stri
   db.run(`UPDATE groups SET ${key} = ? WHERE jid = ?`, [value, jid]);
 }
 
+// ======= Group Members (lastChat tracking) =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS group_members (
+    groupJid TEXT,
+    memberJid TEXT,
+    lastChat INTEGER DEFAULT 0,
+    PRIMARY KEY (groupJid, memberJid)
+  )
+`);
+
+export function updateMemberChat(groupJid: string, memberJid: string) {
+  db.run(
+    "INSERT INTO group_members (groupJid, memberJid, lastChat) VALUES (?, ?, ?) ON CONFLICT(groupJid, memberJid) DO UPDATE SET lastChat = ?",
+    [groupJid, memberJid, Date.now(), Date.now()],
+  );
+}
+
+export function getSiders(groupJid: string, days = 3) {
+  const threshold = Date.now() - days * 86400000;
+  return db
+    .query("SELECT memberJid, lastChat FROM group_members WHERE groupJid = ? AND lastChat < ?")
+    .all(groupJid, threshold) as { memberJid: string; lastChat: number }[];
+}
+
 export default db;
