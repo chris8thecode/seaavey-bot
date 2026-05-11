@@ -1,6 +1,10 @@
+import { readFileSync } from "node:fs";
 import { config } from "@/config";
+import { getUser } from "@/database";
 import { commands } from "@/loader";
 import { defineCommand } from "@/types";
+
+const thumbnail = readFileSync("assets/banner.png");
 
 export default defineCommand({
   name: "menu",
@@ -13,7 +17,7 @@ export default defineCommand({
       categories.set(cmd.category, list);
     }
 
-    let text = `╭─── *${config.name}* ───\n│\n`;
+    let text = `╭─── *${config.name}* ───\n│\n│ Hits: ${getUser(msg.sender)?.hits ?? 0}\n│\n`;
     for (const [category, cmds] of categories) {
       text += `│ *「 ${category.toUpperCase()} 」*\n`;
       for (const cmd of cmds) {
@@ -23,6 +27,6 @@ export default defineCommand({
     }
     text += `╰────────────────`;
 
-    await msg.reply(text);
+    await msg.send({ image: thumbnail, caption: text });
   },
 });
