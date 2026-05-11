@@ -4,9 +4,9 @@ import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
 import QRCode from "qrcode";
 import { config } from "@/config";
+import { addHit, isBanned } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
-import { addHit, isBanned } from "@/database";
 import { logger } from "@/logger";
 
 async function startBot() {
