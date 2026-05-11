@@ -66,9 +66,14 @@ async function startBot() {
   });
 
   sock.ev.on("group-participants.update", async ({ id, participants, action }) => {
-    if (action === "add") {
-      for (const jid of participants) {
-        updateMemberChat(id, jid);
+    if (action === "add" || action === "remove") {
+      for (const p of participants) {
+        const jid = p.phoneNumber || p.id;
+        if (action === "add") {
+          updateMemberChat(id, jid);
+        } else {
+          db.run("DELETE FROM group_members WHERE groupJid = ? AND memberJid = ?", [id, jid]);
+        }
       }
     }
   });

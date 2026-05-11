@@ -48,12 +48,17 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   if (isGroup) {
     const metadata = await sock.groupMetadata(jid);
     const adminIds = metadata.participants.filter((p) => p.admin).map((p) => p.id);
+    const adminPns = metadata.participants.filter((p) => p.admin).map((p) => p.phoneNumber || "");
     const senderLid = key.participant;
     const senderJid = key.participantAlt;
-    isAdmin = adminIds.includes(senderLid || "") || adminIds.includes(senderJid || "");
+    isAdmin =
+      adminIds.includes(senderLid || "") ||
+      adminIds.includes(senderJid || "") ||
+      adminPns.includes(senderJid || "");
     const botId = `${sock.user?.id?.replace(/:\d+/, "")}@s.whatsapp.net`;
-    const botLid = sock.user?.lid;
-    isBotAdmin = adminIds.includes(botId) || adminIds.includes(botLid || "");
+    const botLid = sock.user?.lid?.replace(/:\d+/, "");
+    isBotAdmin =
+      adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;

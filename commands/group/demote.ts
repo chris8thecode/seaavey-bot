@@ -10,6 +10,9 @@ export default defineCommand({
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang mau di demote!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "demote");
-    await msg.reply("Done, user telah dicopot dari admin!");
+    await msg.send({
+      text: `Done, @${target.replace(/@.+/, "")} telah dicopot dari admin!`,
+      mentions: [target],
+    });
   },
 });

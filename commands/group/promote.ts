@@ -10,6 +10,9 @@ export default defineCommand({
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang mau di promote!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "promote");
-    await msg.reply("Done, user telah dijadikan admin!");
+    await msg.send({
+      text: `Done, @${target.replace(/@.+/, "")} telah dijadikan admin!`,
+      mentions: [target],
+    });
   },
 });

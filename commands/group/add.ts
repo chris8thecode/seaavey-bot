@@ -11,6 +11,9 @@ export default defineCommand({
     if (!number) return msg.reply("Masukkan nomor! Contoh: !add 6281234567890");
     const target = `${number}@s.whatsapp.net`;
     await sock.groupParticipantsUpdate(msg.lid, [target], "add");
-    await msg.reply("Done, user telah ditambahkan!");
+    await msg.send({
+      text: `Done, @${target.replace(/@.+/, "")} telah ditambahkan!`,
+      mentions: [target],
+    });
   },
 });

@@ -10,6 +10,9 @@ export default defineCommand({
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang mau di kick!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
-    await msg.reply("Done, user telah di kick!");
+    await msg.send({
+      text: `Done, @${target.replace(/@.+/, "")} telah di kick!`,
+      mentions: [target],
+    });
   },
 });
