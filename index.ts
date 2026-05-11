@@ -6,6 +6,7 @@ import QRCode from "qrcode";
 import { config } from "@/config";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
+import { addHit, isBanned } from "@/database";
 import { logger } from "@/logger";
 
 async function startBot() {
@@ -67,8 +68,12 @@ async function startBot() {
       }
 
       if (!cmdName) continue;
+      if (isBanned(parse.sender)) continue;
       const cmd = commands.get(cmdName);
-      if (cmd) cmd.handler(sock, parse).catch((e) => logger.error(e));
+      if (cmd) {
+        addHit(parse.sender);
+        cmd.handler(sock, parse).catch((e) => logger.error(e));
+      }
     }
   });
 }
