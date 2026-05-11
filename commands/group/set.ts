@@ -18,12 +18,13 @@ export default defineCommand({
     }
 
     const allowed = ["welcomeMsg", "goodbyeMsg", "warnMax"] as const;
-    if (!allowed.includes(key as any)) {
+    type AllowedKey = (typeof allowed)[number];
+    if (!allowed.includes(key as AllowedKey)) {
       return msg.reply(`❌ Key tidak valid. Pilih: ${allowed.join(", ")}`);
     }
 
     const finalValue = key === "warnMax" ? Number(value) || 3 : value;
-    setGroup(msg.jid, key as any, finalValue);
+    setGroup(msg.jid, key as AllowedKey, finalValue);
     await msg.reply(`✅ ${key} berhasil diubah.`);
   },
 });

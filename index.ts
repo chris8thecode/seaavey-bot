@@ -4,7 +4,7 @@ import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
 import QRCode from "qrcode";
 import { config } from "@/config";
-import { addHit, isBanned } from "@/database";
+import { addHit, getGroup, isBanned } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
@@ -69,6 +69,7 @@ async function startBot() {
 
       if (!cmdName) continue;
       if (isBanned(parse.sender)) continue;
+      if (parse.isGroup && getGroup(parse.jid).mute && !parse.isAdmin) continue;
       const cmd = commands.get(cmdName);
       if (cmd) {
         addHit(parse.sender);
