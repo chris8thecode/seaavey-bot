@@ -5,7 +5,7 @@ import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
 import QRCode from "qrcode";
 import { config } from "@/config";
-import { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
+import db, { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
@@ -55,6 +55,24 @@ async function startBot() {
     }
   });
 
+  sock.ev.on("groups.upsert", async (groups) => {
+    for (const group of groups) {
+      const jid = group.id;
+      for (const p of group.participants) {
+        updateMemberChat(jid, p.phoneNumber || p.id);
+      }
+      logger.info(`Registered ${group.participants.length} members from ${group.subject}`);
+    }
+  });
+
+  sock.ev.on("group-participants.update", async ({ id, participants, action }) => {
+    if (action === "add") {
+      for (const jid of participants) {
+        updateMemberChat(id, jid);
+      }
+    }
+  });
+
   sock.ev.on("messages.upsert", async ({ messages }) => {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
@@ -62,7 +80,20 @@ async function startBot() {
       if (isDev) writeFile("message.txt", JSON.stringify(msg, null, 2));
       const parse = await parseMessage(sock, msg);
 
-      if (parse.isGroup) updateMemberChat(parse.jid, parse.sender);
+      if (parse.isGroup) {
+        updateMemberChat(parse.jid, parse.sender);
+
+        // Auto-register semua member kalau group belum ada data
+        const count = db
+          .query("SELECT COUNT(*) as c FROM group_members WHERE groupJid = ?")
+          .get(parse.jid) as { c: number };
+        if (count.c <= 1) {
+          const metadata = await sock.groupMetadata(parse.jid);
+          for (const p of metadata.participants) {
+            updateMemberChat(parse.jid, p.phoneNumber || p.id);
+          }
+        }
+      }
 
       let cmdName: string | undefined;
       if (parse.body.startsWith("=> ") || parse.body === "=>") {

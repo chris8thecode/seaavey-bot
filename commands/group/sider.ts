@@ -1,4 +1,4 @@
-import db, { getSiders } from "@/database";
+import db, { getSiders, updateMemberChat } from "@/database";
 import { defineCommand } from "@/types";
 
 export default defineCommand({
@@ -10,26 +10,31 @@ export default defineCommand({
 
     const days = Number(msg.args[0]) || 3;
     const metadata = await sock.groupMetadata(msg.jid);
-    const allMembers = metadata.participants.map((p) => p.id);
 
-    // Member yang tercatat tapi sudah lama tidak chat
-    const inactive = getSiders(msg.jid, days).map((s) => s.memberJid);
-
-    // Member yang belum pernah tercatat di DB (belum pernah chat sejak bot aktif)
-    const tracked = db
-      .query("SELECT memberJid FROM group_members WHERE groupJid = ?")
-      .all(msg.jid) as { memberJid: string }[];
-    const trackedSet = new Set(tracked.map((t) => t.memberJid));
-
-    if (!trackedSet.size) {
-      return msg.reply(
-        `⚠️ Bot baru masuk group ini, belum ada data chat.\nTunggu ${days} hari untuk hasil yang akurat.`,
-      );
+    // Sync semua member ke DB (yang belum ada akan di-insert dengan lastChat = now)
+    for (const p of metadata.participants) {
+      const memberJid = p.phoneNumber || p.id;
+      const exists = db
+        .query("SELECT 1 FROM group_members WHERE groupJid = ? AND memberJid = ?")
+        .get(msg.jid, memberJid);
+      if (!exists) updateMemberChat(msg.jid, memberJid);
     }
 
-    const neverChatted = allMembers.filter((m) => !trackedSet.has(m));
+    // Ambil semua member dari participant list
+    const allMembers = metadata.participants.map((p) => p.phoneNumber || p.id);
 
-    const allSiders = [...new Set([...inactive, ...neverChatted])];
+    // Cek apakah bot baru masuk (semua member lastChat baru)
+    const threshold = Date.now() - days * 86400000;
+    const oldRecords = db
+      .query("SELECT COUNT(*) as c FROM group_members WHERE groupJid = ? AND lastChat < ?")
+      .get(msg.jid, threshold) as { c: number };
+
+    // Member yang tercatat dan sudah lama tidak chat
+    const inactive = getSiders(msg.jid, days).map((s) => s.memberJid);
+    const inactiveSet = new Set(inactive);
+
+    // Filter hanya yang ada di participant list
+    const allSiders = allMembers.filter((m) => inactiveSet.has(m));
 
     if (!allSiders.length) {
       return msg.reply(`✅ Tidak ada sider! Semua member aktif dalam ${days} hari terakhir.`);
