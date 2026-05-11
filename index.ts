@@ -2,7 +2,12 @@ import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
-import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
+import makeWASocket, {
+  DisconnectReason,
+  proto,
+  useMultiFileAuthState,
+  type WAMessage,
+} from "baileys";
 import QRCode from "qrcode";
 import { config } from "@/config";
 import db, { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
@@ -78,9 +83,68 @@ async function startBot() {
     }
   });
 
+  // Message store for antidelete (TTL: 10 minutes)
+  const messageStore = new Map<string, WAMessage>();
+  const MSG_TTL = 10 * 60 * 1000;
+
+  setInterval(() => {
+    const now = Date.now();
+    for (const [id, msg] of messageStore) {
+      const ts = (msg.messageTimestamp as number) * 1000;
+      if (now - ts > MSG_TTL) messageStore.delete(id);
+    }
+  }, 60_000);
+
+  sock.ev.on("messages.update", async (updates) => {
+    for (const { key, update } of updates) {
+      if (!key.remoteJid || !key.id) continue;
+      if (update.messageStubType !== proto.WebMessageInfo.StubType.REVOKE) continue;
+
+      const jid = key.remoteJid;
+      const isGroup = jid.endsWith("@g.us");
+      if (!isGroup) continue;
+
+      const group = getGroup(jid);
+      if (!group.antidelete) continue;
+
+      const stored = messageStore.get(key.id);
+      if (!stored?.message || !stored.key) continue;
+
+      const sender = stored.key.participant || stored.key.remoteJid || "";
+      const body =
+        stored.message.conversation ||
+        stored.message.extendedTextMessage?.text ||
+        stored.message.imageMessage?.caption ||
+        stored.message.videoMessage?.caption ||
+        "";
+
+      const text = `🚫 *Anti-Delete Detected*\n\n👤 @${sender.replace(/@.+/, "")}\n💬 ${body || "[media]"}`;
+
+      await sock.sendMessage(jid, { text, mentions: [sender] });
+
+      // Forward media if exists
+      if (stored.message.imageMessage) {
+        await sock.sendMessage(jid, { forward: stored });
+      } else if (stored.message.videoMessage) {
+        await sock.sendMessage(jid, { forward: stored });
+      } else if (stored.message.documentMessage) {
+        await sock.sendMessage(jid, { forward: stored });
+      } else if (stored.message.audioMessage) {
+        await sock.sendMessage(jid, { forward: stored });
+      } else if (stored.message.stickerMessage) {
+        await sock.sendMessage(jid, { forward: stored });
+      }
+    }
+  });
+
   sock.ev.on("messages.upsert", async ({ messages }) => {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
+
+      // Store message for antidelete
+      if (msg.key.id) {
+        messageStore.set(msg.key.id, msg);
+      }
 
       if (isDev) writeFile("message.txt", JSON.stringify(msg, null, 2));
       const parse = await parseMessage(sock, msg);
