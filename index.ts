@@ -188,8 +188,8 @@ async function startBot() {
         // Antilink: delete messages containing links (except admins)
         const group = getGroup(parse.jid);
         if (group.antilink && !parse.isAdmin && /https?:\/\/\S+/i.test(parse.body)) {
-          await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
-          await sock.sendMessage(msg.key.remoteJid!, {
+          await sock.sendMessage(parse.jid, { delete: msg.key });
+          await sock.sendMessage(parse.jid, {
             text: `⚠️ @${parse.sender.replace(/@.+/, "")} link tidak diperbolehkan!`,
             mentions: [parse.sender],
           });
@@ -206,8 +206,8 @@ async function startBot() {
           spamTracker.set(key, recent);
           if (recent.length >= 5) {
             spamTracker.delete(key);
-            await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
-            await sock.sendMessage(msg.key.remoteJid!, {
+            await sock.sendMessage(parse.jid, { delete: msg.key });
+            await sock.sendMessage(parse.jid, {
               text: `⚠️ @${parse.sender.replace(/@.+/, "")} jangan spam!`,
               mentions: [parse.sender],
             });
@@ -220,8 +220,8 @@ async function startBot() {
           const toxic =
             /anjing|bangsat|kontol|memek|babi|tolol|goblok|bajingan|asu|jancok|ngentot|pepek/i;
           if (toxic.test(parse.body)) {
-            await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
-            await sock.sendMessage(msg.key.remoteJid!, {
+            await sock.sendMessage(parse.jid, { delete: msg.key });
+            await sock.sendMessage(parse.jid, {
               text: `⚠️ @${parse.sender.replace(/@.+/, "")} jaga bicaramu!`,
               mentions: [parse.sender],
             });
