@@ -96,8 +96,10 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## Star History
 
-<p align="center">
-  <a href="https://star-history.com/#seaavey/seaavey-bot&Date">
-    <img src="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" alt="Star History Chart" width="100%" />
-  </a>
-</p>
+<a href="https://www.star-history.com/?repos=seaavey%2Fseaavey-bot&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&legend=top-left" />
+ </picture>
+</a>
