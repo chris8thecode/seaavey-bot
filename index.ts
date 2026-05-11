@@ -72,6 +72,8 @@ async function startBot() {
 
   sock.ev.on("group-participants.update", async ({ id, participants, action }) => {
     if (action === "add" || action === "remove") {
+      const group = getGroup(id);
+
       for (const p of participants) {
         const jid = p.phoneNumber || p.id;
         if (action === "add") {
@@ -80,11 +82,31 @@ async function startBot() {
           db.run("DELETE FROM group_members WHERE groupJid = ? AND memberJid = ?", [id, jid]);
         }
       }
+
+      const mentions = participants.map((p) => p.phoneNumber || p.id);
+      const tags = mentions.map((m) => `@${m.replace(/@.+/, "")}`).join(", ");
+
+      // Welcome message
+      if (action === "add" && group.welcome) {
+        await sock.sendMessage(id, {
+          text: `👋 Welcome ${tags}! Semoga betah di group ini.`,
+          mentions,
+        });
+      }
+
+      // Goodbye message
+      if (action === "remove" && group.goodbye) {
+        await sock.sendMessage(id, {
+          text: `👋 Goodbye ${tags}, sampai jumpa lagi.`,
+          mentions,
+        });
+      }
     }
   });
 
   // Message store for antidelete (TTL: 10 minutes)
   const messageStore = new Map<string, WAMessage>();
+  const spamTracker = new Map<string, number[]>();
   const MSG_TTL = 10 * 60 * 1000;
 
   setInterval(() => {
@@ -152,7 +174,7 @@ async function startBot() {
       if (parse.isGroup) {
         updateMemberChat(parse.jid, parse.sender);
 
-        // Auto-register semua member kalau group belum ada data
+        // Auto-register all members if group has no data yet
         const count = db
           .query("SELECT COUNT(*) as c FROM group_members WHERE groupJid = ?")
           .get(parse.jid) as { c: number };
@@ -160,6 +182,50 @@ async function startBot() {
           const metadata = await sock.groupMetadata(parse.jid);
           for (const p of metadata.participants) {
             updateMemberChat(parse.jid, p.phoneNumber || p.id);
+          }
+        }
+
+        // Antilink: delete messages containing links (except admins)
+        const group = getGroup(parse.jid);
+        if (group.antilink && !parse.isAdmin && /https?:\/\/\S+/i.test(parse.body)) {
+          await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
+          await sock.sendMessage(msg.key.remoteJid!, {
+            text: `⚠️ @${parse.sender.replace(/@.+/, "")} link tidak diperbolehkan!`,
+            mentions: [parse.sender],
+          });
+          continue;
+        }
+
+        // Antispam: 5+ messages in 10 seconds = spam
+        if (group.antispam && !parse.isAdmin) {
+          const key = `${parse.jid}:${parse.sender}`;
+          const now = Date.now();
+          const timestamps = spamTracker.get(key) || [];
+          timestamps.push(now);
+          const recent = timestamps.filter((t) => now - t < 10_000);
+          spamTracker.set(key, recent);
+          if (recent.length >= 5) {
+            spamTracker.delete(key);
+            await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
+            await sock.sendMessage(msg.key.remoteJid!, {
+              text: `⚠️ @${parse.sender.replace(/@.+/, "")} jangan spam!`,
+              mentions: [parse.sender],
+            });
+            continue;
+          }
+        }
+
+        // Antitoxic: delete messages containing toxic words
+        if (group.antitoxic && !parse.isAdmin) {
+          const toxic =
+            /anjing|bangsat|kontol|memek|babi|tolol|goblok|bajingan|asu|jancok|ngentot|pepek/i;
+          if (toxic.test(parse.body)) {
+            await sock.sendMessage(msg.key.remoteJid!, { delete: msg.key });
+            await sock.sendMessage(msg.key.remoteJid!, {
+              text: `⚠️ @${parse.sender.replace(/@.+/, "")} jaga bicaramu!`,
+              mentions: [parse.sender],
+            });
+            continue;
           }
         }
       }
