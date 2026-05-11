@@ -72,7 +72,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     isGroup,
     isAdmin,
     isBotAdmin,
-    isOwner: (sender?.replace(/@.+/, "") || "") === config.owner,
+    isOwner: config.owner.includes(sender?.replace(/@.+/, "") || ""),
     mentioned,
     quoted,
     args,

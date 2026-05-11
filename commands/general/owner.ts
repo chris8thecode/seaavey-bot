@@ -7,12 +7,10 @@ export default defineCommand({
   handler: async (sock, msg) => {
     await sock.sendMessage(msg.lid, {
       contacts: {
-        contacts: [
-          {
-            displayName: "Owner",
-            vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:Owner ${config.name}\nTEL;type=CELL:+${config.owner}\nEND:VCARD`,
-          },
-        ],
+        contacts: config.owner.map((num, i) => ({
+          displayName: `Owner ${i + 1}`,
+          vcard: `BEGIN:VCARD\nVERSION:3.0\nFN:Owner ${config.name}\nTEL;type=CELL:+${num}\nEND:VCARD`,
+        })),
       },
     });
   },
