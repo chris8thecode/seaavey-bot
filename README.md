@@ -8,11 +8,11 @@
 </p>
 
 <p align="center">
-  <a href="#features">Features</a> •
-  <a href="#installation">Installation</a> •
-  <a href="#commands">Commands</a> •
-  <a href="#docker">Docker</a> •
-  <a href="#contributing">Contributing</a>
+  <a href="https://github.com/seaavey/seaavey-bot/stargazers"><img src="https://img.shields.io/github/stars/seaavey/seaavey-bot?style=flat&color=yellow" alt="Stars" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/network/members"><img src="https://img.shields.io/github/forks/seaavey/seaavey-bot?style=flat&color=blue" alt="Forks" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/issues"><img src="https://img.shields.io/github/issues/seaavey/seaavey-bot?style=flat&color=red" alt="Issues" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>&nbsp;
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun" alt="Bun" /></a>
 </p>
 
 ---
@@ -25,6 +25,7 @@
 - 📂 **Category-based** — Organized command structure
 - 🛡️ **Group Admin** — Full group management commands
 - 🧩 **Extensible** — Easy to add new commands
+- 🎛️ **Interactive Messages** — Buttons, lists, and more
 
 ## Requirements
 
@@ -40,47 +41,14 @@ cd seaavey-bot
 # Install dependencies
 bun install
 
+# Copy environment config
+cp .env.example .env
+
 # Start the bot
 bun run index.ts
 ```
 
 Scan the QR code from `qr.png` or enter your phone number for pairing code.
-
-## Commands
-
-### General
-| Command | Description |
-|---------|-------------|
-| `!menu` | Show all available commands |
-| `!ping` | Check bot response speed |
-| `!runtime` | Show bot uptime |
-| `!owner` | Show owner contact |
-
-### Group Admin
-| Command | Description |
-|---------|-------------|
-| `!kick` | Kick a member |
-| `!add` | Add a member |
-| `!promote` | Promote to admin |
-| `!demote` | Demote from admin |
-| `!mute` | Close group (admin only chat) |
-| `!unmute` | Open group |
-| `!lock` | Lock group settings |
-| `!unlock` | Unlock group settings |
-| `!setname` | Change group name |
-| `!setdesc` | Change group description |
-| `!link` | Get invite link |
-| `!revoke` | Reset invite link |
-| `!hidetag` | Tag all without visible mention |
-| `!tagall` | Tag all members |
-| `!groupinfo` | Show group info |
-| `!leave` | Bot leaves group (owner only) |
-
-### Owner
-| Command | Description |
-|---------|-------------|
-| `> code` | Evaluate JavaScript |
-| `=> code` | Evaluate async JavaScript |
 
 ## Adding Commands
 
@@ -112,9 +80,11 @@ docker run -v ./auth:/app/auth seaaveybot
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `prefix` | `!` | Command prefix |
-| `OWNER_NUMBER` | - | Owner WhatsApp number |
+| `NODE_ENV` | `production` | `development` or `production` |
+| `OWNER_NUMBER` | - | Owner WhatsApp number(s), comma-separated |
 | `API_KEY` | - | API key for external services |
+
+Bot prefix default: `.` (configurable in `lib/config.ts`)
 
 ## Contributing
 
@@ -123,3 +93,11 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 ## License
 
 [MIT](LICENSE) © Muhammad Adriansyah (Seaavey)
+
+## Star History
+
+<p align="center">
+  <a href="https://star-history.com/#seaavey/seaavey-bot&Date">
+    <img src="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" alt="Star History Chart" width="100%" />
+  </a>
+</p>
