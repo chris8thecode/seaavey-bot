@@ -41,3 +41,6 @@ qr.png
 *.db
 *.db-wal
 *.db-shm
+
+# debug
+message.txt
