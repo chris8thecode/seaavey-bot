@@ -15,6 +15,7 @@ export interface ParsedMessage {
   mentioned: string[];
   quoted: string | undefined;
   args: string[];
+  msg: WAMessage;
   reply: (text: string) => Promise<void>;
   send: (content: AnyMessageContent) => Promise<void>;
 }
@@ -81,6 +82,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     mentioned,
     quoted,
     args,
+    msg,
     reply: async (text) => {
       await sock.sendMessage(jid, { text }, { quoted: msg });
     },
