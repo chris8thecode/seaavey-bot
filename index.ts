@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import { writeFile } from "node:fs/promises";
 import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
@@ -8,6 +9,8 @@ import { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
+
+const isDev = process.env.NODE_ENV !== "production";
 
 async function startBot() {
   await loadCommands();
@@ -56,6 +59,7 @@ async function startBot() {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
 
+      if (isDev) writeFile("message.txt", JSON.stringify(msg, null, 2));
       const parse = await parseMessage(sock, msg);
 
       if (parse.isGroup) updateMemberChat(parse.jid, parse.sender);

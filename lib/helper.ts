@@ -20,11 +20,18 @@ export interface ParsedMessage {
 }
 
 function extractBody(m: proto.IMessage | null | undefined): string {
+  if (m?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson) {
+    try {
+      const params = JSON.parse(m.interactiveResponseMessage.nativeFlowResponseMessage.paramsJson);
+      if (params.id) return params.id;
+    } catch {}
+  }
   return (
     m?.conversation ||
     m?.extendedTextMessage?.text ||
     m?.imageMessage?.caption ||
     m?.videoMessage?.caption ||
+    m?.templateButtonReplyMessage?.selectedId ||
     ""
   );
 }
