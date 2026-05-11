@@ -36,3 +36,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # whatsapp auth session
 auth/
 qr.png
+
+# database
+*.db
+*.db-wal
+*.db-shm
