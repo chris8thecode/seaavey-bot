@@ -23,12 +23,6 @@ export default defineCommand({
     // Ambil semua member dari participant list
     const allMembers = metadata.participants.map((p) => p.phoneNumber || p.id);
 
-    // Cek apakah bot baru masuk (semua member lastChat baru)
-    const threshold = Date.now() - days * 86400000;
-    const oldRecords = db
-      .query("SELECT COUNT(*) as c FROM group_members WHERE groupJid = ? AND lastChat < ?")
-      .get(msg.jid, threshold) as { c: number };
-
     // Member yang tercatat dan sudah lama tidak chat
     const inactive = getSiders(msg.jid, days).map((s) => s.memberJid);
     const inactiveSet = new Set(inactive);
