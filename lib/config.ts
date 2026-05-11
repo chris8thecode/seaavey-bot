@@ -7,7 +7,7 @@ interface Config {
 
 export const config: Config = {
   name: "SeaaveyBot",
-  prefix: "!",
+  prefix: ".",
   owner: process.env.OWNER_NUMBER ?? "6289513081052",
   apiKey: process.env.API_KEY ?? "", // https://www.seaavey.com/apps/keys
 };
