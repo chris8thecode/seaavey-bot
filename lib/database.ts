@@ -47,4 +47,54 @@ export function isBanned(jid: string): boolean {
   return row?.banned === 1;
 }
 
+// ======= Groups =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS groups (
+    jid TEXT PRIMARY KEY,
+    name TEXT DEFAULT '',
+    welcome INTEGER DEFAULT 0,
+    goodbye INTEGER DEFAULT 0,
+    antilink INTEGER DEFAULT 0,
+    antidelete INTEGER DEFAULT 0,
+    antispam INTEGER DEFAULT 0,
+    antitoxic INTEGER DEFAULT 0,
+    mute INTEGER DEFAULT 0,
+    autosticker INTEGER DEFAULT 0,
+    onlyAdmin INTEGER DEFAULT 0,
+    welcomeMsg TEXT DEFAULT '',
+    goodbyeMsg TEXT DEFAULT '',
+    warnMax INTEGER DEFAULT 3
+  )
+`);
+
+export interface Group {
+  jid: string;
+  name: string;
+  welcome: number;
+  goodbye: number;
+  antilink: number;
+  antidelete: number;
+  antispam: number;
+  antitoxic: number;
+  mute: number;
+  autosticker: number;
+  onlyAdmin: number;
+  welcomeMsg: string;
+  goodbyeMsg: string;
+  warnMax: number;
+}
+
+export function getGroup(jid: string): Group {
+  const row = db.query("SELECT * FROM groups WHERE jid = ?").get(jid) as Group | null;
+  if (row) return row;
+  db.run("INSERT OR IGNORE INTO groups (jid) VALUES (?)", [jid]);
+  return db.query("SELECT * FROM groups WHERE jid = ?").get(jid) as Group;
+}
+
+export function setGroup(jid: string, key: keyof Omit<Group, "jid">, value: string | number) {
+  db.run("INSERT OR IGNORE INTO groups (jid) VALUES (?)", [jid]);
+  db.run(`UPDATE groups SET ${key} = ? WHERE jid = ?`, [value, jid]);
+}
+
 export default db;
