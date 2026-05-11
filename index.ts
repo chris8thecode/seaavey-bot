@@ -24,7 +24,7 @@ async function startBot() {
       output: process.stdout,
     });
     pairingNumber = await new Promise<string>((r) =>
-      rl.question("Masukkan nomor WhatsApp (contoh: 6289513081052): ", r),
+      rl.question("Masukkan nomor WhatsApp (contoh: 62123456789): ", r),
     );
     rl.close();
   }
