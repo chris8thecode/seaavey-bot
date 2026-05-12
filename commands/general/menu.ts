@@ -37,23 +37,25 @@ export default defineCommand({
     const hours = Math.floor(uptime / 3600);
     const mins = Math.floor((uptime % 3600) / 60);
 
-    let caption = `┌─── *${config.name}* ───┐\n│\n`;
-    caption += `│ 👤 @${msg.sender.replace(/@.+/, "")}\n`;
-    caption += `│ 🏆 Level ${level} (${xp} XP)\n`;
-    caption += `│ 📊 Hits: ${hits}\n`;
-    caption += `│ ⏱️ Uptime: ${hours}h ${mins}m\n`;
-    caption += `│ 📦 Total: ${commands.size} commands\n`;
-    caption += `│\n`;
+    let caption = `╭━━━━[ *${config.name}* ]━━━━\n`;
+    caption += `┃ 👤 @${msg.sender.replace(/@.+/, "")}\n`;
+    caption += `┃ 🏆 Level ${level} (${xp} XP)\n`;
+    caption += `┃ 📊 Hits: ${hits}\n`;
+    caption += `┃ ⏱️ Uptime: ${hours}h ${mins}m\n`;
+    caption += `┃ 📦 Total: ${commands.size} commands\n`;
+    caption += `╰━━━━━━━━━━━━━━━━\n\n`;
 
     const sorted = [...categories.entries()].sort((a, b) => a[0].localeCompare(b[0]));
     for (const [category, cmds] of sorted) {
       const icon = categoryIcons[category] || "📂";
-      caption += `├─ ${icon} *${category.toUpperCase()}*\n`;
-      caption += `│ ${cmds.join(", ")}\n│\n`;
+      caption += `╭━━━[ ${icon} *${category.toUpperCase()}* ]━━━\n`;
+      for (const cmd of cmds) {
+        caption += `┃ ◦ ${cmd}\n`;
+      }
+      caption += `╰━━━━━━━━━━━━━━━━\n\n`;
     }
 
-    caption += `└────────────────\n`;
-    caption += `\n_Ketik ${config.prefix}<command> untuk menggunakan._`;
+    caption += `_Ketik ${config.prefix}<command> untuk menggunakan._`;
 
     await msg.send({ image, caption, mentions: [msg.sender] });
   },

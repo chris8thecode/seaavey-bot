@@ -7,14 +7,22 @@ export default defineCommand({
   description: "Convert sticker to image",
   handler: async (_sock, msg) => {
     const raw = msg.msg;
-    const quotedMsg = raw.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const stickerMsg = raw.message?.stickerMessage || quotedMsg?.stickerMessage;
+    const contextInfo = raw.message?.extendedTextMessage?.contextInfo;
+    const quotedMsg = contextInfo?.quotedMessage;
+    const sticker =
+      quotedMsg?.stickerMessage ||
+      quotedMsg?.viewOnceMessageV2?.message?.stickerMessage ||
+      quotedMsg?.ephemeralMessage?.message?.stickerMessage;
 
-    if (!stickerMsg) {
+    if (!sticker) {
       return msg.reply("Reply sticker dengan caption .toimg");
     }
 
-    const message = quotedMsg ? ({ key: raw.key, message: quotedMsg } as WAMessage) : raw;
+    const message = {
+      key: { ...raw.key, id: contextInfo?.stanzaId, participant: contextInfo?.participant },
+      message: { stickerMessage: sticker },
+    } as WAMessage;
+
     const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
     const image = stickerToImage(buffer);
 

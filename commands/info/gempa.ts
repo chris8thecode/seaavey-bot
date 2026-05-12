@@ -7,6 +7,7 @@ interface Gempa {
   Kedalaman: string;
   Wilayah: string;
   Potensi: string;
+  Shakemap: string;
 }
 
 export default defineCommand({
@@ -17,8 +18,10 @@ export default defineCommand({
     const data = (await res.json()) as { Infogempa?: { gempa?: Gempa } };
     const g = data.Infogempa?.gempa;
     if (!g) return msg.reply("❌ Data gempa tidak tersedia.");
-    await msg.reply(
-      `🌍 *Info Gempa Terkini*\n\n📅 ${g.Tanggal} ${g.Jam}\n📏 Magnitudo: ${g.Magnitude}\n📐 Kedalaman: ${g.Kedalaman}\n📍 Wilayah: ${g.Wilayah}\n⚠️ Potensi: ${g.Potensi}`,
-    );
+    const caption = `🌍 *Info Gempa Terkini*\n\n📅 ${g.Tanggal} ${g.Jam}\n📏 Magnitudo: ${g.Magnitude}\n📐 Kedalaman: ${g.Kedalaman}\n📍 Wilayah: ${g.Wilayah}\n⚠️ Potensi: ${g.Potensi}`;
+    await msg.send({
+      image: { url: `https://data.bmkg.go.id/DataMKG/TEWS/${g.Shakemap}` },
+      caption,
+    });
   },
 });

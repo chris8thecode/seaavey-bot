@@ -22,8 +22,8 @@ export default defineCommand({
     const author = msg.args[1] || "Seaavey";
 
     const sticker = videoMsg
-      ? videoToSticker(buffer, { pack, author })
-      : imageToSticker(buffer, { pack, author });
+      ? await videoToSticker(buffer, { pack, author })
+      : await imageToSticker(buffer, { pack, author });
 
     await msg.send({ sticker });
   },
