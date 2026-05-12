@@ -75,6 +75,23 @@ export function toMp3(buffer: Buffer): Buffer {
 }
 
 /**
+ * Convert WebP sticker to PNG image
+ */
+export function stickerToImage(buffer: Buffer): Buffer {
+  const tmp = mkdtempSync(join(tmpdir(), "toimg-"));
+  const input = join(tmp, "input.webp");
+  const output = join(tmp, "output.png");
+
+  try {
+    writeFileSync(input, buffer);
+    execSync(`ffmpeg -i ${input} -frames:v 1 ${output}`, { stdio: "ignore" });
+    return readFileSync(output);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+/**
  * Add EXIF metadata (pack name & author) to WebP sticker
  */
 function addExif(webp: Buffer, pack: string, author: string): Buffer {
