@@ -1,3 +1,5 @@
+export const isDev = process.env.NODE_ENV !== "production";
+
 interface Config {
   name: string;
   prefix: string;

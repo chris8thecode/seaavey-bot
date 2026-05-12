@@ -9,13 +9,11 @@ import makeWASocket, {
   type WAMessage,
 } from "baileys";
 import QRCode from "qrcode";
-import { config } from "@/config";
+import { config, isDev } from "@/config";
 import db, { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
-
-const isDev = process.env.NODE_ENV !== "production";
 
 async function startBot() {
   await loadCommands();

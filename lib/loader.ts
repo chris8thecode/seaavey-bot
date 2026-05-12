@@ -1,11 +1,11 @@
 import { watch } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
+import { isDev } from "@/config";
 import { logger } from "@/logger";
 import type { Command } from "@/types";
 
 const COMMANDS_DIR = join(import.meta.dir, "..", "commands");
-const isDev = process.env.NODE_ENV !== "production";
 
 export const commands = new Map<string, Command>();
 
