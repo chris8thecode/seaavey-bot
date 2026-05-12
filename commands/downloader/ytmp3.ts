@@ -13,7 +13,7 @@ export default defineCommand({
     const url = msg.args[0];
     if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp3 https://youtu.be/...");
     await msg.reply("⏳ Downloading audio...");
-    const res = await api.get<YTData>(`/downloader/ytmp3?url=${encodeURIComponent(url)}`);
+    const res = await api.get<YTData>(`/downloader/youtube/audio?url=${encodeURIComponent(url)}`);
     await msg.send({ audio: { url: res.data.url }, mimetype: "audio/mpeg" });
   },
 });
