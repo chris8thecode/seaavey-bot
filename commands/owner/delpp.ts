@@ -5,8 +5,9 @@ export default defineCommand({
   description: "Remove bot profile picture (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;
+    if (!sock.user?.id) return;
 
-    await sock.removeProfilePicture(sock.user?.id);
+    await sock.removeProfilePicture(sock.user.id);
     await msg.reply("✅ Profile picture bot berhasil dihapus!");
   },
 });
