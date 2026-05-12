@@ -104,13 +104,19 @@ db.run(`
     groupJid TEXT,
     memberJid TEXT,
     lastChat INTEGER DEFAULT 0,
+    chatCount INTEGER DEFAULT 0,
     PRIMARY KEY (groupJid, memberJid)
   )
 `);
 
+// Migration: add chatCount if missing
+try {
+  db.run("ALTER TABLE group_members ADD COLUMN chatCount INTEGER DEFAULT 0");
+} catch {}
+
 export function updateMemberChat(groupJid: string, memberJid: string) {
   db.run(
-    "INSERT INTO group_members (groupJid, memberJid, lastChat) VALUES (?, ?, ?) ON CONFLICT(groupJid, memberJid) DO UPDATE SET lastChat = ?",
+    "INSERT INTO group_members (groupJid, memberJid, lastChat, chatCount) VALUES (?, ?, ?, 1) ON CONFLICT(groupJid, memberJid) DO UPDATE SET lastChat = ?, chatCount = chatCount + 1",
     [groupJid, memberJid, Date.now(), Date.now()],
   );
 }
