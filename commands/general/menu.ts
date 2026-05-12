@@ -6,6 +6,18 @@ import { defineCommand } from "@/types";
 
 const image = readFileSync("assets/thumbnail.jpg");
 
+const categoryIcons: Record<string, string> = {
+  general: "⚙️",
+  fun: "🎮",
+  game: "🎯",
+  group: "👥",
+  owner: "👑",
+  downloader: "📥",
+  economy: "💰",
+  info: "ℹ️",
+  search: "🔍",
+};
+
 export default defineCommand({
   name: "menu",
   description: "Tampilkan daftar command",
@@ -13,20 +25,36 @@ export default defineCommand({
     const categories = new Map<string, string[]>();
     for (const cmd of commands.values()) {
       const list = categories.get(cmd.category) || [];
-      list.push(`• ${config.prefix}${cmd.name}`);
+      list.push(`${config.prefix}${cmd.name}`);
       categories.set(cmd.category, list);
     }
 
-    let caption = `╭─── *${config.name}* ───\n│\n│ Hits: ${getUser(msg.sender)?.hits ?? 0}\n│\n`;
-    for (const [category, cmds] of categories) {
-      caption += `│ *「 ${category.toUpperCase()} 」*\n`;
-      for (const cmd of cmds) {
-        caption += `│ ${cmd}\n`;
-      }
-      caption += `│\n`;
-    }
-    caption += `╰────────────────`;
+    const user = getUser(msg.sender);
+    const level = user?.level ?? 1;
+    const xp = user?.xp ?? 0;
+    const hits = user?.hits ?? 0;
+    const uptime = process.uptime();
+    const hours = Math.floor(uptime / 3600);
+    const mins = Math.floor((uptime % 3600) / 60);
 
-    await msg.send({ image, caption });
+    let caption = `┌─── *${config.name}* ───┐\n│\n`;
+    caption += `│ 👤 @${msg.sender.replace(/@.+/, "")}\n`;
+    caption += `│ 🏆 Level ${level} (${xp} XP)\n`;
+    caption += `│ 📊 Hits: ${hits}\n`;
+    caption += `│ ⏱️ Uptime: ${hours}h ${mins}m\n`;
+    caption += `│ 📦 Total: ${commands.size} commands\n`;
+    caption += `│\n`;
+
+    const sorted = [...categories.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    for (const [category, cmds] of sorted) {
+      const icon = categoryIcons[category] || "📂";
+      caption += `├─ ${icon} *${category.toUpperCase()}*\n`;
+      caption += `│ ${cmds.join(", ")}\n│\n`;
+    }
+
+    caption += `└────────────────\n`;
+    caption += `\n_Ketik ${config.prefix}<command> untuk menggunakan._`;
+
+    await msg.send({ image, caption, mentions: [msg.sender] });
   },
 });
