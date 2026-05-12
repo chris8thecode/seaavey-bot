@@ -4,13 +4,23 @@ import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
 import makeWASocket, {
   DisconnectReason,
+  downloadMediaMessage,
   proto,
   useMultiFileAuthState,
   type WAMessage,
 } from "baileys";
 import QRCode from "qrcode";
 import { config, isDev } from "@/config";
-import db, { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
+import db, {
+  addHit,
+  getAfk,
+  getGroup,
+  getPendingReminders,
+  isBanned,
+  markReminderDone,
+  removeAfk,
+  updateMemberChat,
+} from "@/database";
 import { checkGameAnswer } from "@/game";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
@@ -115,6 +125,18 @@ async function startBot() {
       if (now - ts > MSG_TTL) messageStore.delete(id);
     }
   }, 60_000);
+
+  // Reminder checker
+  setInterval(async () => {
+    const reminders = getPendingReminders();
+    for (const r of reminders) {
+      markReminderDone(r.id);
+      await sock.sendMessage(r.chatJid, {
+        text: `⏰ *Reminder!*\n\n@${r.jid.replace(/@.+/, "")}: ${r.message}`,
+        mentions: [r.jid],
+      });
+    }
+  }, 30_000);
 
   sock.ev.on("messages.update", async (updates) => {
     for (const { key, update } of updates) {
@@ -227,10 +249,56 @@ async function startBot() {
             continue;
           }
         }
+
+        // Anti-NSFW: detect NSFW images
+        if (group.antinsfw && !parse.isAdmin && msg.message?.imageMessage) {
+          try {
+            const buffer = await downloadMediaMessage(msg, "buffer", {});
+            const base64 = Buffer.from(buffer).toString("base64");
+            const res = await fetch("https://api.seaavey.com/tools/nsfw-detect", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-API-KEY": config.apiKey,
+              },
+              body: JSON.stringify({ image: base64 }),
+            });
+            const data = (await res.json()) as { data?: { nsfw?: boolean } };
+            if (data.data?.nsfw) {
+              await sock.sendMessage(parse.jid, { delete: msg.key });
+              await sock.sendMessage(parse.jid, {
+                text: `🚫 @${parse.sender.replace(/@.+/, "")} gambar NSFW terdeteksi dan dihapus!`,
+                mentions: [parse.sender],
+              });
+              continue;
+            }
+          } catch {}
+        }
       }
 
       // Game answer check
       if (parse.body && !parse.body.startsWith(config.prefix)) {
+        // AFK: check if sender is AFK and remove
+        const senderAfk = getAfk(parse.sender);
+        if (senderAfk) {
+          removeAfk(parse.sender);
+          await sock.sendMessage(parse.jid, {
+            text: `👋 @${parse.sender.replace(/@.+/, "")} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
+            mentions: [parse.sender],
+          });
+        }
+
+        // AFK: check if mentioned users are AFK
+        for (const m of parse.mentioned) {
+          const afk = getAfk(m);
+          if (afk) {
+            await sock.sendMessage(parse.jid, {
+              text: `💤 @${m.replace(/@.+/, "")} sedang AFK\nAlasan: ${afk.reason}\nSejak: ${Math.floor((Date.now() - afk.timestamp) / 60000)} menit lalu`,
+              mentions: [m],
+            });
+          }
+        }
+
         const gameResult = checkGameAnswer(parse.jid, parse.body, parse.sender);
         if (gameResult) {
           await sock.sendMessage(parse.jid, { text: gameResult }, { quoted: msg });

@@ -89,9 +89,14 @@ db.run(`
     onlyAdmin INTEGER DEFAULT 0,
     welcomeMsg TEXT DEFAULT '',
     goodbyeMsg TEXT DEFAULT '',
-    warnMax INTEGER DEFAULT 3
+    warnMax INTEGER DEFAULT 3,
+    antinsfw INTEGER DEFAULT 0
   )
 `);
+
+try {
+  db.run("ALTER TABLE groups ADD COLUMN antinsfw INTEGER DEFAULT 0");
+} catch {}
 
 export interface Group {
   jid: string;
@@ -108,6 +113,7 @@ export interface Group {
   welcomeMsg: string;
   goodbyeMsg: string;
   warnMax: number;
+  antinsfw: number;
 }
 
 export function getGroup(jid: string): Group {
@@ -151,6 +157,192 @@ export function getSiders(groupJid: string, days = 3) {
   return db
     .query("SELECT memberJid, lastChat FROM group_members WHERE groupJid = ? AND lastChat < ?")
     .all(groupJid, threshold) as { memberJid: string; lastChat: number }[];
+}
+
+// ======= AFK =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS afk (
+    jid TEXT PRIMARY KEY,
+    reason TEXT DEFAULT '',
+    timestamp INTEGER DEFAULT 0
+  )
+`);
+
+export function setAfk(jid: string, reason: string) {
+  db.run("INSERT OR REPLACE INTO afk (jid, reason, timestamp) VALUES (?, ?, ?)", [
+    jid,
+    reason,
+    Date.now(),
+  ]);
+}
+
+export function getAfk(jid: string) {
+  return db.query("SELECT * FROM afk WHERE jid = ?").get(jid) as {
+    jid: string;
+    reason: string;
+    timestamp: number;
+  } | null;
+}
+
+export function removeAfk(jid: string) {
+  db.run("DELETE FROM afk WHERE jid = ?", [jid]);
+}
+
+// ======= Economy =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS economy (
+    jid TEXT PRIMARY KEY,
+    wallet INTEGER DEFAULT 0,
+    bank INTEGER DEFAULT 0,
+    lastDaily INTEGER DEFAULT 0
+  )
+`);
+
+export function getEconomy(jid: string) {
+  db.run("INSERT OR IGNORE INTO economy (jid) VALUES (?)", [jid]);
+  return db.query("SELECT * FROM economy WHERE jid = ?").get(jid) as {
+    jid: string;
+    wallet: number;
+    bank: number;
+    lastDaily: number;
+  };
+}
+
+export function addWallet(jid: string, amount: number) {
+  db.run("INSERT OR IGNORE INTO economy (jid) VALUES (?)", [jid]);
+  db.run("UPDATE economy SET wallet = wallet + ? WHERE jid = ?", [amount, jid]);
+}
+
+export function setLastDaily(jid: string) {
+  db.run("UPDATE economy SET lastDaily = ? WHERE jid = ?", [Date.now(), jid]);
+}
+
+export function transferMoney(from: string, to: string, amount: number): boolean {
+  const sender = getEconomy(from);
+  if (sender.wallet < amount) return false;
+  db.run("UPDATE economy SET wallet = wallet - ? WHERE jid = ?", [amount, from]);
+  addWallet(to, amount);
+  return true;
+}
+
+// ======= Warn =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS warns (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    groupJid TEXT,
+    memberJid TEXT,
+    reason TEXT DEFAULT '',
+    timestamp INTEGER DEFAULT 0
+  )
+`);
+
+export function addWarn(groupJid: string, memberJid: string, reason: string) {
+  db.run("INSERT INTO warns (groupJid, memberJid, reason, timestamp) VALUES (?, ?, ?, ?)", [
+    groupJid,
+    memberJid,
+    reason,
+    Date.now(),
+  ]);
+}
+
+export function getWarns(groupJid: string, memberJid: string) {
+  return db
+    .query("SELECT * FROM warns WHERE groupJid = ? AND memberJid = ?")
+    .all(groupJid, memberJid) as { id: number; reason: string; timestamp: number }[];
+}
+
+export function removeWarns(groupJid: string, memberJid: string) {
+  db.run("DELETE FROM warns WHERE groupJid = ? AND memberJid = ?", [groupJid, memberJid]);
+}
+
+// ======= Poll =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS polls (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    groupJid TEXT,
+    creator TEXT,
+    question TEXT,
+    options TEXT,
+    votes TEXT DEFAULT '{}',
+    active INTEGER DEFAULT 1,
+    timestamp INTEGER DEFAULT 0
+  )
+`);
+
+export function createPoll(groupJid: string, creator: string, question: string, options: string[]) {
+  db.run(
+    "INSERT INTO polls (groupJid, creator, question, options, votes, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
+    [groupJid, creator, question, JSON.stringify(options), JSON.stringify({}), Date.now()],
+  );
+  return db.query("SELECT last_insert_rowid() as id").get() as { id: number };
+}
+
+export function getPoll(groupJid: string) {
+  return db
+    .query("SELECT * FROM polls WHERE groupJid = ? AND active = 1 ORDER BY id DESC LIMIT 1")
+    .get(groupJid) as {
+    id: number;
+    creator: string;
+    question: string;
+    options: string;
+    votes: string;
+    timestamp: number;
+  } | null;
+}
+
+export function votePoll(pollId: number, voter: string, optionIndex: number) {
+  const poll = db.query("SELECT votes FROM polls WHERE id = ?").get(pollId) as {
+    votes: string;
+  } | null;
+  if (!poll) return false;
+  const votes = JSON.parse(poll.votes) as Record<string, number>;
+  votes[voter] = optionIndex;
+  db.run("UPDATE polls SET votes = ? WHERE id = ?", [JSON.stringify(votes), pollId]);
+  return true;
+}
+
+export function closePoll(pollId: number) {
+  db.run("UPDATE polls SET active = 0 WHERE id = ?", [pollId]);
+}
+
+// ======= Scheduler =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS reminders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    jid TEXT,
+    chatJid TEXT,
+    message TEXT,
+    triggerAt INTEGER,
+    done INTEGER DEFAULT 0
+  )
+`);
+
+export function addReminder(jid: string, chatJid: string, message: string, triggerAt: number) {
+  db.run("INSERT INTO reminders (jid, chatJid, message, triggerAt) VALUES (?, ?, ?, ?)", [
+    jid,
+    chatJid,
+    message,
+    triggerAt,
+  ]);
+}
+
+export function getPendingReminders() {
+  return db.query("SELECT * FROM reminders WHERE done = 0 AND triggerAt <= ?").all(Date.now()) as {
+    id: number;
+    jid: string;
+    chatJid: string;
+    message: string;
+    triggerAt: number;
+  }[];
+}
+
+export function markReminderDone(id: number) {
+  db.run("UPDATE reminders SET done = 1 WHERE id = ?", [id]);
 }
 
 export default db;
