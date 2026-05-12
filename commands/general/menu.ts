@@ -4,7 +4,7 @@ import { getUser } from "@/database";
 import { commands } from "@/loader";
 import { defineCommand } from "@/types";
 
-const thumbnail = readFileSync("assets/banner.png");
+const image = readFileSync("assets/thumbnail.jpg");
 
 export default defineCommand({
   name: "menu",
@@ -17,16 +17,16 @@ export default defineCommand({
       categories.set(cmd.category, list);
     }
 
-    let text = `╭─── *${config.name}* ───\n│\n│ Hits: ${getUser(msg.sender)?.hits ?? 0}\n│\n`;
+    let caption = `╭─── *${config.name}* ───\n│\n│ Hits: ${getUser(msg.sender)?.hits ?? 0}\n│\n`;
     for (const [category, cmds] of categories) {
-      text += `│ *「 ${category.toUpperCase()} 」*\n`;
+      caption += `│ *「 ${category.toUpperCase()} 」*\n`;
       for (const cmd of cmds) {
-        text += `│ ${cmd}\n`;
+        caption += `│ ${cmd}\n`;
       }
-      text += `│\n`;
+      caption += `│\n`;
     }
-    text += `╰────────────────`;
+    caption += `╰────────────────`;
 
-    await msg.send({ image: thumbnail, caption: text });
+    await msg.send({ image, caption });
   },
 });
