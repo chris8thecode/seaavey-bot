@@ -16,6 +16,7 @@ import db, {
   getAfk,
   getGroup,
   getPendingReminders,
+  getUser,
   isBanned,
   markReminderDone,
   removeAfk,
@@ -321,7 +322,20 @@ async function startBot() {
       const cmd = commands.get(cmdName);
       if (cmd) {
         addHit(parse.sender);
-        cmd.handler(sock, parse).catch((e) => logger.error(e));
+        const user = getUser(parse.sender);
+        if (user) {
+          const prevLevel = user.level;
+          cmd.handler(sock, parse).catch((e) => logger.error(e));
+          const after = getUser(parse.sender);
+          if (after && after.level > prevLevel) {
+            await sock.sendMessage(parse.jid, {
+              text: `🎉 *Level Up!*\n\n@${parse.sender.replace(/@.+/, "")} naik ke level *${after.level}*! 🏆`,
+              mentions: [parse.sender],
+            });
+          }
+        } else {
+          cmd.handler(sock, parse).catch((e) => logger.error(e));
+        }
       }
     }
   });

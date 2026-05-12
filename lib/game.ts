@@ -1,4 +1,6 @@
 import { checkMathAnswer } from "../commands/game/math";
+import { checkTebakBendera } from "../commands/game/tebakbendera";
+import { checkTebakGambar } from "../commands/game/tebakgambar";
 import { checkTebakKata } from "../commands/game/tebakkata";
 import { checkTrivia } from "../commands/game/trivia";
 
@@ -6,6 +8,8 @@ export function checkGameAnswer(jid: string, text: string, sender: string): stri
   return (
     checkMathAnswer(jid, text, sender) ||
     checkTebakKata(jid, text, sender) ||
-    checkTrivia(jid, text, sender)
+    checkTrivia(jid, text, sender) ||
+    checkTebakBendera(jid, text, sender) ||
+    checkTebakGambar(jid, text, sender)
   );
 }
