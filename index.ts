@@ -70,6 +70,18 @@ async function startBot() {
     }
   });
 
+  // Anti Call: reject incoming calls
+  sock.ev.on("call", async (calls) => {
+    for (const call of calls) {
+      if (call.status === "offer") {
+        await sock.rejectCall(call.id, call.from);
+        await sock.sendMessage(call.from, {
+          text: "🚫 Maaf, bot tidak menerima panggilan. Silakan kirim pesan teks.",
+        });
+      }
+    }
+  });
+
   sock.ev.on("groups.upsert", async (groups) => {
     for (const group of groups) {
       const jid = group.id;
@@ -184,6 +196,18 @@ async function startBot() {
   sock.ev.on("messages.upsert", async ({ messages }) => {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
+
+      // Anti ViewOnce: forward view-once media to owner
+      const viewOnce =
+        msg.message?.viewOnceMessage?.message || msg.message?.viewOnceMessageV2?.message;
+      if (viewOnce) {
+        const ownerJid = `${config.owner[0]}@s.whatsapp.net`;
+        const sender = msg.key.participant || msg.key.remoteJid || "";
+        await sock.sendMessage(ownerJid, {
+          text: `👁️ *View Once Detected*\n\n👤 ${sender}\n📍 ${msg.key.remoteJid}`,
+        });
+        await sock.sendMessage(ownerJid, { forward: { key: msg.key, message: viewOnce } });
+      }
 
       // Store message for antidelete
       if (msg.key.id) {
