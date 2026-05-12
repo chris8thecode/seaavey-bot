@@ -11,6 +11,7 @@ import makeWASocket, {
 import QRCode from "qrcode";
 import { config, isDev } from "@/config";
 import db, { addHit, getGroup, isBanned, updateMemberChat } from "@/database";
+import { checkGameAnswer } from "@/game";
 import { parseMessage } from "@/helper";
 import { commands, loadCommands } from "@/loader";
 import { logger } from "@/logger";
@@ -225,6 +226,15 @@ async function startBot() {
             });
             continue;
           }
+        }
+      }
+
+      // Game answer check
+      if (parse.body && !parse.body.startsWith(config.prefix)) {
+        const gameResult = checkGameAnswer(parse.jid, parse.body, parse.sender);
+        if (gameResult) {
+          await sock.sendMessage(parse.jid, { text: gameResult }, { quoted: msg });
+          continue;
         }
       }
 

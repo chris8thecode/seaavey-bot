@@ -1,0 +1,43 @@
+import { addXp } from "@/database";
+import { defineCommand } from "@/types";
+
+const sessions = new Map<string, { answer: number; timeout: Timer }>();
+
+export default defineCommand({
+  name: "math",
+  description: "Soal matematika cepat",
+  handler: async (sock, msg) => {
+    if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
+
+    const ops = ["+", "-", "×"] as const;
+    const op = ops[Math.floor(Math.random() * ops.length)] as (typeof ops)[number];
+    const a = Math.floor(Math.random() * 50) + 1;
+    const b = Math.floor(Math.random() * 20) + 1;
+
+    let answer: number;
+    if (op === "+") answer = a + b;
+    else if (op === "-") answer = a - b;
+    else answer = a * b;
+
+    const jid = msg.jid;
+    const timeout = setTimeout(() => {
+      sessions.delete(jid);
+      sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${answer}*` });
+    }, 30_000);
+
+    sessions.set(msg.jid, { answer, timeout });
+
+    await msg.reply(`🧮 Berapa *${a} ${op} ${b}* ?\n\nJawab dalam 30 detik!`);
+  },
+});
+
+export function checkMathAnswer(jid: string, text: string, sender: string): string | null {
+  const session = sessions.get(jid);
+  if (!session) return null;
+  if (Number(text) !== session.answer) return null;
+
+  clearTimeout(session.timeout);
+  sessions.delete(jid);
+  addXp(sender, 15);
+  return `✅ Benar! Jawabannya *${session.answer}* (+15 XP)`;
+}

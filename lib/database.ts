@@ -8,13 +8,21 @@ db.run(`
     jid TEXT PRIMARY KEY,
     hits INTEGER DEFAULT 0,
     banned INTEGER DEFAULT 0,
-    lastChat INTEGER DEFAULT 0
+    lastChat INTEGER DEFAULT 0,
+    xp INTEGER DEFAULT 0,
+    level INTEGER DEFAULT 1
   )
 `);
 
-// migrate: add lastChat column if missing
+// migrate: add columns if missing
 try {
   db.run("ALTER TABLE users ADD COLUMN lastChat INTEGER DEFAULT 0");
+} catch {}
+try {
+  db.run("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0");
+} catch {}
+try {
+  db.run("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1");
 } catch {}
 
 export function getUser(jid: string) {
@@ -23,7 +31,23 @@ export function getUser(jid: string) {
     hits: number;
     banned: number;
     lastChat: number;
+    xp: number;
+    level: number;
   } | null;
+}
+
+export function addXp(jid: string, amount: number) {
+  db.run("INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = xp + ?", [
+    jid,
+    amount,
+    amount,
+  ]);
+  const user = getUser(jid);
+  if (!user) return;
+  const nextLevel = user.level * 100;
+  if (user.xp >= nextLevel) {
+    db.run("UPDATE users SET level = level + 1, xp = xp - ? WHERE jid = ?", [nextLevel, jid]);
+  }
 }
 
 export function addHit(jid: string) {
@@ -31,6 +55,7 @@ export function addHit(jid: string) {
     "INSERT INTO users (jid, hits, lastChat) VALUES (?, 1, ?) ON CONFLICT(jid) DO UPDATE SET hits = hits + 1, lastChat = ?",
     [jid, Date.now(), Date.now()],
   );
+  addXp(jid, Math.floor(Math.random() * 5) + 1);
 }
 
 export function setBanned(jid: string, banned: boolean) {
