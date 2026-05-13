@@ -151,6 +151,18 @@ async function startBot() {
     }
   }, 30_000);
 
+  // Schedule checker
+  setInterval(async () => {
+    const { getPendingSchedules, markScheduleDone } = await import("@/database");
+    const schedules = getPendingSchedules();
+    for (const s of schedules) {
+      markScheduleDone(s.id);
+      await sock.sendMessage(s.chatJid, {
+        text: `📢 *Scheduled Message*\n\n${s.message}`,
+      });
+    }
+  }, 30_000);
+
   sock.ev.on("messages.update", async (updates) => {
     for (const { key, update } of updates) {
       if (!key.remoteJid || !key.id) continue;
@@ -197,7 +209,7 @@ async function startBot() {
     for (const msg of messages) {
       if (msg.key.fromMe) continue;
 
-      // Anti ViewOnce: forward view-once media to owner
+      // Anti ViewOnce: forward view-once media to owner (or to group if antiviewonce enabled)
       const viewOnce =
         msg.message?.viewOnceMessage?.message || msg.message?.viewOnceMessageV2?.message;
       if (viewOnce) {
@@ -206,7 +218,23 @@ async function startBot() {
         await sock.sendMessage(ownerJid, {
           text: `👁️ *View Once Detected*\n\n👤 ${sender}\n📍 ${msg.key.remoteJid}`,
         });
-        await sock.sendMessage(ownerJid, { forward: { key: msg.key, message: viewOnce } });
+        await sock.sendMessage(ownerJid, {
+          forward: { key: msg.key, message: viewOnce },
+        });
+
+        // If in group and antiviewonce is enabled, forward to group
+        if (msg.key.remoteJid?.endsWith("@g.us")) {
+          const grp = getGroup(msg.key.remoteJid);
+          if (grp.antiviewonce) {
+            await sock.sendMessage(msg.key.remoteJid, {
+              text: `👁️ *View Once Opened*\n\n👤 @${sender.replace(/@.+/, "")} mengirim pesan view once:`,
+              mentions: [sender],
+            });
+            await sock.sendMessage(msg.key.remoteJid, {
+              forward: { key: msg.key, message: viewOnce },
+            });
+          }
+        }
       }
 
       // Store message for antidelete
@@ -261,11 +289,13 @@ async function startBot() {
           }
         }
 
-        // Antitoxic: delete messages containing toxic words
+        // Antitoxic: delete messages containing toxic words (database + default)
         if (group.antitoxic && !parse.isAdmin) {
-          const toxic =
+          const defaultToxic =
             /anjing|bangsat|kontol|memek|babi|tolol|goblok|bajingan|asu|jancok|ngentot|pepek/i;
-          if (toxic.test(parse.body)) {
+          const { isToxicMessage } = await import("@/database");
+          const customToxic = isToxicMessage(parse.jid, parse.body);
+          if (defaultToxic.test(parse.body) || customToxic) {
             await sock.sendMessage(parse.jid, { delete: msg.key });
             await sock.sendMessage(parse.jid, {
               text: `⚠️ @${parse.sender.replace(/@.+/, "")} jaga bicaramu!`,
@@ -328,6 +358,15 @@ async function startBot() {
         if (gameResult) {
           await sock.sendMessage(parse.jid, { text: gameResult }, { quoted: msg });
           continue;
+        }
+
+        // Auto-reply: check if message matches a trigger
+        if (parse.isGroup) {
+          const { findAutoReply } = await import("@/database");
+          const autoReply = findAutoReply(parse.jid, parse.body);
+          if (autoReply) {
+            await sock.sendMessage(parse.jid, { text: autoReply.response }, { quoted: msg });
+          }
         }
       }
 

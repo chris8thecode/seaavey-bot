@@ -99,6 +99,9 @@ db.run(`
 try {
   db.run("ALTER TABLE groups ADD COLUMN antinsfw INTEGER DEFAULT 0");
 } catch {}
+try {
+  db.run("ALTER TABLE groups ADD COLUMN antiviewonce INTEGER DEFAULT 0");
+} catch {}
 
 export interface Group {
   jid: string;
@@ -116,6 +119,7 @@ export interface Group {
   goodbyeMsg: string;
   warnMax: number;
   antinsfw: number;
+  antiviewonce: number;
 }
 
 export function getGroup(jid: string): Group {
@@ -324,6 +328,55 @@ db.run(`
   )
 `);
 
+// ======= Auto-Reply =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS autoreplies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    groupJid TEXT,
+    trigger TEXT,
+    response TEXT,
+    createdBy TEXT
+  )
+`);
+
+export function addAutoReply(
+  groupJid: string,
+  trigger: string,
+  response: string,
+  createdBy: string,
+) {
+  db.run("INSERT INTO autoreplies (groupJid, trigger, response, createdBy) VALUES (?, ?, ?, ?)", [
+    groupJid,
+    trigger.toLowerCase(),
+    response,
+    createdBy,
+  ]);
+}
+
+export function removeAutoReply(groupJid: string, trigger: string): boolean {
+  const result = db.run("DELETE FROM autoreplies WHERE groupJid = ? AND trigger = ?", [
+    groupJid,
+    trigger.toLowerCase(),
+  ]);
+  return result.changes > 0;
+}
+
+export function getAutoReplies(groupJid: string) {
+  return db.query("SELECT * FROM autoreplies WHERE groupJid = ?").all(groupJid) as {
+    id: number;
+    trigger: string;
+    response: string;
+    createdBy: string;
+  }[];
+}
+
+export function findAutoReply(groupJid: string, text: string) {
+  return db
+    .query("SELECT response FROM autoreplies WHERE groupJid = ? AND trigger = ?")
+    .get(groupJid, text.toLowerCase()) as { response: string } | null;
+}
+
 export function addReminder(jid: string, chatJid: string, message: string, triggerAt: number) {
   db.run("INSERT INTO reminders (jid, chatJid, message, triggerAt) VALUES (?, ?, ?, ?)", [
     jid,
@@ -347,4 +400,102 @@ export function markReminderDone(id: number) {
   db.run("UPDATE reminders SET done = 1 WHERE id = ?", [id]);
 }
 
+// ======= Scheduled Messages =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS schedules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chatJid TEXT,
+    creator TEXT,
+    message TEXT,
+    triggerAt INTEGER,
+    repeat TEXT DEFAULT '',
+    done INTEGER DEFAULT 0
+  )
+`);
+
+export function addSchedule(
+  chatJid: string,
+  creator: string,
+  message: string,
+  triggerAt: number,
+  repeat = "",
+) {
+  db.run(
+    "INSERT INTO schedules (chatJid, creator, message, triggerAt, repeat) VALUES (?, ?, ?, ?, ?)",
+    [chatJid, creator, message, triggerAt, repeat],
+  );
+}
+
+export function getPendingSchedules() {
+  return db.query("SELECT * FROM schedules WHERE done = 0 AND triggerAt <= ?").all(Date.now()) as {
+    id: number;
+    chatJid: string;
+    creator: string;
+    message: string;
+    triggerAt: number;
+    repeat: string;
+  }[];
+}
+
+export function markScheduleDone(id: number) {
+  db.run("UPDATE schedules SET done = 1 WHERE id = ?", [id]);
+}
+
+export function reschedule(id: number, nextTrigger: number) {
+  db.run("UPDATE schedules SET triggerAt = ? WHERE id = ?", [nextTrigger, id]);
+}
+
+export function getSchedules(chatJid: string) {
+  return db.query("SELECT * FROM schedules WHERE chatJid = ? AND done = 0").all(chatJid) as {
+    id: number;
+    message: string;
+    triggerAt: number;
+    repeat: string;
+  }[];
+}
+
+export function deleteSchedule(id: number) {
+  db.run("DELETE FROM schedules WHERE id = ?", [id]);
+}
+
 export default db;
+
+// ======= Toxic Words =======
+
+db.run(`
+  CREATE TABLE IF NOT EXISTS toxic_words (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    groupJid TEXT,
+    word TEXT
+  )
+`);
+
+export function addToxicWord(groupJid: string, word: string) {
+  db.run("INSERT INTO toxic_words (groupJid, word) VALUES (?, ?)", [groupJid, word.toLowerCase()]);
+}
+
+export function removeToxicWord(groupJid: string, word: string): boolean {
+  const result = db.run("DELETE FROM toxic_words WHERE groupJid = ? AND word = ?", [
+    groupJid,
+    word.toLowerCase(),
+  ]);
+  return result.changes > 0;
+}
+
+export function getToxicWords(groupJid: string) {
+  return db.query("SELECT word FROM toxic_words WHERE groupJid = ?").all(groupJid) as {
+    word: string;
+  }[];
+}
+
+export function isToxicMessage(groupJid: string, text: string): string | null {
+  const words = db.query("SELECT word FROM toxic_words WHERE groupJid = ?").all(groupJid) as {
+    word: string;
+  }[];
+  const lower = text.toLowerCase();
+  for (const { word } of words) {
+    if (lower.includes(word)) return word;
+  }
+  return null;
+}
