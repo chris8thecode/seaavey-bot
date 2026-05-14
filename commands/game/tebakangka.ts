@@ -6,14 +6,18 @@ const sessions = new Map<string, { answer: number; attempts: number; timeout: Ti
 export default defineCommand({
   name: "tebakangka",
   description: "Tebak angka 1-100 (ada hint higher/lower)",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;
     const session = sessions.get(key);
 
     if (!msg.args[0]) {
       if (session) return msg.reply("⏳ Kamu masih punya game! Ketik .tebakangka [angka]");
       const answer = Math.floor(Math.random() * 100) + 1;
-      const timeout = setTimeout(() => sessions.delete(key), 120_000);
+      const jid = msg.jid;
+      const timeout = setTimeout(() => {
+        sessions.delete(key);
+        sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${answer}*` });
+      }, 120_000);
       sessions.set(key, { answer, attempts: 0, timeout });
       return msg.reply(
         "🔢 Aku sudah pilih angka 1-100.\nTebak dengan .tebakangka [angka]\n\n10 kesempatan, 120 detik!",

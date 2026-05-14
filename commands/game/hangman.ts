@@ -34,7 +34,7 @@ function render(word: string, guessed: Set<string>): string {
 export default defineCommand({
   name: "hangman",
   description: "Tebak huruf satu-satu",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;
     const session = sessions.get(key);
 
@@ -50,7 +50,11 @@ export default defineCommand({
           `🎯 *Hangman*\n\n${render(session.word, session.guessed)}\n❤️ ${session.lives} nyawa\nHuruf: ${[...session.guessed].join(", ") || "-"}\n\nKetik .hangman [huruf]`,
         );
       const word = words[Math.floor(Math.random() * words.length)] as string;
-      const timeout = setTimeout(() => sessions.delete(key), 120_000);
+      const jid = msg.jid;
+      const timeout = setTimeout(() => {
+        sessions.delete(key);
+        sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${word}*` });
+      }, 120_000);
       sessions.set(key, { word, guessed: new Set(), lives: 6, timeout });
       return msg.reply(
         `🎯 *Hangman* (${word.length} huruf)\n\n${render(word, new Set())}\n❤️ 6 nyawa\n\nKetik .hangman [huruf]`,

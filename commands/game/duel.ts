@@ -9,7 +9,7 @@ const sessions = new Map<
 export default defineCommand({
   name: "duel",
   description: "Duel lawan player lain",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const key = msg.jid;
     const session = sessions.get(key);
 
@@ -52,7 +52,11 @@ export default defineCommand({
     if (!target) return msg.reply("Tag lawan: .duel @user");
     if (target === msg.sender) return msg.reply("❌ Gak bisa duel sendiri!");
 
-    const timeout = setTimeout(() => sessions.delete(key), 120_000);
+    const jid = msg.jid;
+    const timeout = setTimeout(() => {
+      sessions.delete(key);
+      sock.sendMessage(jid, { text: "⏰ Waktu habis! Duel dibatalkan." });
+    }, 120_000);
     sessions.set(key, {
       challenger: msg.sender,
       target,

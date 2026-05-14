@@ -6,7 +6,7 @@ const sessions = new Map<string, { lastWord: string; used: Set<string>; timeout:
 export default defineCommand({
   name: "wordchain",
   description: "Sambung kata (huruf terakhir = huruf pertama)",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);
     const word = msg.args[0]?.toLowerCase();
 
@@ -15,7 +15,14 @@ export default defineCommand({
         return msg.reply(
           `🔗 Kata terakhir: *${session.lastWord}*\nSambung dengan huruf *${session.lastWord.slice(-1).toUpperCase()}*\n\nKetik .wordchain [kata]`,
         );
-      const timeout = setTimeout(() => sessions.delete(msg.jid), 120_000);
+      const jid = msg.jid;
+      const timeout = setTimeout(() => {
+        const s = sessions.get(jid);
+        sessions.delete(jid);
+        sock.sendMessage(jid, {
+          text: `⏰ Waktu habis! Word Chain selesai. Total ${s?.used.size ?? 0} kata.`,
+        });
+      }, 120_000);
       sessions.set(msg.jid, { lastWord: "indonesia", used: new Set(["indonesia"]), timeout });
       return msg.reply(
         "🔗 *Word Chain* dimulai!\n\nKata pertama: *indonesia*\nSambung dengan huruf *A*\n\nKetik .wordchain [kata]",
@@ -41,7 +48,14 @@ export default defineCommand({
     session.used.add(word);
     session.lastWord = word;
     clearTimeout(session.timeout);
-    session.timeout = setTimeout(() => sessions.delete(msg.jid), 120_000);
+    const jid = msg.jid;
+    session.timeout = setTimeout(() => {
+      const s = sessions.get(jid);
+      sessions.delete(jid);
+      sock.sendMessage(jid, {
+        text: `⏰ Waktu habis! Word Chain selesai. Total ${s?.used.size ?? 0} kata.`,
+      });
+    }, 120_000);
 
     addXp(msg.sender, 3);
     await msg.reply(

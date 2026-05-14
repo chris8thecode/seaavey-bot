@@ -1,7 +1,7 @@
 import { addXp } from "@/database";
 import { defineCommand } from "@/types";
 
-const sessions = new Map<string, { board: string[]; turn: "X" | "O" }>();
+const sessions = new Map<string, { board: string[]; turn: "X" | "O"; timeout: Timer }>();
 
 function renderBoard(board: string[]): string {
   return `${board[0]}│${board[1]}│${board[2]}\n─┼─┼─\n${board[3]}│${board[4]}│${board[5]}\n─┼─┼─\n${board[6]}│${board[7]}│${board[8]}`;
@@ -52,14 +52,19 @@ function botMove(board: string[]): number {
 export default defineCommand({
   name: "tictactoe",
   description: "Main tic-tac-toe lawan bot",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;
 
     if (!msg.args[0]) {
       const board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-      sessions.set(key, { board, turn: "X" });
+      const jid = msg.jid;
+      const timeout = setTimeout(() => {
+        sessions.delete(key);
+        sock.sendMessage(jid, { text: "⏰ Waktu habis! Game Tic-Tac-Toe dibatalkan." });
+      }, 120_000);
+      sessions.set(key, { board, turn: "X", timeout });
       return msg.reply(
-        `🎮 *Tic-Tac-Toe*\nKamu: ❌ | Bot: ⭕\n\n${renderBoard(board)}\n\nKetik .tictactoe [1-9]`,
+        `🎮 *Tic-Tac-Toe*\nKamu: ❌ | Bot: ⭕\n\n${renderBoard(board)}\n\nKetik .tictactoe [1-9] (120 detik)`,
       );
     }
 
@@ -67,6 +72,7 @@ export default defineCommand({
     if (!session) return msg.reply("Ketik .tictactoe untuk mulai game baru.");
 
     if (msg.args[0] === "nyerah") {
+      clearTimeout(session.timeout);
       sessions.delete(key);
       return msg.reply("🏳️ Menyerah! Game selesai.");
     }
@@ -78,12 +84,14 @@ export default defineCommand({
 
     session.board[pos] = "X";
     if (checkWin(session.board, "X")) {
+      clearTimeout(session.timeout);
       sessions.delete(key);
       addXp(msg.sender, 20);
       return msg.reply(`${renderBoard(session.board)}\n\n🎉 Kamu menang! (+20 XP)`);
     }
 
     if (!session.board.some((v) => v !== "X" && v !== "O")) {
+      clearTimeout(session.timeout);
       sessions.delete(key);
       return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
     }
@@ -91,11 +99,13 @@ export default defineCommand({
     const bot = botMove(session.board);
     session.board[bot] = "O";
     if (checkWin(session.board, "O")) {
+      clearTimeout(session.timeout);
       sessions.delete(key);
       return msg.reply(`${renderBoard(session.board)}\n\n😢 Bot menang!`);
     }
 
     if (!session.board.some((v) => v !== "X" && v !== "O")) {
+      clearTimeout(session.timeout);
       sessions.delete(key);
       return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
     }

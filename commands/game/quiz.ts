@@ -31,7 +31,7 @@ const sessions = new Map<string, { answer: number; timeout: Timer }>();
 export default defineCommand({
   name: "quiz",
   description: "Quiz pilihan ganda",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) {
       const session = sessions.get(msg.jid);
       if (!session) return;
@@ -55,7 +55,13 @@ export default defineCommand({
     ] as (typeof questions)[number];
     const options = item.o.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`).join("\n");
 
-    const timeout = setTimeout(() => sessions.delete(msg.jid), 30_000);
+    const jid = msg.jid;
+    const timeout = setTimeout(() => {
+      sessions.delete(jid);
+      sock.sendMessage(jid, {
+        text: `⏰ Waktu habis! Jawabannya *${String.fromCharCode(65 + item.a)}*`,
+      });
+    }, 30_000);
     sessions.set(msg.jid, { answer: item.a, timeout });
 
     await msg.reply(`📝 *Quiz*\n\n${item.q}\n\n${options}\n\nJawab: .quiz [A/B/C/D] (30 detik)`);
