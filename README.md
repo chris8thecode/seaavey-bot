@@ -30,6 +30,7 @@
 ## Requirements
 
 - [Bun](https://bun.sh) v1.0+
+- [FFmpeg](https://ffmpeg.org/)
 
 ## Installation
 
@@ -38,17 +39,27 @@
 git clone https://github.com/seaavey/seaavey-bot.git
 cd seaavey-bot
 
-# Install dependencies
-bun install
+# Run installer (installs Bun, FFmpeg, dependencies)
+bash bin/install.sh
 
-# Copy environment config
+# Or manual install
+bun install
 cp .env.example .env
 
 # Start the bot
-bun run index.ts
+bun run start
 ```
 
 Scan the QR code from `qr.png` or enter your phone number for pairing code.
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `bin/install.sh` | Install Bun, FFmpeg, dependencies, setup .env |
+| `bin/update.sh` | Pull latest changes & update dependencies |
+| `bin/uninstall.sh` | Remove node_modules, auth, database, .env |
+| `bin/create.sh` | Generate new command file interactively |
 
 ## Adding Commands
 
@@ -67,7 +78,25 @@ export default defineCommand({
 });
 ```
 
+Or use the generator: `bash bin/create.sh`
+
 Commands are auto-loaded on startup. In dev mode, changes are hot-reloaded.
+
+## Command Categories
+
+| Category | Description |
+|----------|-------------|
+| `general` | Menu, ping, runtime, etc. |
+| `tools` | Sticker, OCR, TTS, QR, translate, etc. |
+| `productivity` | Notes, todo, reminders, schedule, AFK |
+| `downloader` | YouTube, TikTok, Instagram, etc. |
+| `fun` | Meme, quotes, ship, zodiak, etc. |
+| `game` | Trivia, tictactoe, hangman, etc. |
+| `group` | Admin tools, antilink, welcome, etc. |
+| `economy` | Wallet, daily, shop, transfer |
+| `search` | Pinterest, SoundCloud, lyrics |
+| `info` | Weather, GitHub, earthquake, etc. |
+| `owner` | Bot management commands |
 
 ## Docker
 

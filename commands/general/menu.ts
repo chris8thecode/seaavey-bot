@@ -101,8 +101,7 @@ export default defineCommand({
       await sock.relayMessage(msg.jid, message, {
         messageId: generateMessageID(),
       });
-    } catch (err) {
-      console.error("menu error:", err);
+    } catch {
       await msg.reply("❌ Gagal mengirim menu.");
     }
   },
