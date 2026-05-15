@@ -44,3 +44,6 @@ qr.png
 
 # debug
 message.txt
+
+# test files
+*.test.*

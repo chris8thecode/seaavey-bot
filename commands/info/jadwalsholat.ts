@@ -11,7 +11,9 @@ export default defineCommand({
     const res = await fetch(
       `https://api.aladhan.com/v1/timingsByCity/${date}?city=${encodeURIComponent(city)}&country=Indonesia&method=20`,
     );
-    const data = (await res.json()) as { data?: { timings?: Record<string, string> } };
+    const data = (await res.json()) as {
+      data?: { timings?: Record<string, string> };
+    };
     const t = data.data?.timings;
     if (!t) return msg.reply("❌ Kota tidak ditemukan.");
     await msg.reply(
