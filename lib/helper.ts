@@ -84,7 +84,8 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     args,
     msg,
     reply: async (text) => {
-      await sock.sendMessage(jid, { text }, { quoted: msg });
+      const mentions = [...text.matchAll(/@(\d+)/g)].map((m) => `${m[1]}@s.whatsapp.net`);
+      await sock.sendMessage(jid, { text, mentions }, { quoted: msg });
     },
     send: async (content) => {
       await sock.sendMessage(jid, content, { quoted: msg });
