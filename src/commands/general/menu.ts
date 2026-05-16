@@ -34,6 +34,26 @@ export default defineCommand({
       categories.set(cmd.category, list);
     }
 
+    const targetCategory = msg.args[0]?.toLowerCase();
+
+    if (targetCategory) {
+      if (!categories.has(targetCategory)) {
+        await msg.reply(
+          `❌ Kategori *${targetCategory}* tidak ditemukan.\nKategori tersedia: ${Array.from(categories.keys()).join(", ")}`,
+        );
+        return;
+      }
+
+      const cmds = categories.get(targetCategory)!;
+      let text = `╭━━━━[ *${targetCategory.toUpperCase()}* ]━━━━\n`;
+      for (const cmd of cmds) {
+        text += `┃ 🔹 *${cmd.title}*\n┃ └ ${cmd.description}\n`;
+      }
+      text += `╰━━━━━━━━━━━━━━━━\n`;
+      await msg.reply(text);
+      return;
+    }
+
     const user = getUser(msg.sender);
     const level = user?.level ?? 1;
     const xp = user?.xp ?? 0;
@@ -53,13 +73,21 @@ export default defineCommand({
 
     const sections = [];
     const sorted = Array.from(categories.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    const categoryRows = [];
+
     for (const [category, cmds] of sorted) {
       const icon = categoryIcons[category] || "📂";
-      sections.push({
+      categoryRows.push({
         title: `${icon} ${category.toUpperCase()}`,
-        rows: cmds,
+        id: `${config.prefix}menu ${category}`,
+        description: `Tampilkan ${cmds.length} command di kategori ini`,
       });
     }
+
+    sections.push({
+      title: "Pilih Kategori",
+      rows: categoryRows,
+    });
 
     try {
       await sendInteractive(sock, msg.jid, {
