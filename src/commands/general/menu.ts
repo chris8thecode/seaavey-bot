@@ -72,7 +72,7 @@ export default defineCommand({
           {
             name: "single_select",
             params: {
-              title: "Daftar Command",
+              title: "Tampilkan Menu",
               sections: sections,
             },
           },
