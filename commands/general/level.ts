@@ -1,18 +1,41 @@
 import { getUser } from "@/database";
+import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
 export default defineCommand({
   name: "level",
   description: "Cek level dan XP kamu",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const user = getUser(msg.sender);
     const level = user?.level ?? 1;
     const xp = user?.xp ?? 0;
     const nextLevel = level * 100;
-    const bar =
-      "█".repeat(Math.floor((xp / nextLevel) * 10)) +
-      "░".repeat(10 - Math.floor((xp / nextLevel) * 10));
 
-    await msg.reply(`🎮 *Level ${level}*\n\n${bar} (${xp}/${nextLevel} XP)`);
+    try {
+      const { generateRankCard } = await import("@/rankCard");
+      let ppUrl: string | null = null;
+      try {
+        ppUrl = await sock.profilePictureUrl(msg.sender, "image");
+      } catch {}
+
+      const userName = msg.msg.pushName || msg.sender.replace(/@.+/, "");
+      const imageBuffer = await generateRankCard(ppUrl, userName, level, xp, nextLevel);
+
+      await sock.sendMessage(
+        msg.jid,
+        {
+          image: imageBuffer,
+          caption: `🎮 *Level ${level}* (${xp}/${nextLevel} XP)`,
+        },
+        { quoted: msg.msg },
+      );
+    } catch (e) {
+      logger.error(e);
+      // Fallback text
+      const bar =
+        "█".repeat(Math.floor((xp / nextLevel) * 10)) +
+        "░".repeat(10 - Math.floor((xp / nextLevel) * 10));
+      await msg.reply(`🎮 *Level ${level}*\n\n${bar} (${xp}/${nextLevel} XP)`);
+    }
   },
 });
