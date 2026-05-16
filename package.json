@@ -7,10 +7,10 @@
     "start": "bun run index.ts",
     "dev": "NODE_ENV=development bun run index.ts",
     "lint": "biome check .",
-    "format": "biome check --write .",
-    "generate": "bun run bin/generate-command.ts"
+    "format": "biome check --write ."
   },
   "dependencies": {
+    "@google/genai": "^2.3.0",
     "baileys": "^7.0.0-rc11",
     "node-webpmux": "^3.2.1",
     "pino-pretty": "^13.1.3",
