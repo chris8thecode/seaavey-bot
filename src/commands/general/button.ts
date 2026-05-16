@@ -10,7 +10,7 @@ export default defineCommand({
       body: "Test",
       footer: "test",
       header: {
-        image: readFileSync("assets/banner.png"),
+        image: readFileSync("src/assets/banner.png"),
       },
       buttons: [
         {
