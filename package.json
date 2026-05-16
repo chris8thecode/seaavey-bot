@@ -1,11 +1,11 @@
 {
   "name": "seaaveybot",
   "type": "module",
-  "module": "index.ts",
+  "module": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "start": "bun run index.ts",
-    "dev": "NODE_ENV=development bun run index.ts",
+    "start": "bun run src/index.ts",
+    "dev": "NODE_ENV=development bun run src/index.ts",
     "lint": "biome check .",
     "format": "biome check --write ."
   },

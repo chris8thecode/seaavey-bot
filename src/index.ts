@@ -111,7 +111,7 @@ async function startBot() {
       // Welcome message
       if (action === "add" && group.welcome) {
         try {
-          const { generateWelcomeImage } = await import("@/welcomeImage");
+          const { generateWelcomeImage } = await import("@utils/canvas/welcomeImage");
           const metadata = await sock.groupMetadata(id);
           for (const m of mentions) {
             let ppUrl: string | null = null;
@@ -141,7 +141,7 @@ async function startBot() {
       // Goodbye message
       if (action === "remove" && group.goodbye) {
         try {
-          const { generateGoodbyeImage } = await import("@/welcomeImage");
+          const { generateGoodbyeImage } = await import("@utils/canvas/welcomeImage");
           const metadata = await sock.groupMetadata(id);
           for (const m of mentions) {
             let ppUrl: string | null = null;

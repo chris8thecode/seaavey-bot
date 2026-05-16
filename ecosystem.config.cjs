@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "seaaveybot",
-      script: "index.ts",
+      script: "src/index.ts",
       interpreter: "bun",
       watch: false,
       autorestart: true,

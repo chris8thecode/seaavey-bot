@@ -19,7 +19,8 @@
     // Path alias
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./lib/*"],
+      "@/*": ["./src/lib/*"],
+      "@utils/*": ["./src/utils/*"]
     },
 
     // Strict
