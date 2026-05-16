@@ -1,4 +1,4 @@
-import * as sharp from "sharp";
+import sharp from "sharp";
 
 export async function generateWelcomeImage(
   ppUrl: string | null,
@@ -7,12 +7,10 @@ export async function generateWelcomeImage(
 ): Promise<Buffer> {
   let ppBuffer: Buffer;
 
-  // 1. Ambil foto profil (kalau gagal/tidak ada, pakai avatar default)
   if (ppUrl) {
     try {
       const res = await fetch(ppUrl);
       const arr = await res.arrayBuffer();
-      // Buat mask bulat
       const circleMask = Buffer.from(
         '<svg><circle cx="100" cy="100" r="100" fill="white" /></svg>',
       );
@@ -28,30 +26,27 @@ export async function generateWelcomeImage(
     ppBuffer = await createDefaultAvatar();
   }
 
-  // 2. Buat background + teks dengan SVG (dirender Sharp)
-  // Karakter & di HTML entitas
   const cleanUser = userName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const cleanGroup = groupName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   const bgSvg = `
-    <svg width="800" height="400">
+    <svg width="800" height="250">
       <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#141E30;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#243B55;stop-opacity:1" />
         </linearGradient>
       </defs>
-      <rect width="800" height="400" fill="url(#grad)" rx="20" ry="20" />
-      <text x="400" y="270" font-family="Arial, sans-serif" font-size="40" fill="#ffffff" font-weight="bold" text-anchor="middle">WELCOME</text>
-      <text x="400" y="320" font-family="Arial, sans-serif" font-size="30" fill="#e0e0e0" text-anchor="middle">${cleanUser}</text>
-      <text x="400" y="360" font-family="Arial, sans-serif" font-size="20" fill="#b0b0b0" text-anchor="middle">To ${cleanGroup}</text>
+      <rect width="800" height="250" fill="url(#bg)" rx="15" ry="15" />
+      <text x="250" y="90" font-family="Arial, sans-serif" font-size="45" fill="#00e676" font-weight="bold">WELCOME TO THE SQUAD</text>
+      <text x="250" y="150" font-family="Arial, sans-serif" font-size="38" fill="#ffffff" font-weight="bold">${cleanUser}</text>
+      <text x="250" y="200" font-family="Arial, sans-serif" font-size="22" fill="#b0c4de">You have joined ${cleanGroup}</text>
     </svg>
   `;
 
-  // 3. Gabung background dengan foto profil
   return await sharp(Buffer.from(bgSvg))
     .composite([
-      { input: ppBuffer, top: 40, left: 300 }, // Posisi PP di tengah atas
+      { input: ppBuffer, top: 25, left: 25 }, // Posisi PP di kiri
     ])
     .png()
     .toBuffer();
@@ -101,22 +96,22 @@ export async function generateGoodbyeImage(
   const cleanGroup = groupName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
   const bgSvg = `
-    <svg width="800" height="400">
+    <svg width="800" height="250">
       <defs>
-        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#8b0000;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#2a0808;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#1a0000;stop-opacity:1" />
         </linearGradient>
       </defs>
-      <rect width="800" height="400" fill="url(#grad)" rx="20" ry="20" />
-      <text x="400" y="270" font-family="Arial, sans-serif" font-size="40" fill="#ffffff" font-weight="bold" text-anchor="middle">GOODBYE</text>
-      <text x="400" y="320" font-family="Arial, sans-serif" font-size="30" fill="#e0e0e0" text-anchor="middle">${cleanUser}</text>
-      <text x="400" y="360" font-family="Arial, sans-serif" font-size="20" fill="#b0b0b0" text-anchor="middle">Left ${cleanGroup}</text>
+      <rect width="800" height="250" fill="url(#bg)" rx="15" ry="15" />
+      <text x="250" y="90" font-family="Arial, sans-serif" font-size="45" fill="#ff4d4d" font-weight="bold">FAREWELL</text>
+      <text x="250" y="150" font-family="Arial, sans-serif" font-size="38" fill="#ffffff" font-weight="bold">${cleanUser}</text>
+      <text x="250" y="200" font-family="Arial, sans-serif" font-size="22" fill="#b08080">Just left ${cleanGroup}</text>
     </svg>
   `;
 
   return await sharp(Buffer.from(bgSvg))
-    .composite([{ input: ppBuffer, top: 40, left: 300 }])
+    .composite([{ input: ppBuffer, top: 25, left: 25 }])
     .png()
     .toBuffer();
 }
