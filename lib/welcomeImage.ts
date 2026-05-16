@@ -70,3 +70,53 @@ async function createDefaultAvatar(): Promise<Buffer> {
     .png()
     .toBuffer();
 }
+
+export async function generateGoodbyeImage(
+  ppUrl: string | null,
+  userName: string,
+  groupName: string,
+): Promise<Buffer> {
+  let ppBuffer: Buffer;
+
+  if (ppUrl) {
+    try {
+      const res = await fetch(ppUrl);
+      const arr = await res.arrayBuffer();
+      const circleMask = Buffer.from(
+        '<svg><circle cx="100" cy="100" r="100" fill="white" /></svg>',
+      );
+      ppBuffer = await sharp(Buffer.from(arr))
+        .resize(200, 200, { fit: "cover" })
+        .composite([{ input: circleMask, blend: "dest-in" }])
+        .png()
+        .toBuffer();
+    } catch {
+      ppBuffer = await createDefaultAvatar();
+    }
+  } else {
+    ppBuffer = await createDefaultAvatar();
+  }
+
+  const cleanUser = userName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const cleanGroup = groupName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  const bgSvg = `
+    <svg width="800" height="400">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#8b0000;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#grad)" rx="20" ry="20" />
+      <text x="400" y="270" font-family="Arial, sans-serif" font-size="40" fill="#ffffff" font-weight="bold" text-anchor="middle">GOODBYE</text>
+      <text x="400" y="320" font-family="Arial, sans-serif" font-size="30" fill="#e0e0e0" text-anchor="middle">${cleanUser}</text>
+      <text x="400" y="360" font-family="Arial, sans-serif" font-size="20" fill="#b0b0b0" text-anchor="middle">Left ${cleanGroup}</text>
+    </svg>
+  `;
+
+  return await sharp(Buffer.from(bgSvg))
+    .composite([{ input: ppBuffer, top: 40, left: 300 }])
+    .png()
+    .toBuffer();
+}

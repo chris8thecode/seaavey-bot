@@ -140,10 +140,32 @@ async function startBot() {
 
       // Goodbye message
       if (action === "remove" && group.goodbye) {
-        await sock.sendMessage(id, {
-          text: `👋 Goodbye ${tags}, sampai jumpa lagi.`,
-          mentions,
-        });
+        try {
+          const { generateGoodbyeImage } = await import("@/welcomeImage");
+          const metadata = await sock.groupMetadata(id);
+          for (const m of mentions) {
+            let ppUrl: string | null = null;
+            try {
+              ppUrl = await sock.profilePictureUrl(m, "image");
+            } catch {}
+            const imageBuffer = await generateGoodbyeImage(
+              ppUrl,
+              m.replace(/@.+/, ""),
+              metadata.subject,
+            );
+            await sock.sendMessage(id, {
+              image: imageBuffer,
+              caption: `👋 Goodbye @${m.replace(/@.+/, "")}, sampai jumpa lagi.`,
+              mentions: [m],
+            });
+          }
+        } catch (e) {
+          logger.error(e);
+          await sock.sendMessage(id, {
+            text: `👋 Goodbye ${tags}, sampai jumpa lagi.`,
+            mentions,
+          });
+        }
       }
     }
   });
