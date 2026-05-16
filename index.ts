@@ -116,7 +116,7 @@ async function startBot() {
           for (const m of mentions) {
             let ppUrl: string | null = null;
             try {
-              ppUrl = await sock.profilePictureUrl(m, "image");
+              ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
             } catch {}
             const imageBuffer = await generateWelcomeImage(
               ppUrl,
@@ -146,7 +146,7 @@ async function startBot() {
           for (const m of mentions) {
             let ppUrl: string | null = null;
             try {
-              ppUrl = await sock.profilePictureUrl(m, "image");
+              ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
             } catch {}
             const imageBuffer = await generateGoodbyeImage(
               ppUrl,

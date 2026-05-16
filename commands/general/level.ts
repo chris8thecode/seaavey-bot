@@ -15,7 +15,7 @@ export default defineCommand({
       const { generateRankCard } = await import("@/rankCard");
       let ppUrl: string | null = null;
       try {
-        ppUrl = await sock.profilePictureUrl(msg.sender, "image");
+        ppUrl = (await sock.profilePictureUrl(msg.sender, "image")) ?? null;
       } catch {}
 
       const userName = msg.msg.pushName || msg.sender.replace(/@.+/, "");
