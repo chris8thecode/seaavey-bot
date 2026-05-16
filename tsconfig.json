@@ -20,7 +20,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/lib/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@canvas/*": ["./src/canvas/*"]
     },
 
     // Strict
