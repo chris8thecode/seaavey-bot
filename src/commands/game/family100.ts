@@ -4,7 +4,7 @@ import { addXp } from "@/database";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
-// Load local database if available, otherwise fallback to empty array
+// Load local database
 let localData: { soal: string; jawaban: string[] }[] = [];
 try {
   const fileContent = readFileSync(
@@ -13,7 +13,7 @@ try {
   );
   localData = JSON.parse(fileContent);
 } catch (_e) {
-  logger.warn("Local family100.json not found or invalid.");
+  logger.error("Local family100.json not found or invalid.");
 }
 
 const sessions = new Map<
@@ -38,23 +38,13 @@ export default defineCommand({
       return msg.reply("⏳ Masih ada sesi family 100 yang sedang berjalan di grup ini!");
     }
 
-    let surveyData: { soal: string; jawaban: string[] };
-
-    if (localData.length > 0) {
-      surveyData = localData[Math.floor(Math.random() * localData.length)] as typeof surveyData;
-    } else {
-      try {
-        const res = await fetch(
-          "https://raw.githubusercontent.com/BochilTeam/database/master/games/family100.json",
-        );
-        const data = (await res.json()) as typeof localData;
-        surveyData = data[Math.floor(Math.random() * data.length)] as typeof surveyData;
-      } catch (e) {
-        logger.error(`Family100 fetch error: ${e}`);
-        return msg.reply("❌ Gagal mengambil soal family 100.");
-      }
+    if (localData.length === 0) {
+      return msg.reply("❌ Data soal family 100 belum tersedia.");
     }
 
+    const surveyData = localData[
+      Math.floor(Math.random() * localData.length)
+    ] as (typeof localData)[number];
     const jid = msg.jid;
     const question = surveyData.soal;
     const answers = surveyData.jawaban.map((a) => a.toLowerCase().trim());

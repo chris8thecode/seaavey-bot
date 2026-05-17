@@ -6,7 +6,7 @@ import { defineCommand } from "@/types";
 
 const sessions = new Map<string, { answer: string; timeout: Timer }>();
 
-// Load local database if available, otherwise fallback to empty array
+// Load local database
 let localData: { img: string; jawaban: string; deskripsi: string }[] = [];
 try {
   const fileContent = readFileSync(
@@ -15,7 +15,7 @@ try {
   );
   localData = JSON.parse(fileContent);
 } catch (_e) {
-  logger.warn("Local tebakgambar.json not found or invalid.");
+  logger.error("Local tebakgambar.json not found or invalid.");
 }
 
 export default defineCommand({
@@ -24,23 +24,13 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
 
-    let imgData: { img: string; jawaban: string; deskripsi: string };
-
-    if (localData.length > 0) {
-      imgData = localData[Math.floor(Math.random() * localData.length)] as typeof imgData;
-    } else {
-      try {
-        const res = await fetch(
-          "https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakgambar.json",
-        );
-        const data = (await res.json()) as typeof localData;
-        imgData = data[Math.floor(Math.random() * data.length)] as typeof imgData;
-      } catch (e) {
-        logger.error(`TebakGambar fetch error: ${e}`);
-        return msg.reply("❌ Gagal mengambil soal tebak gambar.");
-      }
+    if (localData.length === 0) {
+      return msg.reply("❌ Data soal tebak gambar belum tersedia.");
     }
 
+    const imgData = localData[
+      Math.floor(Math.random() * localData.length)
+    ] as (typeof localData)[number];
     const jid = msg.jid;
     const answer = imgData.jawaban.toLowerCase();
 
