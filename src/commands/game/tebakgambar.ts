@@ -1,13 +1,6 @@
 import { addXp } from "@/database";
+import { logger } from "@/logger";
 import { defineCommand } from "@/types";
-
-const images = [
-  { url: "https://i.imgur.com/8QZQZ0m.jpg", answer: "kucing" },
-  { url: "https://i.imgur.com/3GvwNBf.jpg", answer: "anjing" },
-  { url: "https://i.imgur.com/JQN0g1S.jpg", answer: "gajah" },
-  { url: "https://i.imgur.com/YCr7bBX.jpg", answer: "singa" },
-  { url: "https://i.imgur.com/5bPxZGo.jpg", answer: "panda" },
-];
 
 const sessions = new Map<string, { answer: string; timeout: Timer }>();
 
@@ -16,16 +9,34 @@ export default defineCommand({
   description: "Tebak gambar yang dikirim bot",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
-    const img = images[Math.floor(Math.random() * images.length)] as (typeof images)[number];
+
+    let imgData: { img: string; jawaban: string; deskripsi: string };
+    try {
+      const res = await fetch(
+        "https://raw.githubusercontent.com/BochilTeam/database/master/games/tebakgambar.json",
+      );
+      const data = (await res.json()) as (typeof imgData)[];
+      imgData = data[Math.floor(Math.random() * data.length)] as typeof imgData;
+    } catch (e) {
+      logger.error(`TebakGambar fetch error: ${e}`);
+      return msg.reply("❌ Gagal mengambil soal tebak gambar.");
+    }
+
     const jid = msg.jid;
+    const answer = imgData.jawaban.toLowerCase();
+
     const timeout = setTimeout(() => {
       sessions.delete(jid);
-      sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${img.answer}*` });
+      sock.sendMessage(jid, {
+        text: `⏰ Waktu habis!\n\nJawabannya: *${imgData.jawaban}*\nDeskripsi: ${imgData.deskripsi}`,
+      });
     }, 60_000);
-    sessions.set(jid, { answer: img.answer, timeout });
+
+    sessions.set(jid, { answer, timeout });
+
     await msg.send({
-      image: { url: img.url },
-      caption: "🖼️ *Tebak Gambar!*\n\nApa ini? Jawab dalam 60 detik!",
+      image: { url: imgData.img },
+      caption: `🖼️ *Tebak Gambar!*\n\nClue: ${imgData.deskripsi}\n\nJawab dalam 60 detik!`,
     });
   },
 });
@@ -37,5 +48,5 @@ export function checkTebakGambar(jid: string, text: string, sender: string): str
   clearTimeout(session.timeout);
   sessions.delete(jid);
   addXp(sender, 20);
-  return `✅ Benar! Jawabannya *${session.answer}* (+20 XP)`;
+  return `✅ Benar! Jawabannya *${session.answer.toUpperCase()}* (+20 XP)`;
 }
