@@ -1,6 +1,6 @@
 import { getEconomy, transferMoney } from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "transfer",
   description: "Transfer uang ke user lain",
@@ -15,7 +15,7 @@ export default defineCommand({
     if (!success) return msg.reply("❌ Saldo tidak cukup.");
     const eco = getEconomy(msg.sender);
     await msg.reply(
-      `✅ Berhasil transfer ${amount.toLocaleString()} coins ke @${target.replace(/@.+/, "")}\n💰 Sisa saldo: ${eco.wallet.toLocaleString()}`,
+      `✅ Berhasil transfer ${amount.toLocaleString()} coins ke @${getNumber(target)}\n💰 Sisa saldo: ${eco.wallet.toLocaleString()}`,
     );
   },
 });

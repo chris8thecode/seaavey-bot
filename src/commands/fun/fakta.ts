@@ -1,3 +1,4 @@
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const fakta = [
@@ -22,7 +23,7 @@ export default defineCommand({
   name: "fakta",
   description: "Fakta random yang menarik",
   handler: async (_sock, msg) => {
-    const f = fakta[Math.floor(Math.random() * fakta.length)];
+    const f = getRandomItem(fakta);
     await msg.reply(`💡 *Tahukah Kamu?*\n\n${f}`);
   },
 });

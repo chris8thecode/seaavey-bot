@@ -1,6 +1,6 @@
 import db from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "groupstats",
   description: "Statistik aktivitas group",
@@ -32,7 +32,7 @@ export default defineCommand({
       .all(msg.jid) as { memberJid: string; chatCount: number }[];
     const medals = ["🥇", "🥈", "🥉"];
     const topList = top3
-      .map((m, i) => `${medals[i]} @${m.memberJid.replace(/@.+/, "")} (${m.chatCount})`)
+      .map((m, i) => `${medals[i]} @${getNumber(m.memberJid)} (${m.chatCount})`)
       .join("\n");
 
     await msg.send({

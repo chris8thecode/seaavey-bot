@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const questions = [
@@ -27,9 +28,7 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
 
-    const item = questions[
-      Math.floor(Math.random() * questions.length)
-    ] as (typeof questions)[number];
+    const item = getRandomItem(questions) as (typeof questions)[number];
 
     const jid = msg.jid;
     const timeout = setTimeout(() => {

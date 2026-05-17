@@ -1,3 +1,4 @@
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const truths = [
@@ -32,16 +33,16 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const type = msg.args[0]?.toLowerCase();
     if (type === "truth" || type === "t") {
-      const q = truths[Math.floor(Math.random() * truths.length)];
+      const q = getRandomItem(truths);
       return msg.reply(`🤔 *Truth:*\n\n${q}`);
     }
     if (type === "dare" || type === "d") {
-      const q = dares[Math.floor(Math.random() * dares.length)];
+      const q = getRandomItem(dares);
       return msg.reply(`🔥 *Dare:*\n\n${q}`);
     }
     const isTruth = Math.random() > 0.5;
     const pool = isTruth ? truths : dares;
-    const q = pool[Math.floor(Math.random() * pool.length)];
+    const q = getRandomItem(pool);
     await msg.reply(
       `${isTruth ? "🤔 *Truth:*" : "🔥 *Dare:*"}\n\n${q}\n\n_Pilih: .tod truth / .tod dare_`,
     );

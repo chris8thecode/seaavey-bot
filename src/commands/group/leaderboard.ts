@@ -1,6 +1,6 @@
 import db from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "leaderboard",
   description: "Top 10 member paling aktif di group",
@@ -18,8 +18,7 @@ export default defineCommand({
     const medals = ["🥇", "🥈", "🥉"];
     const list = top
       .map(
-        (m, i) =>
-          `${medals[i] || `${i + 1}.`} @${m.memberJid.replace(/@.+/, "")} — ${m.chatCount} pesan`,
+        (m, i) => `${medals[i] || `${i + 1}.`} @${getNumber(m.memberJid)} — ${m.chatCount} pesan`,
       )
       .join("\n");
 

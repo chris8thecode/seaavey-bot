@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getNumber, getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const sessions = new Map<
@@ -17,7 +18,7 @@ export default defineCommand({
     if (msg.args[0] === "accept" && session && session.target === msg.sender) {
       session.turn = session.challenger;
       return msg.reply(
-        `⚔️ Duel dimulai!\n\n@${session.challenger.replace(/@.+/, "")} vs @${session.target.replace(/@.+/, "")}\n\nGiliran @${session.challenger.replace(/@.+/, "")}! Ketik .duel attack`,
+        `⚔️ Duel dimulai!\n\n@${getNumber(session.challenger)} vs @${getNumber(session.target)}\n\nGiliran @${getNumber(session.challenger)}! Ketik .duel attack`,
       );
     }
 
@@ -25,7 +26,7 @@ export default defineCommand({
     if (msg.args[0] === "attack" && session) {
       if (session.turn !== msg.sender) return msg.reply("❌ Bukan giliranmu!");
 
-      const dmg = Math.floor(Math.random() * 30) + 10;
+      const dmg = getRandomNumber(10, 39);
       const opponent = msg.sender === session.challenger ? session.target : session.challenger;
       session.hp[opponent] = (session.hp[opponent] ?? 100) - dmg;
 
@@ -34,14 +35,14 @@ export default defineCommand({
         sessions.delete(key);
         addXp(msg.sender, 25);
         return msg.send({
-          text: `⚔️ @${msg.sender.replace(/@.+/, "")} menyerang ${dmg} damage!\n\n🏆 @${msg.sender.replace(/@.+/, "")} menang! (+25 XP)`,
+          text: `⚔️ @${getNumber(msg.sender)} menyerang ${dmg} damage!\n\n🏆 @${getNumber(msg.sender)} menang! (+25 XP)`,
           mentions: [msg.sender, opponent],
         });
       }
 
       session.turn = opponent;
       return msg.send({
-        text: `⚔️ @${msg.sender.replace(/@.+/, "")} menyerang ${dmg} damage!\n\n❤️ @${session.challenger.replace(/@.+/, "")}: ${session.hp[session.challenger]} HP\n❤️ @${session.target.replace(/@.+/, "")}: ${session.hp[session.target]} HP\n\nGiliran @${opponent.replace(/@.+/, "")}! Ketik .duel attack`,
+        text: `⚔️ @${getNumber(msg.sender)} menyerang ${dmg} damage!\n\n❤️ @${getNumber(session.challenger)}: ${session.hp[session.challenger]} HP\n❤️ @${getNumber(session.target)}: ${session.hp[session.target]} HP\n\nGiliran @${getNumber(opponent)}! Ketik .duel attack`,
         mentions: [session.challenger, session.target],
       });
     }
@@ -66,7 +67,7 @@ export default defineCommand({
     });
 
     await msg.send({
-      text: `⚔️ @${msg.sender.replace(/@.+/, "")} menantang @${target.replace(/@.+/, "")}!\n\nKetik .duel accept untuk menerima (120 detik)`,
+      text: `⚔️ @${getNumber(msg.sender)} menantang @${getNumber(target)}!\n\nKetik .duel accept untuk menerima (120 detik)`,
       mentions: [msg.sender, target],
     });
   },

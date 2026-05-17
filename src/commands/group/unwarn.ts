@@ -1,6 +1,6 @@
 import { removeWarns } from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "unwarn",
   description: "Hapus semua warn member",
@@ -10,6 +10,6 @@ export default defineCommand({
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang ingin diunwarn.");
     removeWarns(msg.jid, target);
-    await msg.reply(`✅ Semua warn @${target.replace(/@.+/, "")} telah dihapus.`);
+    await msg.reply(`✅ Semua warn @${getNumber(target)} telah dihapus.`);
   },
 });

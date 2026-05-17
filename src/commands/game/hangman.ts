@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const words = [
@@ -49,7 +50,7 @@ export default defineCommand({
         return msg.reply(
           `🎯 *Hangman*\n\n${render(session.word, session.guessed)}\n❤️ ${session.lives} nyawa\nHuruf: ${[...session.guessed].join(", ") || "-"}\n\nKetik .hangman [huruf]`,
         );
-      const word = words[Math.floor(Math.random() * words.length)] as string;
+      const word = getRandomItem(words) as string;
       const jid = msg.jid;
       const timeout = setTimeout(() => {
         sessions.delete(key);

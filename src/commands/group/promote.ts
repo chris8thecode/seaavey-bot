@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "promote",
   description: "Jadikan member sebagai admin",
@@ -11,7 +11,7 @@ export default defineCommand({
     if (!target) return msg.reply("Tag atau reply user yang mau di promote!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "promote");
     await msg.send({
-      text: `Done, @${target.replace(/@.+/, "")} telah dijadikan admin!`,
+      text: `Done, @${getNumber(target)} telah dijadikan admin!`,
       mentions: [target],
     });
   },

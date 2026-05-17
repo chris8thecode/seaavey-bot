@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
@@ -42,9 +43,7 @@ export default defineCommand({
       return msg.reply("❌ Data soal family 100 belum tersedia.");
     }
 
-    const surveyData = localData[
-      Math.floor(Math.random() * localData.length)
-    ] as (typeof localData)[number];
+    const surveyData = getRandomItem(localData) as (typeof localData)[number];
     const jid = msg.jid;
     const question = surveyData.soal;
     const answers = surveyData.jawaban.map((a) => a.toLowerCase().trim());

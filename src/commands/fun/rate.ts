@@ -1,3 +1,4 @@
+import { getNumber, getRandomItem, getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const categories = [
@@ -16,10 +17,10 @@ export default defineCommand({
   description: "Rate seseorang secara random",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.quoted || msg.sender;
-    const cat = categories[Math.floor(Math.random() * categories.length)];
-    const score = Math.floor(Math.random() * 101);
+    const cat = getRandomItem(categories);
+    const score = getRandomNumber(0, 100);
     await msg.send({
-      text: `⭐ *Rate*\n\n👤 @${target.replace(/@.+/, "")}\n📊 ${cat}: *${score}/100*`,
+      text: `⭐ *Rate*\n\n👤 @${getNumber(target)}\n📊 ${cat}: *${score}/100*`,
       mentions: [target],
     });
   },

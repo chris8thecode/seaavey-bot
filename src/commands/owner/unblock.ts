@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "unblock",
   description: "Unblock a user (owner only)",
@@ -10,6 +10,6 @@ export default defineCommand({
     if (!target) return msg.reply("Tag atau reply user yang mau di-unblock.");
 
     await sock.updateBlockStatus(target, "unblock");
-    await msg.reply(`✅ @${target.replace(/@.+/, "")} berhasil di-unblock.`);
+    await msg.reply(`✅ @${getNumber(target)} berhasil di-unblock.`);
   },
 });

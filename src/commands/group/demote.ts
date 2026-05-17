@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "demote",
   description: "Hapus admin dari member",
@@ -11,7 +11,7 @@ export default defineCommand({
     if (!target) return msg.reply("Tag atau reply user yang mau di demote!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "demote");
     await msg.send({
-      text: `Done, @${target.replace(/@.+/, "")} telah dicopot dari admin!`,
+      text: `Done, @${getNumber(target)} telah dicopot dari admin!`,
       mentions: [target],
     });
   },

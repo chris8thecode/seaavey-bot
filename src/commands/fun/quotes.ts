@@ -1,3 +1,4 @@
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const quotes = [
@@ -19,7 +20,7 @@ export default defineCommand({
   name: "quotes",
   description: "Quotes motivasi random",
   handler: async (_sock, msg) => {
-    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    const q = getRandomItem(quotes);
     await msg.reply(`💬 *Quote of the Day*\n\n_"${q}"_`);
   },
 });

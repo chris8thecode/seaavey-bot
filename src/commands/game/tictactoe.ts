@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const sessions = new Map<string, { board: string[]; turn: "X" | "O"; timeout: Timer }>();
@@ -46,7 +47,7 @@ function botMove(board: string[]): number {
   }
   // Center or random
   if (empty.includes(4)) return 4;
-  return empty[Math.floor(Math.random() * empty.length)] ?? 0;
+  return getRandomItem(empty) ?? 0;
 }
 
 export default defineCommand({

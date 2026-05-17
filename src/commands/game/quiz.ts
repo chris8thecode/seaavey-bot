@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const questions = [
@@ -50,9 +51,7 @@ export default defineCommand({
       return msg.reply(`❌ Salah! Jawabannya *${String.fromCharCode(65 + session.answer)}*`);
     }
 
-    const item = questions[
-      Math.floor(Math.random() * questions.length)
-    ] as (typeof questions)[number];
+    const item = getRandomItem(questions) as (typeof questions)[number];
     const options = item.o.map((o, i) => `${String.fromCharCode(65 + i)}. ${o}`).join("\n");
 
     const jid = msg.jid;

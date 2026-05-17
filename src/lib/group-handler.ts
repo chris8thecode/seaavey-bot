@@ -1,7 +1,7 @@
 import type { WASocket } from "baileys";
 import db, { getGroup, updateMemberChat } from "@/database";
+import { getNumber } from "@/helper";
 import { logger } from "@/logger";
-
 export async function handleGroupParticipants(
   sock: WASocket,
   { id, participants, action }: { id: string; participants: string[]; action: string },
@@ -11,7 +11,7 @@ export async function handleGroupParticipants(
   const group = getGroup(id);
 
   for (const p of participants) {
-    const jid = `${p.replace(/@.+/, "")}@s.whatsapp.net`;
+    const jid = `${getNumber(p)}@s.whatsapp.net`;
     if (action === "add") {
       updateMemberChat(id, jid);
     } else {
@@ -20,7 +20,7 @@ export async function handleGroupParticipants(
   }
 
   const mentions = participants;
-  const tags = mentions.map((m) => `@${m.replace(/@.+/, "")}`).join(", ");
+  const tags = mentions.map((m) => `@${getNumber(m)}`).join(", ");
 
   // Welcome
   if (action === "add" && group.welcome) {
@@ -32,14 +32,10 @@ export async function handleGroupParticipants(
         try {
           ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
         } catch {}
-        const imageBuffer = await generateWelcomeImage(
-          ppUrl,
-          m.replace(/@.+/, ""),
-          metadata.subject,
-        );
+        const imageBuffer = await generateWelcomeImage(ppUrl, getNumber(m), metadata.subject);
         await sock.sendMessage(id, {
           image: imageBuffer,
-          caption: `👋 Welcome @${m.replace(/@.+/, "")}! Semoga betah di group ini.`,
+          caption: `👋 Welcome @${getNumber(m)}! Semoga betah di group ini.`,
           mentions: [m],
         });
       }
@@ -62,14 +58,10 @@ export async function handleGroupParticipants(
         try {
           ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
         } catch {}
-        const imageBuffer = await generateGoodbyeImage(
-          ppUrl,
-          m.replace(/@.+/, ""),
-          metadata.subject,
-        );
+        const imageBuffer = await generateGoodbyeImage(ppUrl, getNumber(m), metadata.subject);
         await sock.sendMessage(id, {
           image: imageBuffer,
-          caption: `👋 Goodbye @${m.replace(/@.+/, "")}, sampai jumpa lagi.`,
+          caption: `👋 Goodbye @${getNumber(m)}, sampai jumpa lagi.`,
           mentions: [m],
         });
       }

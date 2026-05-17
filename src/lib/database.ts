@@ -1,5 +1,7 @@
 import { Database } from "bun:sqlite";
 
+import { getRandomNumber } from "@/helper";
+
 const db = new Database("data.db");
 
 db.run("PRAGMA journal_mode = WAL");
@@ -57,7 +59,7 @@ export function addHit(jid: string) {
     "INSERT INTO users (jid, hits, lastChat) VALUES (?, 1, ?) ON CONFLICT(jid) DO UPDATE SET hits = hits + 1, lastChat = ?",
     [jid, Date.now(), Date.now()],
   );
-  addXp(jid, Math.floor(Math.random() * 5) + 1);
+  addXp(jid, getRandomNumber(1, 5));
 }
 
 export function setBanned(jid: string, banned: boolean) {

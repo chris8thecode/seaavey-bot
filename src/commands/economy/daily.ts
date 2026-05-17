@@ -1,6 +1,6 @@
 import { addWallet, getEconomy, setLastDaily } from "@/database";
+import { getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "daily",
   description: "Klaim hadiah harian",
@@ -14,7 +14,7 @@ export default defineCommand({
       const mins = Math.floor((remaining % 3600000) / 60000);
       return msg.reply(`⏰ Kamu sudah klaim hari ini. Coba lagi dalam ${hours}j ${mins}m.`);
     }
-    const reward = Math.floor(Math.random() * 5000) + 3000;
+    const reward = getRandomNumber(3000, 7999);
     addWallet(msg.sender, reward);
     setLastDaily(msg.sender);
     await msg.reply(

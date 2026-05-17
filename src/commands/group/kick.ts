@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "kick",
   description: "Kick member dari grup",
@@ -11,7 +11,7 @@ export default defineCommand({
     if (!target) return msg.reply("Tag atau reply user yang mau di kick!");
     await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
     await msg.send({
-      text: `Done, @${target.replace(/@.+/, "")} telah di kick!`,
+      text: `Done, @${getNumber(target)} telah di kick!`,
       mentions: [target],
     });
   },

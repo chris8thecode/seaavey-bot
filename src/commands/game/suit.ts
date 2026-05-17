@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const choices = ["batu", "gunting", "kertas"] as const;
@@ -14,7 +15,7 @@ export default defineCommand({
     }
 
     const player = input as (typeof choices)[number];
-    const bot = choices[Math.floor(Math.random() * 3)] as (typeof choices)[number];
+    const bot = choices[getRandomNumber(0, 2)] as (typeof choices)[number];
 
     let result: string;
     if (player === bot) {

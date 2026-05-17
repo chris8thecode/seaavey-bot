@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "block",
   description: "Block a user (owner only)",
@@ -10,6 +10,6 @@ export default defineCommand({
     if (!target) return msg.reply("Tag atau reply user yang mau di-block.");
 
     await sock.updateBlockStatus(target, "block");
-    await msg.reply(`✅ @${target.replace(/@.+/, "")} berhasil di-block.`);
+    await msg.reply(`✅ @${getNumber(target)} berhasil di-block.`);
   },
 });

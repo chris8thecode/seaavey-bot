@@ -1,6 +1,6 @@
 import db, { getUser } from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "profile",
   description: "Lihat profile card / rank kamu",
@@ -29,7 +29,7 @@ export default defineCommand({
       if (member) groupStats = `\n💬 Chat di grup: ${member.chatCount} pesan`;
     }
 
-    const name = target.replace(/@.+/, "");
+    const name = getNumber(target);
     const card =
       `╭─── *Profile Card* ───╮\n` +
       `│ 👤 @${name}\n` +

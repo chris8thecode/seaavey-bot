@@ -1,6 +1,6 @@
 import db, { getSiders, updateMemberChat } from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "sider",
   description: "List member yang tidak chat selama 3+ hari",
@@ -34,7 +34,7 @@ export default defineCommand({
       return msg.reply(`✅ Tidak ada sider! Semua member aktif dalam ${days} hari terakhir.`);
     }
 
-    const list = allSiders.map((jid, i) => `${i + 1}. @${jid.replace(/@.+/, "")}`).join("\n");
+    const list = allSiders.map((jid, i) => `${i + 1}. @${getNumber(jid)}`).join("\n");
 
     await msg.send({
       text: `🚶 *Daftar Sider (${days} hari)*\nTotal: ${allSiders.length}/${allMembers.length} member\n\n${list}`,

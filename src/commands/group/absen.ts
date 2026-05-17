@@ -1,3 +1,4 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const sessions = new Map<string, { title: string; members: Set<string>; creator: string }>();
@@ -20,18 +21,14 @@ export default defineCommand({
       const session = sessions.get(msg.jid);
       if (!session) return msg.reply("❌ Tidak ada sesi absen aktif.");
       session.members.add(msg.sender);
-      return msg.reply(
-        `✅ @${msg.sender.replace(/@.+/, "")} hadir! (${session.members.size} orang)`,
-      );
+      return msg.reply(`✅ @${getNumber(msg.sender)} hadir! (${session.members.size} orang)`);
     }
 
     if (sub === "tutup" || sub === "close") {
       if (!msg.isAdmin) return msg.reply("❌ Khusus admin.");
       const session = sessions.get(msg.jid);
       if (!session) return msg.reply("❌ Tidak ada sesi absen aktif.");
-      const list = [...session.members]
-        .map((m, i) => `${i + 1}. @${m.replace(/@.+/, "")}`)
-        .join("\n");
+      const list = [...session.members].map((m, i) => `${i + 1}. @${getNumber(m)}`).join("\n");
       sessions.delete(msg.jid);
       return msg.send({
         text: `📋 *Absensi Ditutup!*\n\n📝 ${session.title}\n👥 Total: ${session.members.size} orang\n\n${list}`,

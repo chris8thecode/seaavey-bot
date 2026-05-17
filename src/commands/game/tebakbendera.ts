@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const flags = [
@@ -35,7 +36,7 @@ export default defineCommand({
   description: "Tebak negara dari emoji bendera",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
-    const flag = flags[Math.floor(Math.random() * flags.length)] as (typeof flags)[number];
+    const flag = getRandomItem(flags) as (typeof flags)[number];
     const jid = msg.jid;
     const timeout = setTimeout(() => {
       sessions.delete(jid);

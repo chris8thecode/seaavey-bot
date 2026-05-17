@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
@@ -28,9 +29,7 @@ export default defineCommand({
       return msg.reply("❌ Data soal tebak gambar belum tersedia.");
     }
 
-    const imgData = localData[
-      Math.floor(Math.random() * localData.length)
-    ] as (typeof localData)[number];
+    const imgData = getRandomItem(localData) as (typeof localData)[number];
     const jid = msg.jid;
     const answer = imgData.jawaban.toLowerCase();
 

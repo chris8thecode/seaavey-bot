@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { config } from "@/config";
 import { getUser } from "@/database";
+import { getNumber } from "@/helper";
 import { sendInteractive } from "@/interactive";
 import { commands } from "@/loader";
 import { defineCommand } from "@/types";
@@ -65,7 +66,7 @@ export default defineCommand({
     const mins = Math.floor((uptime % 3600) / 60);
 
     let caption = `╭━━━━[ *${config.name}* ]━━━━\n`;
-    caption += `┃ 👤 @${msg.sender.replace(/@.+/, "")}\n`;
+    caption += `┃ 👤 @${getNumber(msg.sender)}\n`;
     caption += `┃ 🏆 Level ${level} (${xp} XP)\n`;
     caption += `┃ 📊 Hits: ${hits}\n`;
     caption += `┃ ⏱️ Uptime: ${hours}h ${mins}m\n`;

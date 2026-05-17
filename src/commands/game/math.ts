@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem, getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const sessions = new Map<string, { answer: number; timeout: Timer }>();
@@ -9,10 +10,10 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
 
-    const ops = ["+", "-", "×"] as const;
-    const op = ops[Math.floor(Math.random() * ops.length)] as (typeof ops)[number];
-    const a = Math.floor(Math.random() * 50) + 1;
-    const b = Math.floor(Math.random() * 20) + 1;
+    const ops = ["+", "-", "×"];
+    const op = getRandomItem(ops) as (typeof ops)[number];
+    const a = getRandomNumber(1, 50);
+    const b = getRandomNumber(1, 20);
 
     let answer: number;
     if (op === "+") answer = a + b;

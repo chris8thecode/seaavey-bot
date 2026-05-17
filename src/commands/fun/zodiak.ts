@@ -1,3 +1,4 @@
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const zodiak: Record<string, string[]> = {
@@ -73,7 +74,7 @@ export default defineCommand({
       return msg.reply(`Format: .zodiak <zodiak>\nPilihan: ${list}`);
     }
     const predictions = zodiak[sign];
-    const pred = predictions[Math.floor(Math.random() * predictions.length)];
+    const pred = getRandomItem(predictions);
     await msg.reply(`🔮 *Zodiak ${sign.charAt(0).toUpperCase() + sign.slice(1)}*\n\n${pred}`);
   },
 });

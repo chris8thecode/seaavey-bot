@@ -1,5 +1,5 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "add",
   description: "Tambah member ke grup",
@@ -12,7 +12,7 @@ export default defineCommand({
     const target = `${number}@s.whatsapp.net`;
     await sock.groupParticipantsUpdate(msg.lid, [target], "add");
     await msg.send({
-      text: `Done, @${target.replace(/@.+/, "")} telah ditambahkan!`,
+      text: `Done, @${getNumber(target)} telah ditambahkan!`,
       mentions: [target],
     });
   },

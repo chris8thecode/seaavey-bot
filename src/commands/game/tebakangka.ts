@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const sessions = new Map<string, { answer: number; attempts: number; timeout: Timer }>();
@@ -12,7 +13,7 @@ export default defineCommand({
 
     if (!msg.args[0]) {
       if (session) return msg.reply("⏳ Kamu masih punya game! Ketik .tebakangka [angka]");
-      const answer = Math.floor(Math.random() * 100) + 1;
+      const answer = getRandomNumber(1, 100);
       const jid = msg.jid;
       const timeout = setTimeout(() => {
         sessions.delete(key);

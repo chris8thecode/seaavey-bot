@@ -13,7 +13,7 @@ import db, {
   updateMemberChat,
 } from "@/database";
 import { checkGameAnswer } from "@/game";
-import { parseMessage } from "@/helper";
+import { getNumber, parseMessage } from "@/helper";
 import { commands } from "@/loader";
 import { logger } from "@/logger";
 
@@ -49,7 +49,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
         const grp = getGroup(msg.key.remoteJid);
         if (grp.antiviewonce) {
           await sock.sendMessage(msg.key.remoteJid, {
-            text: `👁️ *View Once Opened*\n\n👤 @${sender.replace(/@.+/, "")} mengirim pesan view once:`,
+            text: `👁️ *View Once Opened*\n\n👤 @${getNumber(sender)} mengirim pesan view once:`,
             mentions: [sender],
           });
           await sock.sendMessage(msg.key.remoteJid, {
@@ -83,7 +83,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       if (group.antilink && !parse.isAdmin && /https?:\/\/\S+/i.test(parse.body)) {
         await sock.sendMessage(parse.jid, { delete: msg.key });
         await sock.sendMessage(parse.jid, {
-          text: `⚠️ @${parse.sender.replace(/@.+/, "")} link tidak diperbolehkan!`,
+          text: `⚠️ @${getNumber(parse.sender)} link tidak diperbolehkan!`,
           mentions: [parse.sender],
         });
         continue;
@@ -101,7 +101,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
           spamTracker.delete(key);
           await sock.sendMessage(parse.jid, { delete: msg.key });
           await sock.sendMessage(parse.jid, {
-            text: `⚠️ @${parse.sender.replace(/@.+/, "")} jangan spam!`,
+            text: `⚠️ @${getNumber(parse.sender)} jangan spam!`,
             mentions: [parse.sender],
           });
           continue;
@@ -114,7 +114,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
         if (config.toxicRegex.test(parse.body) || customToxic) {
           await sock.sendMessage(parse.jid, { delete: msg.key });
           await sock.sendMessage(parse.jid, {
-            text: `⚠️ @${parse.sender.replace(/@.+/, "")} jaga bicaramu!`,
+            text: `⚠️ @${getNumber(parse.sender)} jaga bicaramu!`,
             mentions: [parse.sender],
           });
           continue;
@@ -135,7 +135,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
           if (data.data?.nsfw) {
             await sock.sendMessage(parse.jid, { delete: msg.key });
             await sock.sendMessage(parse.jid, {
-              text: `🚫 @${parse.sender.replace(/@.+/, "")} gambar NSFW terdeteksi dan dihapus!`,
+              text: `🚫 @${getNumber(parse.sender)} gambar NSFW terdeteksi dan dihapus!`,
               mentions: [parse.sender],
             });
             continue;
@@ -152,7 +152,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       if (senderAfk) {
         removeAfk(parse.sender);
         await sock.sendMessage(parse.jid, {
-          text: `👋 @${parse.sender.replace(/@.+/, "")} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
+          text: `👋 @${getNumber(parse.sender)} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
           mentions: [parse.sender],
         });
       }
@@ -161,7 +161,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
         const afk = getAfk(m);
         if (afk) {
           await sock.sendMessage(parse.jid, {
-            text: `💤 @${m.replace(/@.+/, "")} sedang AFK\nAlasan: ${afk.reason}\nSejak: ${Math.floor((Date.now() - afk.timestamp) / 60000)} menit lalu`,
+            text: `💤 @${getNumber(m)} sedang AFK\nAlasan: ${afk.reason}\nSejak: ${Math.floor((Date.now() - afk.timestamp) / 60000)} menit lalu`,
             mentions: [m],
           });
         }
@@ -200,7 +200,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       const after = getUser(parse.sender);
       if (after && after.level > prevLevel) {
         await sock.sendMessage(parse.jid, {
-          text: `🎉 *Level Up!*\n\n@${parse.sender.replace(/@.+/, "")} naik ke level *${after.level}*! 🏆`,
+          text: `🎉 *Level Up!*\n\n@${getNumber(parse.sender)} naik ke level *${after.level}*! 🏆`,
           mentions: [parse.sender],
         });
       }
@@ -233,7 +233,7 @@ export async function handleMessagesUpdate(
       stored.message.videoMessage?.caption ||
       "";
 
-    const text = `🚫 *Anti-Delete Detected*\n\n👤 @${sender.replace(/@.+/, "")}\n💬 ${body || "[media]"}`;
+    const text = `🚫 *Anti-Delete Detected*\n\n👤 @${getNumber(sender)}\n💬 ${body || "[media]"}`;
     await sock.sendMessage(jid, { text, mentions: [sender] });
 
     if (

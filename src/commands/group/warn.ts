@@ -1,6 +1,6 @@
 import { addWarn, getGroup, getWarns } from "@/database";
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "warn",
   description: "Beri peringatan ke member",
@@ -16,10 +16,10 @@ export default defineCommand({
     const max = group.warnMax || 3;
     if (warns.length >= max) {
       await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
-      await msg.reply(`⚠️ @${target.replace(/@.+/, "")} telah mencapai ${max} warn dan dikick!`);
+      await msg.reply(`⚠️ @${getNumber(target)} telah mencapai ${max} warn dan dikick!`);
     } else {
       await msg.reply(
-        `⚠️ @${target.replace(/@.+/, "")} diwarn! (${warns.length}/${max})\nAlasan: ${reason}`,
+        `⚠️ @${getNumber(target)} diwarn! (${warns.length}/${max})\nAlasan: ${reason}`,
       );
     }
   },

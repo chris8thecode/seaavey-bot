@@ -1,5 +1,5 @@
+import { getNumber, getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "siapayg",
   description: "Random pilih member grup. Contoh: .siapayg paling ganteng",
@@ -12,9 +12,9 @@ export default defineCommand({
       );
     const metadata = await sock.groupMetadata(msg.lid);
     const members = metadata.participants.map((p) => p.id);
-    const chosen = members[Math.floor(Math.random() * members.length)] as string;
+    const chosen = getRandomItem(members) as string;
     await msg.send({
-      text: `🎯 *Siapa yang ${question}?*\n\nJawabannya: @${chosen.replace(/@.+/, "")} 😂`,
+      text: `🎯 *Siapa yang ${question}?*\n\nJawabannya: @${getNumber(chosen)} 😂`,
       mentions: [chosen],
     });
   },

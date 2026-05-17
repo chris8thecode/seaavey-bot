@@ -92,3 +92,25 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     },
   };
 }
+
+/**
+ * Mendapatkan elemen acak dari sebuah array
+ */
+export function getRandomItem<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)] as T;
+}
+
+/**
+ * Menghasilkan angka acak antara min dan max (inklusif)
+ */
+export function getRandomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+/**
+ * Menghapus bagian @domain dari JID dan hanya mengembalikan nomor telepon
+ * Contoh: "62123@s.whatsapp.net" -> "62123"
+ */
+export function getNumber(jid: string): string {
+  return jid.replace(/@.+/, "");
+}

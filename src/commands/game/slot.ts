@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎"];
@@ -7,9 +8,9 @@ export default defineCommand({
   name: "slot",
   description: "Slot machine 🎰",
   handler: async (_sock, msg) => {
-    const s1 = symbols[Math.floor(Math.random() * symbols.length)];
-    const s2 = symbols[Math.floor(Math.random() * symbols.length)];
-    const s3 = symbols[Math.floor(Math.random() * symbols.length)];
+    const s1 = getRandomItem(symbols);
+    const s2 = getRandomItem(symbols);
+    const s3 = getRandomItem(symbols);
 
     let result: string;
     if (s1 === s2 && s2 === s3) {

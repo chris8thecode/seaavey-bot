@@ -1,7 +1,7 @@
 import type { WASocket } from "baileys";
 import { getPendingReminders, markReminderDone } from "@/database";
+import { getNumber } from "@/helper";
 import { logger } from "@/logger";
-
 export function startSchedulers(sock: WASocket) {
   // Reminder checker
   setInterval(async () => {
@@ -10,7 +10,7 @@ export function startSchedulers(sock: WASocket) {
       for (const r of reminders) {
         markReminderDone(r.id);
         await sock.sendMessage(r.chatJid, {
-          text: `⏰ *Reminder!*\n\n@${r.jid.replace(/@.+/, "")}: ${r.message}`,
+          text: `⏰ *Reminder!*\n\n@${getNumber(r.jid)}: ${r.message}`,
           mentions: [r.jid],
         });
       }

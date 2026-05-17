@@ -1,6 +1,6 @@
 import { addXp } from "@/database";
+import { getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "dice",
   description: "Tebak angka dadu (1-6)",
@@ -10,7 +10,7 @@ export default defineCommand({
       return msg.reply("Contoh: .dice 4 (tebak angka 1-6)");
     }
 
-    const result = Math.floor(Math.random() * 6) + 1;
+    const result = getRandomNumber(1, 6);
 
     if (guess === result) {
       addXp(msg.sender, 15);

@@ -1,7 +1,7 @@
 import { getUser } from "@/database";
+import { getNumber } from "@/helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
-
 export default defineCommand({
   name: "level",
   description: "Cek level dan XP kamu",
@@ -18,7 +18,7 @@ export default defineCommand({
         ppUrl = (await sock.profilePictureUrl(msg.sender, "image")) ?? null;
       } catch {}
 
-      const userName = msg.msg.pushName || msg.sender.replace(/@.+/, "");
+      const userName = msg.msg.pushName || getNumber(msg.sender);
       const imageBuffer = await generateRankCard(ppUrl, userName, level, xp, nextLevel);
 
       await sock.sendMessage(

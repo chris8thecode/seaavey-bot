@@ -1,4 +1,5 @@
 import { addXp } from "@/database";
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const words = [
@@ -44,7 +45,7 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
 
-    const word = words[Math.floor(Math.random() * words.length)] as string;
+    const word = getRandomItem(words) as string;
     let shuffled = shuffle(word);
     while (shuffled === word) shuffled = shuffle(word);
 

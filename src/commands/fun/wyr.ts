@@ -1,3 +1,4 @@
+import { getRandomItem } from "@/helper";
 import { defineCommand } from "@/types";
 
 const questions = [
@@ -19,7 +20,7 @@ export default defineCommand({
   name: "wyr",
   description: "Would You Rather — pilih salah satu!",
   handler: async (_sock, msg) => {
-    const q = questions[Math.floor(Math.random() * questions.length)] as (typeof questions)[number];
+    const q = getRandomItem(questions) as (typeof questions)[number];
     await msg.reply(`🤔 *Would You Rather?*\n\n🅰️ ${q.a}\n\natau\n\n🅱️ ${q.b}\n\n_Pilih A atau B!_`);
   },
 });

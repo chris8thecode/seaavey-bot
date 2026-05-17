@@ -1,3 +1,4 @@
+import { getNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
 const votes = new Map<string, { target: string; voters: Set<string>; timeout: Timer }>();
@@ -21,7 +22,7 @@ export default defineCommand({
       const timeout = setTimeout(() => {
         votes.delete(key);
         sock.sendMessage(jid, {
-          text: `⏰ Votekick @${target.replace(/@.+/, "")} expired.`,
+          text: `⏰ Votekick @${getNumber(target)} expired.`,
           mentions: [target],
         });
       }, 300_000);
@@ -37,13 +38,13 @@ export default defineCommand({
       votes.delete(key);
       await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
       return msg.send({
-        text: `🗳️ *Votekick Berhasil!*\n\n@${target.replace(/@.+/, "")} dikick (${needed}/${needed} vote)`,
+        text: `🗳️ *Votekick Berhasil!*\n\n@${getNumber(target)} dikick (${needed}/${needed} vote)`,
         mentions: [target],
       });
     }
 
     await msg.send({
-      text: `🗳️ *Votekick*\n\n@${target.replace(/@.+/, "")} — ${session.voters.size}/${needed} vote\n\nKetik .votekick @${target.replace(/@.+/, "")} untuk vote!`,
+      text: `🗳️ *Votekick*\n\n@${getNumber(target)} — ${session.voters.size}/${needed} vote\n\nKetik .votekick @${getNumber(target)} untuk vote!`,
       mentions: [target],
     });
   },
