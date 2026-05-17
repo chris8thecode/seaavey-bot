@@ -79,7 +79,7 @@ async function startBot() {
   sock.ev.on("group-participants.update", (data) =>
     handleGroupParticipants(sock, {
       id: data.id,
-      participants: data.participants,
+      participants: data.participants.map((p) => p.id),
       action: data.action,
     }),
   );
