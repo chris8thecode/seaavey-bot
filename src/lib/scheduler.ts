@@ -15,7 +15,7 @@ export function startSchedulers(sock: WASocket) {
         });
       }
     } catch (e) {
-      logger.error("Scheduler Error (Reminder):", e);
+      logger.error(`Scheduler Error (Reminder): ${e}`);
     }
   }, 30_000);
 
@@ -31,7 +31,7 @@ export function startSchedulers(sock: WASocket) {
         });
       }
     } catch (e) {
-      logger.error("Scheduler Error (Schedule):", e);
+      logger.error(`Scheduler Error (Schedule): ${e}`);
     }
   }, 30_000);
 }

@@ -11,7 +11,7 @@ export async function handleGroupParticipants(
   const group = getGroup(id);
 
   for (const p of participants) {
-    const jid = p.replace(/@.+/, "") + "@s.whatsapp.net";
+    const jid = `${p.replace(/@.+/, "")}@s.whatsapp.net`;
     if (action === "add") {
       updateMemberChat(id, jid);
     } else {

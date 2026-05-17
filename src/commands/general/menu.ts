@@ -44,7 +44,9 @@ export default defineCommand({
         return;
       }
 
-      const cmds = categories.get(targetCategory)!;
+      const cmds = categories.get(targetCategory);
+      if (!cmds) return;
+
       let text = `╭━━━━[ *${targetCategory.toUpperCase()}* ]━━━━\n`;
       for (const cmd of cmds) {
         text += `┃ 🔹 *${cmd.title}*\n┃ └ ${cmd.description}\n`;

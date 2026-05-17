@@ -8,8 +8,7 @@ const FILE_PATH = join(import.meta.dir, "..", "..", "assets", "toxic.txt");
 export default defineCommand({
   name: "toxic",
   description: "Kelola database kata toxic",
-  category: "owner",
-  handler: async (sock, msg) => {
+  handler: async (_sock, msg) => {
     if (!msg.isOwner) return msg.reply("❌ Khusus Owner!");
 
     const action = msg.args[0];

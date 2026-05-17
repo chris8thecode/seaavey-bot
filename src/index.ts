@@ -76,7 +76,13 @@ async function startBot() {
     }
   });
 
-  sock.ev.on("group-participants.update", (data) => handleGroupParticipants(sock, data));
+  sock.ev.on("group-participants.update", (data) =>
+    handleGroupParticipants(sock, {
+      id: data.id,
+      participants: data.participants,
+      action: data.action,
+    }),
+  );
 
   // Message Events
   sock.ev.on("messages.upsert", ({ messages }) => handleMessagesUpsert(sock, messages));

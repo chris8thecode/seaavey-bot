@@ -141,7 +141,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
             continue;
           }
         } catch (e) {
-          logger.error("NSFW Check Error:", e);
+          logger.error(`NSFW Check Error: ${e}`);
         }
       }
     }
