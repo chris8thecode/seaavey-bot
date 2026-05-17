@@ -1,10 +1,11 @@
 import { closePoll, createPoll, getPoll, votePoll } from "@/database";
+import { type Button, sendInteractive } from "@/interactive";
 import { defineCommand } from "@/types";
 
 export default defineCommand({
   name: "poll",
   description: "Buat/vote/tutup polling. Format: .poll Pertanyaan? | Opsi1 | Opsi2",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     const sub = msg.args[0];
 
@@ -41,9 +42,20 @@ export default defineCommand({
       const votes = JSON.parse(poll.votes) as Record<string, number>;
       const counts = options.map((_, i) => Object.values(votes).filter((v) => v === i).length);
       const result = options.map((o, i) => `${i + 1}. ${o} — ${counts[i]} vote`).join("\n");
-      return msg.reply(
-        `📊 *Poll Aktif*\n\n❓ ${poll.question}\n\n${result}\n\nVote: .poll vote <nomor>`,
-      );
+
+      const buttons: Button[] = options.map((o, i) => ({
+        name: "quick_reply",
+        params: {
+          display_text: o.slice(0, 20),
+          id: `.poll vote ${i + 1}`,
+        },
+      }));
+
+      return sendInteractive(sock, msg.jid, {
+        body: `📊 *Poll Aktif*\n\n❓ ${poll.question}\n\n${result}`,
+        footer: "Klik tombol di bawah untuk vote",
+        buttons,
+      });
     }
 
     // Create: .poll Pertanyaan? | Opsi1 | Opsi2
@@ -57,9 +69,19 @@ export default defineCommand({
     const existing = getPoll(msg.jid);
     if (existing) return msg.reply("❌ Sudah ada poll aktif. Tutup dulu dengan .poll close");
     createPoll(msg.jid, msg.sender, question as string, options);
-    const optList = options.map((o, i) => `${i + 1}. ${o}`).join("\n");
-    await msg.reply(
-      `📊 *Poll Dibuat!*\n\n❓ ${question}\n\n${optList}\n\nVote: .poll vote <nomor>`,
-    );
+
+    const buttons: Button[] = options.map((o, i) => ({
+      name: "quick_reply",
+      params: {
+        display_text: o.slice(0, 20),
+        id: `.poll vote ${i + 1}`,
+      },
+    }));
+
+    await sendInteractive(sock, msg.jid, {
+      body: `📊 *Poll Dibuat!*\n\n❓ ${question}`,
+      footer: "Klik tombol di bawah untuk vote",
+      buttons,
+    });
   },
 });
