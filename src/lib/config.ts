@@ -22,5 +22,5 @@ export const config: Config = {
   prefix: ".",
   owner: (process.env.OWNER_NUMBER ?? "62123456789").split(","),
   apiKey: process.env.API_KEY ?? "",
-  toxicRegex: new RegExp(toxicWords, "i"),
+  toxicRegex: new RegExp(`\\b(?:${toxicWords})\\b`, "i"),
 };

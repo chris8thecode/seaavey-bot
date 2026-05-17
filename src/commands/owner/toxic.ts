@@ -30,7 +30,7 @@ export default defineCommand({
         .filter((w) => w.trim())
         .map((w) => w.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
         .join("|");
-      config.toxicRegex = new RegExp(updated, "i");
+      config.toxicRegex = new RegExp(`\\b(?:${updated})\\b`, "i");
 
       await msg.reply(`✅ Berhasil tambah: *${word}*`);
     } else if (action === "del") {
@@ -50,7 +50,7 @@ export default defineCommand({
         .filter((w) => w.trim())
         .map((w) => w.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
         .join("|");
-      config.toxicRegex = new RegExp(updated, "i");
+      config.toxicRegex = new RegExp(`\\b(?:${updated})\\b`, "i");
 
       await msg.reply(`✅ Berhasil hapus: *${word}*`);
     } else if (action === "list") {

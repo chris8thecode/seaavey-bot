@@ -494,8 +494,10 @@ export function isToxicMessage(groupJid: string, text: string): string | null {
     word: string;
   }[];
   const lower = text.toLowerCase();
+
   for (const { word } of words) {
-    if (lower.includes(word)) return word;
+    const regex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}\\b`, "i");
+    if (regex.test(lower)) return word;
   }
   return null;
 }
