@@ -24,7 +24,7 @@ export default defineCommand({
 
       appendFileSync(FILE_PATH, `\n${word}`);
 
-      // Hot-reload regex di memori
+      // Hot-reload regex in memory
       const updated = readFileSync(FILE_PATH, "utf-8")
         .split("\n")
         .filter((w) => w.trim())

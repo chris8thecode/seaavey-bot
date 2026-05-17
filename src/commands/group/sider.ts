@@ -11,7 +11,7 @@ export default defineCommand({
     const days = Number(msg.args[0]) || 3;
     const metadata = await sock.groupMetadata(msg.jid);
 
-    // Sync semua member ke DB (yang belum ada akan di-insert dengan lastChat = now)
+    // Sync all members to DB (missing ones will be inserted with lastChat = now)
     for (const p of metadata.participants) {
       const memberJid = p.phoneNumber || p.id;
       const exists = db
@@ -20,14 +20,14 @@ export default defineCommand({
       if (!exists) updateMemberChat(msg.jid, memberJid);
     }
 
-    // Ambil semua member dari participant list
+    // Get all members from participant list
     const allMembers = metadata.participants.map((p) => p.phoneNumber || p.id);
 
-    // Member yang tercatat dan sudah lama tidak chat
+    // Recorded members who haven't chatted in a while
     const inactive = getSiders(msg.jid, days).map((s) => s.memberJid);
     const inactiveSet = new Set(inactive);
 
-    // Filter hanya yang ada di participant list
+    // Filter only those in the participant list
     const allSiders = allMembers.filter((m) => inactiveSet.has(m));
 
     if (!allSiders.length) {

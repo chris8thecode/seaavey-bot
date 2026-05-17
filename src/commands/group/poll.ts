@@ -58,7 +58,7 @@ export default defineCommand({
       });
     }
 
-    // Create: .poll Pertanyaan? | Opsi1 | Opsi2
+    // Create: .poll Question? | Option1 | Option2
     const text = msg.args.join(" ");
     const parts = text.split("|").map((s) => s.trim());
     if (parts.length < 3)

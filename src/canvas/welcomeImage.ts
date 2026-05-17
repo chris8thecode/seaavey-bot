@@ -46,7 +46,7 @@ export async function generateWelcomeImage(
 
   return await sharp(Buffer.from(bgSvg))
     .composite([
-      { input: ppBuffer, top: 25, left: 25 }, // Posisi PP di kiri
+      { input: ppBuffer, top: 25, left: 25 }, // Position avatar on the left
     ])
     .png()
     .toBuffer();
