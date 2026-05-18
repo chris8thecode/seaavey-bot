@@ -45,7 +45,7 @@ export default defineCommand({
       const counts = options.map((_, i) => Object.values(votes).filter((v) => v === i).length);
       const result = options.map((o, i) => `${i + 1}. ${o} — ${counts[i]} vote`).join("\n");
 
-      const buttons: Button[] = options.map((o, i) => ({
+      const buttons: Button[] = options.map((o: string, i: number) => ({
         name: "quick_reply",
         params: {
           display_text: o.slice(0, 20),
@@ -62,7 +62,7 @@ export default defineCommand({
 
     // Create: .poll Question? | Option1 | Option2
     const text = msg.args.join(" ");
-    const parts = text.split("|").map((s) => s.trim());
+    const parts = text.split("|").map((s: string) => s.trim());
     if (parts.length < 3)
       return msg.reply(
         "Format: .poll Pertanyaan? | Opsi1 | Opsi2 | ...\n\nLainnya:\n.poll vote <nomor>\n.poll result\n.poll close",
@@ -72,7 +72,7 @@ export default defineCommand({
     if (existing) return msg.reply("❌ Sudah ada poll aktif. Tutup dulu dengan .poll close");
     createPoll(msg.jid, msg.sender, question as string, options);
 
-    const buttons: Button[] = options.map((o, i) => ({
+    const buttons: Button[] = options.map((o: string, i: number) => ({
       name: "quick_reply",
       params: {
         display_text: o.slice(0, 20),

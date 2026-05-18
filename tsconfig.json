@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "allowJs": true,
-    "types": ["bun", "qrcode"],
+    "types": ["bun"],
 
     // Bundler mode (Bun)
     "moduleResolution": "bundler",

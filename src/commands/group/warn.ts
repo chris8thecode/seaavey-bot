@@ -9,7 +9,7 @@ export default defineCommand({
     if (!msg.isAdmin) return msg.reply("❌ Khusus admin.");
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang ingin diwarn.");
-    const reason = msg.args.filter((a) => !a.startsWith("@")).join(" ") || "Tidak ada alasan";
+    const reason = msg.args.filter((a: string) => !a.startsWith("@")).join(" ") || "Tidak ada alasan";
     addWarn(msg.jid, target, reason);
     const warns = getWarns(msg.jid, target);
     const group = getGroup(msg.jid);

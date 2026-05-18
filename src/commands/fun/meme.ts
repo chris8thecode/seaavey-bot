@@ -9,7 +9,7 @@ export default defineCommand({
       return msg.reply(
         "Format: .meme <text atas> | <text bawah>\nContoh: .meme Ketika kode error | Tapi deadline besok",
       );
-    const [top, bottom] = text.split("|").map((s) => s.trim());
+    const [top, bottom] = text.split("|").map((s: string) => s.trim());
     const url = `https://api.memegen.link/images/buzz/${encodeURIComponent(top || "_")}/${encodeURIComponent(bottom || "_")}.png`;
     await msg.send({ image: { url }, caption: "😂" });
   },

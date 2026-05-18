@@ -6,7 +6,7 @@ export default defineCommand({
   description: "Transfer uang ke user lain",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.quoted;
-    const amount = parseInt(msg.args.find((a) => /^\d+$/.test(a)) || "0", 10);
+    const amount = parseInt(msg.args.find((a: string) => /^\d+$/.test(a)) || "0", 10);
     if (!target)
       return msg.reply("Tag atau reply user yang ingin ditransfer.\nContoh: .transfer @user 1000");
     if (amount <= 0) return msg.reply("Masukkan jumlah yang valid.");
