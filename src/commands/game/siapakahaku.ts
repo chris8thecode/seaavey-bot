@@ -5,33 +5,49 @@ import { getRandomItem } from "@/helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
-const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
+const sessions = new Map<
+  string,
+  { answer: string; hint: string; timeout: Timer; sender?: string }
+>();
 
 let localData: { soal: string; jawaban: string }[] = [];
 try {
-  localData = JSON.parse(
-    readFileSync(join(import.meta.dir, "..", "..", "data", "games", "siapakahaku.json"), "utf-8"),
+  const fileContent = readFileSync(
+    join(process.cwd(), "src", "data", "games", "siapakahaku.json"),
+    "utf-8",
   );
+  localData = JSON.parse(fileContent);
 } catch (_e) {
   logger.error("siapakahaku.json error");
 }
 
 export default defineCommand({
   name: "siapakahaku",
-  description: "Game siapakah aku",
+  description: "Game siapakah aku (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
-    if (sessions.has(msg.jid)) return msg.reply("⏳ Selesaikan soal sebelumnya!");
+    const jid = msg.jid;
+    if (msg.args[0] === "hint") {
+      const session = sessions.get(jid);
+      if (!session) return msg.reply("❌ Tidak ada sesi game yang aktif!");
+      return msg.reply(`💡 Hint: *${session.hint}*`);
+    }
+
+    if (sessions.has(jid)) return msg.reply("⏳ Selesaikan soal sebelumnya!");
     if (!localData.length) return msg.reply("❌ Data kosong.");
 
     const item = getRandomItem(localData);
-    const jid = msg.jid;
+    const answer = item.jawaban;
+    const hint = answer.replace(/[a-zA-Z]/g, (l, i) => (i % 2 === 0 ? l : "_"));
+
     const timeout = setTimeout(() => {
       sessions.delete(jid);
-      sock.sendMessage(jid, { text: `⏰ Habis! Jawabannya: *${item.jawaban}*` });
+      sock.sendMessage(jid, { text: `⏰ Habis! Jawabannya: *${answer}*` });
     }, 60000);
 
-    sessions.set(jid, { answer: item.jawaban.toLowerCase(), timeout, sender: msg.sender });
-    await msg.reply(`🕵️ *Siapakah Aku?*\n\nSoal: ${item.soal}\n\nWaktu 60s!`);
+    sessions.set(jid, { answer: answer.toLowerCase(), hint, timeout, sender: msg.sender });
+    await msg.reply(
+      `🕵️ *Siapakah Aku?*\n\nSoal: ${item.soal}\n\nWaktu 60s!\n(Ketik *.siapakahaku hint* untuk bantuan)`,
+    );
   },
 });
 
@@ -39,6 +55,7 @@ export function checkSiapakahAku(jid: string, text: string, sender: string): str
   const session = sessions.get(jid);
   if (!session) return null;
   if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
+  if (text.toLowerCase() === "hint") return null;
   if (text.toLowerCase() !== session.answer) return null;
   clearTimeout(session.timeout);
   sessions.delete(jid);

@@ -1,64 +1,44 @@
-import { addXp } from "@/database";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { getRandomItem } from "@/helper";
+import { GameManager } from "@/lib/game-helper";
+import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
-const flags = [
-  { emoji: "🇮🇩", answer: "indonesia" },
-  { emoji: "🇯🇵", answer: "jepang" },
-  { emoji: "🇰🇷", answer: "korea" },
-  { emoji: "🇺🇸", answer: "amerika" },
-  { emoji: "🇬🇧", answer: "inggris" },
-  { emoji: "🇫🇷", answer: "prancis" },
-  { emoji: "🇩🇪", answer: "jerman" },
-  { emoji: "🇮🇹", answer: "italia" },
-  { emoji: "🇪🇸", answer: "spanyol" },
-  { emoji: "🇧🇷", answer: "brasil" },
-  { emoji: "🇷🇺", answer: "rusia" },
-  { emoji: "🇨🇳", answer: "china" },
-  { emoji: "🇮🇳", answer: "india" },
-  { emoji: "🇹🇭", answer: "thailand" },
-  { emoji: "🇲🇾", answer: "malaysia" },
-  { emoji: "🇸🇬", answer: "singapura" },
-  { emoji: "🇦🇺", answer: "australia" },
-  { emoji: "🇨🇦", answer: "kanada" },
-  { emoji: "🇲🇽", answer: "meksiko" },
-  { emoji: "🇪🇬", answer: "mesir" },
-  { emoji: "🇹🇷", answer: "turki" },
-  { emoji: "🇸🇦", answer: "arab saudi" },
-  { emoji: "🇦🇷", answer: "argentina" },
-  { emoji: "🇳🇱", answer: "belanda" },
-];
+const gm = new GameManager(50);
 
-const sessions = new Map<
-  string,
-  { answer: string; emoji: string; timeout: Timer; sender?: string }
->();
+let localData: { flag: string; img: string; name: string }[] = [];
+try {
+  localData = JSON.parse(
+    readFileSync(join(process.cwd(), "src", "data", "games", "tebakbendera.json"), "utf-8"),
+  );
+} catch (_e) {
+  logger.error("tebakbendera error");
+}
 
 export default defineCommand({
   name: "tebakbendera",
-  description: "Tebak negara dari emoji bendera",
+  description: "Tebak negara dari gambar bendera (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
-    if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
-    const flag = getRandomItem(flags) as (typeof flags)[number];
-    const jid = msg.jid;
-    const timeout = setTimeout(() => {
-      sessions.delete(jid);
-      sock.sendMessage(jid, {
-        text: `⏰ Waktu habis! Jawabannya *${flag.answer}* ${flag.emoji}`,
-      });
-    }, 30_000);
-    sessions.set(jid, { answer: flag.answer, emoji: flag.emoji, timeout, sender: msg.sender });
-    await msg.reply(`🏁 *Tebak Bendera!*\n\n${flag.emoji}\n\nNegara apa ini? (30 detik)`);
+    if (msg.args[0] === "hint") {
+      const hint = gm.getHint(msg.jid);
+      return msg.reply(hint ? `💡 Hint: *${hint}*` : "❌ Tidak ada sesi aktif!");
+    }
+
+    const item = getRandomItem(localData);
+    const success = gm.start(msg.jid, item.name, msg.sender, () => {
+      sock.sendMessage(msg.jid, { text: `⏰ Habis! Jawabannya: *${item.name}*` });
+    });
+
+    if (!success) return msg.reply("⏳ Selesaikan soal sebelumnya!");
+    await msg.send({
+      image: { url: item.img },
+      caption: `🏁 *Tebak Bendera!*\n\nNegara apa ini?\n\nWaktu 60s!\n(Ketik *.tebakbendera hint*)`,
+    });
   },
 });
 
-export function checkTebakBendera(jid: string, text: string, sender: string): string | null {
-  const session = sessions.get(jid);
-  if (!session) return null;
-  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
-  if (text.toLowerCase() !== session.answer) return null;
-  clearTimeout(session.timeout);
-  sessions.delete(jid);
-  addXp(sender, 15);
-  return `✅ Benar! ${session.emoji} = *${session.answer}* (+15 XP)`;
-}
+export const checkTebakBendera = (jid: string, text: string, sender: string) => {
+  const ans = gm.check(jid, text, sender);
+  return ans ? `✅ Benar! Jawabannya adalah *${ans}* (+50 XP)` : null;
+};

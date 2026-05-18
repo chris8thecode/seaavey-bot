@@ -5,20 +5,20 @@ import { GameManager } from "@/lib/game-helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
-const gm = new GameManager(15);
+const gm = new GameManager(30);
 
-let localData: { soal: string; jawaban: string }[] = [];
+let localData: { soal: string; jawaban: string; deskripsi: string }[] = [];
 try {
   localData = JSON.parse(
-    readFileSync(join(process.cwd(), "src", "data", "games", "asahotak.json"), "utf-8"),
+    readFileSync(join(process.cwd(), "src", "data", "games", "caklontong.json"), "utf-8"),
   );
 } catch (_e) {
-  logger.error("asahotak.json error");
+  logger.error("caklontong.json error");
 }
 
 export default defineCommand({
-  name: "asahotak",
-  description: "Game asah otak (Ketik 'hint' untuk bantuan)",
+  name: "caklontong",
+  description: "Game TTS Cak Lontong (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {
       const hint = gm.getHint(msg.jid);
@@ -27,15 +27,19 @@ export default defineCommand({
 
     const item = getRandomItem(localData);
     const success = gm.start(msg.jid, item.jawaban, msg.sender, () => {
-      sock.sendMessage(msg.jid, { text: `⏰ Habis! Jawabannya: *${item.jawaban}*` });
+      sock.sendMessage(msg.jid, {
+        text: `⏰ Habis! Jawabannya: *${item.jawaban}*\n${item.deskripsi}`,
+      });
     });
 
     if (!success) return msg.reply("⏳ Selesaikan soal sebelumnya!");
-    await msg.reply(`🧠 *Asah Otak*\n\nSoal: ${item.soal}\n\nWaktu 60s!\n(Ketik *.asahotak hint*)`);
+    await msg.reply(
+      `🧩 *TTS Cak Lontong*\n\nSoal: ${item.soal}\n\nWaktu 60s!\n(Ketik *.caklontong hint*)`,
+    );
   },
 });
 
-export const checkAsahOtak = (jid: string, text: string, sender: string) => {
+export const checkCakLontong = (jid: string, text: string, sender: string) => {
   const ans = gm.check(jid, text, sender);
-  return ans ? `✅ Benar! Jawabannya *${ans.toUpperCase()}* (+15 XP)` : null;
+  return ans ? `✅ Benar! (+30 XP)` : null;
 };
