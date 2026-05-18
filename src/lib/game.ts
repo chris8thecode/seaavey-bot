@@ -1,4 +1,5 @@
 import { checkAsahOtak } from "../commands/game/asahotak";
+import { checkCakLontong } from "../commands/game/caklontong";
 import { checkFamily100 } from "../commands/game/family100";
 import { checkMathAnswer } from "../commands/game/math";
 import { checkSiapakahAku } from "../commands/game/siapakahaku";
@@ -21,6 +22,7 @@ export function checkGameAnswer(jid: string, text: string, sender: string): stri
     checkFamily100(jid, input, sender) ||
     checkAsahOtak(jid, input, sender) ||
     checkSiapakahAku(jid, input, sender) ||
-    checkTekaTeki(jid, input, sender)
+    checkTekaTeki(jid, input, sender) ||
+    checkCakLontong(jid, input, sender)
   );
 }
