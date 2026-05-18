@@ -20,7 +20,7 @@ const questions = [
   { q: "Apa nama mata uang Jepang?", a: "yen" },
 ];
 
-const sessions = new Map<string, { answer: string; timeout: Timer }>();
+const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
 
 export default defineCommand({
   name: "trivia",
@@ -45,6 +45,7 @@ export default defineCommand({
 export function checkTrivia(jid: string, text: string, sender: string): string | null {
   const session = sessions.get(jid);
   if (!session) return null;
+  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
   if (!text.toLowerCase().includes(session.answer)) return null;
 
   clearTimeout(session.timeout);

@@ -52,6 +52,7 @@ export default defineCommand({
 export function checkTebakBendera(jid: string, text: string, sender: string): string | null {
   const session = sessions.get(jid);
   if (!session) return null;
+  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
   if (text.toLowerCase() !== session.answer) return null;
   clearTimeout(session.timeout);
   sessions.delete(jid);

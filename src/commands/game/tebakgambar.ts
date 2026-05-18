@@ -5,13 +5,13 @@ import { getRandomItem } from "@/helper";
 import { logger } from "@/logger";
 import { defineCommand } from "@/types";
 
-const sessions = new Map<string, { answer: string; timeout: Timer }>();
+const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
 
 // Load local database
 let localData: { img: string; jawaban: string; deskripsi: string }[] = [];
 try {
   const fileContent = readFileSync(
-    join(import.meta.dir, "..", "..", "assets", "tebakgambar.json"),
+    join(import.meta.dir, "..", "..", "data", "games", "tebakgambar.json"),
     "utf-8",
   );
   localData = JSON.parse(fileContent);
@@ -40,7 +40,7 @@ export default defineCommand({
       });
     }, 60_000);
 
-    sessions.set(jid, { answer, timeout });
+    sessions.set(jid, { answer, timeout, sender: msg.sender });
 
     await msg.send({
       image: { url: imgData.img },
@@ -52,6 +52,7 @@ export default defineCommand({
 export function checkTebakGambar(jid: string, text: string, sender: string): string | null {
   const session = sessions.get(jid);
   if (!session) return null;
+  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
   if (text.toLowerCase() !== session.answer) return null;
   clearTimeout(session.timeout);
   sessions.delete(jid);

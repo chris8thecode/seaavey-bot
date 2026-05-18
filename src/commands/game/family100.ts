@@ -9,7 +9,7 @@ import { defineCommand } from "@/types";
 let localData: { soal: string; jawaban: string[] }[] = [];
 try {
   const fileContent = readFileSync(
-    join(import.meta.dir, "..", "..", "assets", "family100.json"),
+    join(import.meta.dir, "..", "..", "data", "games", "family100.json"),
     "utf-8",
   );
   localData = JSON.parse(fileContent);

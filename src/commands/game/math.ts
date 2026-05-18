@@ -2,7 +2,7 @@ import { addXp } from "@/database";
 import { getRandomItem, getRandomNumber } from "@/helper";
 import { defineCommand } from "@/types";
 
-const sessions = new Map<string, { answer: number; timeout: Timer }>();
+const sessions = new Map<string, { answer: number; timeout: Timer; sender?: string }>();
 
 export default defineCommand({
   name: "math",
@@ -26,7 +26,7 @@ export default defineCommand({
       sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${answer}*` });
     }, 30_000);
 
-    sessions.set(msg.jid, { answer, timeout });
+    sessions.set(msg.jid, { answer, timeout, sender: msg.sender });
 
     await msg.reply(`🧮 Berapa *${a} ${op} ${b}* ?\n\nJawab dalam 30 detik!`);
   },
@@ -35,6 +35,7 @@ export default defineCommand({
 export function checkMathAnswer(jid: string, text: string, sender: string): string | null {
   const session = sessions.get(jid);
   if (!session) return null;
+  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
   if (Number(text) !== session.answer) return null;
 
   clearTimeout(session.timeout);

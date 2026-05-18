@@ -27,7 +27,7 @@ const questions = [
   { q: "Berapa derajat sudut segitiga?", o: ["90", "180", "270", "360"], a: 1 },
 ];
 
-const sessions = new Map<string, { answer: number; timeout: Timer }>();
+const sessions = new Map<string, { answer: number; timeout: Timer; sender?: string }>();
 
 export default defineCommand({
   name: "quiz",
