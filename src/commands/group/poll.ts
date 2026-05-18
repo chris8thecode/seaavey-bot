@@ -13,6 +13,8 @@ export default defineCommand({
     if (sub === "vote") {
       const poll = getPoll(msg.jid);
       if (!poll) return msg.reply("❌ Tidak ada poll aktif.");
+      const votes = JSON.parse(poll.votes) as Record<string, number>;
+      if (votes[msg.sender] !== undefined) return msg.reply("❌ Kamu sudah melakukan vote!");
       const idx = parseInt(msg.args[1] || "0", 10) - 1;
       const options = JSON.parse(poll.options) as string[];
       if (Number.isNaN(idx) || idx < 0 || idx >= options.length)

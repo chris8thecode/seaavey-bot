@@ -30,6 +30,7 @@ export default defineCommand({
       votes.set(key, session);
     }
 
+    if (session.voters.has(msg.sender)) return msg.reply("❌ Kamu sudah vote!");
     session.voters.add(msg.sender);
     const needed = 5;
 
