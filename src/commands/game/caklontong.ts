@@ -1,9 +1,9 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getRandomItem } from "@/helper";
-import { GameManager } from "@/lib/game-helper";
-import { logger } from "@/logger";
-import { defineCommand } from "@/types";
+import { getRandomItem } from "@/utils/helper";
+import { GameManager } from "@/game/game-helper";
+import { logger } from "@/core/logger";
+import { defineCommand } from "@/core/types";
 
 const gm = new GameManager(30);
 

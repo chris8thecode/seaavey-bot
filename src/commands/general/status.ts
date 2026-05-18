@@ -1,6 +1,6 @@
 import { freemem, totalmem } from "node:os";
-import { formatSize, formatTime } from "@/helper";
-import { defineCommand } from "@/types";
+import { formatSize, formatTime } from "@/utils/helper";
+import { defineCommand } from "@/core/types";
 
 const startTime = Date.now();
 

@@ -1,4 +1,4 @@
-import { addXp } from "@/database";
+import { addXp } from "@/infra/database";
 
 export interface GameSession {
   answer: string;

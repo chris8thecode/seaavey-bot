@@ -1,5 +1,5 @@
-import { formatTime } from "@/helper";
-import { defineCommand } from "@/types";
+import { formatTime } from "@/utils/helper";
+import { defineCommand } from "@/core/types";
 
 const startTime = Date.now();
 
