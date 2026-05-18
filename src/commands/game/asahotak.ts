@@ -12,7 +12,7 @@ try {
   localData = JSON.parse(
     readFileSync(join(import.meta.dir, "..", "..", "data", "games", "asahotak.json"), "utf-8"),
   );
-} catch (e) {
+} catch (_e) {
   logger.error("asahotak.json error");
 }
 
