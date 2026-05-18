@@ -7,6 +7,6 @@ export default defineCommand({
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
     if (!msg.isOwner) return msg.reply("Hanya owner yang bisa!");
     await msg.reply("Bye bye 👋");
-    await sock.groupLeave(msg.lid);
+    await sock.groupLeave(msg.jid);
   },
 });

@@ -5,7 +5,7 @@ export default defineCommand({
   name: "owner",
   description: "Info owner bot",
   handler: async (sock, msg) => {
-    await sock.sendMessage(msg.lid, {
+    await sock.sendMessage(msg.jid, {
       contacts: {
         contacts: config.owner.map((num, i) => ({
           displayName: `Owner ${i + 1}`,

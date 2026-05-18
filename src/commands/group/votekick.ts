@@ -18,7 +18,7 @@ export default defineCommand({
 
     if (!session) {
       const jid = msg.jid;
-      const _lid = msg.lid;
+      const _lid = msg.jid;
       const timeout = setTimeout(() => {
         votes.delete(key);
         sock.sendMessage(jid, {
@@ -36,7 +36,7 @@ export default defineCommand({
     if (session.voters.size >= needed) {
       clearTimeout(session.timeout);
       votes.delete(key);
-      await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
+      await sock.groupParticipantsUpdate(msg.jid, [target], "remove");
       return msg.send({
         text: `🗳️ *Votekick Berhasil!*\n\n@${getNumber(target)} dikick (${needed}/${needed} vote)`,
         mentions: [target],

@@ -10,7 +10,7 @@ export default defineCommand({
     if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
     if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
 
-    const key = `${msg.lid}:${msg.sender}`;
+    const key = `${msg.jid}:${msg.sender}`;
 
     if (!pending.has(key)) {
       pending.add(key);
@@ -22,7 +22,7 @@ export default defineCommand({
 
     pending.delete(key);
 
-    const metadata = await sock.groupMetadata(msg.lid);
+    const metadata = await sock.groupMetadata(msg.jid);
     const members = metadata.participants.filter((p) => !p.admin).map((p) => p.id);
 
     if (!members.length) return msg.reply("Tidak ada member yang bisa di kick!");
@@ -30,7 +30,7 @@ export default defineCommand({
     await msg.reply(`Mengeluarkan ${members.length} member...`);
 
     for (const member of members) {
-      await sock.groupParticipantsUpdate(msg.lid, [member], "remove");
+      await sock.groupParticipantsUpdate(msg.jid, [member], "remove");
     }
 
     await msg.reply(`Done! ${members.length} member telah dikeluarkan.`);

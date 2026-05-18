@@ -7,7 +7,7 @@ export default defineCommand({
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
     if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
     if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
-    await sock.groupRevokeInvite(msg.lid);
+    await sock.groupRevokeInvite(msg.jid);
     await msg.reply("Link invite grup telah direset!");
   },
 });

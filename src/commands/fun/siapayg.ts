@@ -10,7 +10,7 @@ export default defineCommand({
       return msg.reply(
         "Format: .siapayg <pertanyaan>\nContoh: .siapayg paling ganteng di grup ini",
       );
-    const metadata = await sock.groupMetadata(msg.lid);
+    const metadata = await sock.groupMetadata(msg.jid);
     const members = metadata.participants.map((p) => p.id);
     const chosen = getRandomItem(members) as string;
     await msg.send({

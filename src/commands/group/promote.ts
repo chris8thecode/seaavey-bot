@@ -9,7 +9,7 @@ export default defineCommand({
     if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
     const target = msg.mentioned[0] || msg.quoted;
     if (!target) return msg.reply("Tag atau reply user yang mau di promote!");
-    await sock.groupParticipantsUpdate(msg.lid, [target], "promote");
+    await sock.groupParticipantsUpdate(msg.jid, [target], "promote");
     await msg.send({
       text: `Done, @${getNumber(target)} telah dijadikan admin!`,
       mentions: [target],

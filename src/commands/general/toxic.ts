@@ -9,8 +9,6 @@ export default defineCommand({
   name: "toxic",
   description: "Kelola database kata toxic",
   handler: async (_sock, msg) => {
-    if (!msg.isOwner) return msg.reply("❌ Khusus Owner!");
-
     const action = msg.args[0];
     const word = msg.args.slice(1).join(" ").toLowerCase();
 

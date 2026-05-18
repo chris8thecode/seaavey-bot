@@ -9,7 +9,7 @@ export default defineCommand({
     if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
     const desc = msg.args.join(" ");
     if (!desc) return msg.reply("Masukkan deskripsi baru!");
-    await sock.groupUpdateDescription(msg.lid, desc);
+    await sock.groupUpdateDescription(msg.jid, desc);
     await msg.reply("Deskripsi grup telah diubah!");
   },
 });

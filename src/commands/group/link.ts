@@ -7,7 +7,7 @@ export default defineCommand({
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
     if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
     if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
-    const code = await sock.groupInviteCode(msg.lid);
+    const code = await sock.groupInviteCode(msg.jid);
     await msg.reply(`https://chat.whatsapp.com/${code}`);
   },
 });

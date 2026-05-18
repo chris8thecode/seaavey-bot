@@ -15,7 +15,7 @@ export default defineCommand({
     const group = getGroup(msg.jid);
     const max = group.warnMax || 3;
     if (warns.length >= max) {
-      await sock.groupParticipantsUpdate(msg.lid, [target], "remove");
+      await sock.groupParticipantsUpdate(msg.jid, [target], "remove");
       await msg.reply(`⚠️ @${getNumber(target)} telah mencapai ${max} warn dan dikick!`);
     } else {
       await msg.reply(
