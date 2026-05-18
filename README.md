@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" alt="SeaaveyBot" width="100%" />
+  <img src="src/assets/banner.png" alt="SeaaveyBot" width="100%" />
 </p>
 
 <p align="center">
@@ -26,6 +26,10 @@
 - 🛡️ **Group Admin** — Full group management commands
 - 🧩 **Extensible** — Easy to add new commands
 - 🎛️ **Interactive Messages** — Buttons, lists, and more
+- 🎮 **Game Database** — 10+ local games from BochilTeam
+- 💰 **Economy System** — Wallet, bank, and secure transfers
+- 📢 **AFK Status** — Auto-respond and clear status on activity
+- 🗳️ **Group Voting** — Polls and Votekick sessions with anti-double vote
 
 ## Requirements
 
