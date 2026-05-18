@@ -147,16 +147,16 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
     }
 
     // AFK & Game & Auto-reply
-    if (parse.body && !parse.body.startsWith(config.prefix)) {
-      const senderAfk = getAfk(parse.sender);
-      if (senderAfk) {
-        removeAfk(parse.sender);
-        await sock.sendMessage(parse.jid, {
-          text: `👋 @${getNumber(parse.sender)} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
-          mentions: [parse.sender],
-        });
-      }
+    const senderAfk = getAfk(parse.sender);
+    if (senderAfk) {
+      removeAfk(parse.sender);
+      await sock.sendMessage(parse.jid, {
+        text: `👋 @${getNumber(parse.sender)} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
+        mentions: [parse.sender],
+      });
+    }
 
+    if (parse.body && !parse.body.startsWith(config.prefix)) {
       for (const m of parse.mentioned) {
         const afk = getAfk(m);
         if (afk) {
