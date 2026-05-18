@@ -29,7 +29,10 @@ const flags = [
   { emoji: "🇳🇱", answer: "belanda" },
 ];
 
-const sessions = new Map<string, { answer: string; emoji: string; timeout: Timer }>();
+const sessions = new Map<
+  string,
+  { answer: string; emoji: string; timeout: Timer; sender?: string }
+>();
 
 export default defineCommand({
   name: "tebakbendera",
@@ -44,7 +47,7 @@ export default defineCommand({
         text: `⏰ Waktu habis! Jawabannya *${flag.answer}* ${flag.emoji}`,
       });
     }, 30_000);
-    sessions.set(jid, { answer: flag.answer, emoji: flag.emoji, timeout });
+    sessions.set(jid, { answer: flag.answer, emoji: flag.emoji, timeout, sender: msg.sender });
     await msg.reply(`🏁 *Tebak Bendera!*\n\n${flag.emoji}\n\nNegara apa ini? (30 detik)`);
   },
 });

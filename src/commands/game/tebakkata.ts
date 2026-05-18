@@ -30,7 +30,7 @@ const words = [
   "gajah",
 ];
 
-const sessions = new Map<string, { word: string; timeout: Timer }>();
+const sessions = new Map<string, { word: string; timeout: Timer; sender?: string }>();
 
 function shuffle(word: string): string {
   return word
@@ -55,7 +55,7 @@ export default defineCommand({
       sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${word}*` });
     }, 60_000);
 
-    sessions.set(msg.jid, { word, timeout });
+    sessions.set(msg.jid, { word, timeout, sender: msg.sender });
 
     await msg.reply(
       `🔤 Susun huruf berikut:\n\n*${shuffled.toUpperCase()}*\n\nJawab dalam 60 detik!`,
