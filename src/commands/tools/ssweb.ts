@@ -1,5 +1,5 @@
-import { api } from "@/infra/api";
 import { defineCommand } from "@/core/types";
+import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "ssweb",

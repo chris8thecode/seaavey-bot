@@ -1,7 +1,7 @@
 import type { WASocket } from "baileys";
+import { logger } from "@/core/logger";
 import { getPendingReminders, markReminderDone } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
-import { logger } from "@/core/logger";
 export function startSchedulers(sock: WASocket) {
   // Reminder checker
   setInterval(async () => {

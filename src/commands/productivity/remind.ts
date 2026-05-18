@@ -1,5 +1,5 @@
-import { addReminder } from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import { addReminder } from "@/infra/database";
 
 export default defineCommand({
   name: "remind",

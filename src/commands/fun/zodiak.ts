@@ -1,5 +1,5 @@
-import { getRandomItem } from "@/utils/helper";
 import { defineCommand } from "@/core/types";
+import { getRandomItem } from "@/utils/helper";
 
 const zodiak: Record<string, string[]> = {
   aries: [

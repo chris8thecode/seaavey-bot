@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { config } from "@/core/config";
-import { getUser } from "@/infra/database";
-import { getNumber } from "@/utils/helper";
-import { sendInteractive } from "@/handlers/interactive";
-import { commands } from "@/infra/loader";
 import { defineCommand } from "@/core/types";
+import { sendInteractive } from "@/handlers/interactive";
+import { getUser } from "@/infra/database";
+import { commands } from "@/infra/loader";
+import { getNumber } from "@/utils/helper";
 
 const categoryIcons: Record<string, string> = {
   general: "⚙️",

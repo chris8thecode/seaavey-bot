@@ -1,5 +1,5 @@
-import { getGroup } from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import { getGroup } from "@/infra/database";
 
 export default defineCommand({
   name: "antiviewonce",

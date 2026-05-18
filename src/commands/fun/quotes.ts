@@ -1,5 +1,5 @@
-import { getRandomItem } from "@/utils/helper";
 import { defineCommand } from "@/core/types";
+import { getRandomItem } from "@/utils/helper";
 
 const quotes = [
   "Hidup itu seperti bersepeda. Agar tetap seimbang, kamu harus terus bergerak. — Albert Einstein",

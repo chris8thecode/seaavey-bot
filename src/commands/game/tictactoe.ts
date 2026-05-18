@@ -1,6 +1,6 @@
+import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomItem } from "@/utils/helper";
-import { defineCommand } from "@/core/types";
 
 const sessions = new Map<string, { board: string[]; turn: "X" | "O"; timeout: Timer }>();
 

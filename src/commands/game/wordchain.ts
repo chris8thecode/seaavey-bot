@@ -1,5 +1,5 @@
-import { addXp } from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import { addXp } from "@/infra/database";
 
 const sessions = new Map<string, { lastWord: string; used: Set<string>; timeout: Timer }>();
 

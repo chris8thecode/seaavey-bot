@@ -3,11 +3,11 @@ import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
 import * as QRCode from "qrcode";
-import { updateMemberChat } from "@/infra/database";
-import { handleGroupParticipants } from "@/handlers/group-handler";
-import { loadCommands } from "@/infra/loader";
 import { logger } from "@/core/logger";
+import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
+import { updateMemberChat } from "@/infra/database";
+import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
 
 async function startBot() {

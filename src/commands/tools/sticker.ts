@@ -1,6 +1,6 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
-import { imageToSticker, videoToSticker } from "@/utils/convert";
 import { defineCommand } from "@/core/types";
+import { imageToSticker, videoToSticker } from "@/utils/convert";
 
 export default defineCommand({
   name: "sticker",

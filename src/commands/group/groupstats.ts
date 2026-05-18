@@ -1,6 +1,6 @@
+import { defineCommand } from "@/core/types";
 import db from "@/infra/database";
 import { getNumber } from "@/utils/helper";
-import { defineCommand } from "@/core/types";
 export default defineCommand({
   name: "groupstats",
   description: "Statistik aktivitas group",

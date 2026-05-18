@@ -1,5 +1,5 @@
-import { addXp } from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import { addXp } from "@/infra/database";
 
 export default defineCommand({
   name: "coinflip",

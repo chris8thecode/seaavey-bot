@@ -1,5 +1,5 @@
-import { addAutoReply, getAutoReplies, removeAutoReply } from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import { addAutoReply, getAutoReplies, removeAutoReply } from "@/infra/database";
 
 export default defineCommand({
   name: "autoreply",

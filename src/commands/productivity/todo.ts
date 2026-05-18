@@ -1,5 +1,5 @@
-import db from "@/infra/database";
 import { defineCommand } from "@/core/types";
+import db from "@/infra/database";
 
 db.run(`
   CREATE TABLE IF NOT EXISTS todos (
