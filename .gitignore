@@ -46,5 +46,8 @@ qr.png
 message.txt
 plans/*
 
+# web-ui (separate repo)
+web-ui
+
 # test files
 *.test.*

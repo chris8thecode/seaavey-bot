@@ -16,8 +16,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
 
-    // Deprecation handling
-    "ignoreDeprecations": "6.0",
 
     // Path alias
     "baseUrl": ".",
@@ -41,5 +39,5 @@
     "noPropertyAccessFromIndexSignature": false,
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "web-ui"],
 }
