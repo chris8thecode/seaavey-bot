@@ -1,4 +1,4 @@
-import { Elysia } from "elysia"
+import { Elysia } from "elysia";
 
 export const settingsRoutes = new Elysia({ prefix: "/api/settings" })
   .get("/", () => ({
@@ -10,4 +10,4 @@ export const settingsRoutes = new Elysia({ prefix: "/api/settings" })
     selfMode: false,
     publicMode: true,
   }))
-  .patch("/", ({ body }) => ({ ...body as object, updated: true }))
+  .patch("/", ({ body }) => ({ ...(body as object), updated: true }));

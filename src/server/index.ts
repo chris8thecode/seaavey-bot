@@ -1,15 +1,16 @@
-import { Elysia } from "elysia"
-import { cors } from "@elysiajs/cors"
-import { statsRoutes } from "./routes/stats"
-import { usersRoutes } from "./routes/users"
-import { groupsRoutes } from "./routes/groups"
-import { commandsRoutes } from "./routes/commands"
-import { logsRoutes } from "./routes/logs"
-import { settingsRoutes } from "./routes/settings"
-import { schedulesRoutes } from "./routes/schedules"
-import { broadcastRoutes } from "./routes/broadcast"
+import { cors } from "@elysiajs/cors";
+import { Elysia } from "elysia";
+import { logger } from "@/core/logger";
+import { broadcastRoutes } from "./routes/broadcast";
+import { commandsRoutes } from "./routes/commands";
+import { groupsRoutes } from "./routes/groups";
+import { logsRoutes } from "./routes/logs";
+import { schedulesRoutes } from "./routes/schedules";
+import { settingsRoutes } from "./routes/settings";
+import { statsRoutes } from "./routes/stats";
+import { usersRoutes } from "./routes/users";
 
-const PORT = process.env.API_PORT || 8080
+const PORT = process.env.API_PORT || 8080;
 
 export function startServer() {
   const app = new Elysia()
@@ -23,8 +24,8 @@ export function startServer() {
     .use(schedulesRoutes)
     .use(broadcastRoutes)
     .get("/", () => ({ status: "ok", name: "SeaaveyBot API" }))
-    .listen(PORT)
+    .listen(PORT);
 
-  console.log(`[API] Server running on http://localhost:${PORT}`)
-  return app
+  logger.info(`[API] Server running on http://localhost:${PORT}`);
+  return app;
 }

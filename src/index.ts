@@ -6,7 +6,7 @@ import * as QRCode from "qrcode";
 import { logger } from "@/core/logger";
 import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
-import { updateMemberChat, setGroup } from "@/infra/database";
+import { setGroup, updateMemberChat } from "@/infra/database";
 import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
 import { startServer } from "./server";
@@ -103,4 +103,4 @@ async function startBot() {
 }
 
 startBot();
-startServer()
+startServer();
