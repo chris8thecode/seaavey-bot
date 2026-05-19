@@ -16,11 +16,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
 
+    // Deprecation handling
+    "ignoreDeprecations": "6.0",
+
     // Path alias
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@canvas/*": ["./src/canvas/*"]
+      "@/*": ["./src/*"]
     },
 
     // Strict

@@ -12,7 +12,7 @@ export default defineCommand({
     const nextLevel = level * 100;
 
     try {
-      const { generateRankCard } = await import("@canvas/rankCard");
+      const { generateRankCard } = await import("@/canvas/rankCard");
       let ppUrl: string | null = null;
       try {
         ppUrl = (await sock.profilePictureUrl(msg.sender, "image")) ?? null;
