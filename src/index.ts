@@ -6,9 +6,10 @@ import * as QRCode from "qrcode";
 import { logger } from "@/core/logger";
 import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
-import { updateMemberChat } from "@/infra/database";
+import { updateMemberChat, setGroup } from "@/infra/database";
 import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
+import { startServer } from "./server";
 
 async function startBot() {
   await loadCommands();
@@ -51,6 +52,17 @@ async function startBot() {
     } else if (connection === "open") {
       logger.info("Connected to WhatsApp!");
       startSchedulers(sock);
+
+      // Sync group names to database
+      try {
+        const groups = await sock.groupFetchAllParticipating();
+        for (const group of Object.values(groups)) {
+          if (group.subject) {
+            setGroup(group.id, "name", group.subject);
+          }
+        }
+        logger.info(`Synced ${Object.keys(groups).length} group names`);
+      } catch {}
     }
   });
 
@@ -69,6 +81,7 @@ async function startBot() {
   // Group Events
   sock.ev.on("groups.upsert", async (groups) => {
     for (const group of groups) {
+      setGroup(group.id, "name", group.subject || "");
       for (const p of group.participants) {
         updateMemberChat(group.id, p.phoneNumber || p.id);
       }
@@ -90,3 +103,4 @@ async function startBot() {
 }
 
 startBot();
+startServer()
