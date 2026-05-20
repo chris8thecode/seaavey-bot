@@ -1,7 +1,7 @@
 import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { getUser } from "@/infra/database";
-import { getNumber } from "@/utils/helper";
+import { getNumber, getProfilePictureUrl } from "@/utils/helper";
 export default defineCommand({
   name: "Level",
   description: "Cek level dan XP kamu",
@@ -13,10 +13,7 @@ export default defineCommand({
 
     try {
       const { generateRankCard } = await import("@/canvas/rankCard");
-      let ppUrl: string | null = null;
-      try {
-        ppUrl = (await sock.profilePictureUrl(msg.sender, "image")) ?? null;
-      } catch {}
+      const ppUrl = await getProfilePictureUrl(sock, msg.sender);
 
       const userName = msg.msg.pushName || getNumber(msg.sender);
       const imageBuffer = await generateRankCard(ppUrl, userName, level, xp, nextLevel);

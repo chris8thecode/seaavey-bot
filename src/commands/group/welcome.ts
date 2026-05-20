@@ -1,16 +1,7 @@
-import { defineCommand } from "@/core/types";
-import { getGroup, setGroup } from "@/infra/database";
+import { toggleCommand } from "@/utils/command-factory";
 
-export default defineCommand({
+export default toggleCommand({
   name: "Welcome",
+  field: "welcome",
   description: "Toggle welcome message on/off",
-  handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
-    const group = getGroup(msg.jid);
-    const newVal = group.welcome ? 0 : 1;
-    setGroup(msg.jid, "welcome", newVal);
-    await msg.reply(`✅ Welcome ${newVal ? "diaktifkan" : "dinonaktifkan"}.`);
-  },
 });

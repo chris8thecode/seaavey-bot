@@ -4,6 +4,12 @@ import { getRandomNumber } from "@/utils/helper";
 
 const db = new Database("data.db");
 
+function safeMigrate(sql: string) {
+  try {
+    db.run(sql);
+  } catch {}
+}
+
 db.run("PRAGMA journal_mode = WAL");
 db.run(`
   CREATE TABLE IF NOT EXISTS users (
@@ -16,16 +22,9 @@ db.run(`
   )
 `);
 
-// migrate: add columns if missing
-try {
-  db.run("ALTER TABLE users ADD COLUMN lastChat INTEGER DEFAULT 0");
-} catch {}
-try {
-  db.run("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0");
-} catch {}
-try {
-  db.run("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1");
-} catch {}
+safeMigrate("ALTER TABLE users ADD COLUMN lastChat INTEGER DEFAULT 0");
+safeMigrate("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0");
+safeMigrate("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1");
 
 export function getUser(jid: string) {
   return db.query("SELECT * FROM users WHERE jid = ?").get(jid) as {
@@ -98,12 +97,8 @@ db.run(`
   )
 `);
 
-try {
-  db.run("ALTER TABLE groups ADD COLUMN antinsfw INTEGER DEFAULT 0");
-} catch {}
-try {
-  db.run("ALTER TABLE groups ADD COLUMN antiviewonce INTEGER DEFAULT 0");
-} catch {}
+safeMigrate("ALTER TABLE groups ADD COLUMN antinsfw INTEGER DEFAULT 0");
+safeMigrate("ALTER TABLE groups ADD COLUMN antiviewonce INTEGER DEFAULT 0");
 
 export interface Group {
   jid: string;
@@ -148,10 +143,7 @@ db.run(`
   )
 `);
 
-// Migration: add chatCount if missing
-try {
-  db.run("ALTER TABLE group_members ADD COLUMN chatCount INTEGER DEFAULT 0");
-} catch {}
+safeMigrate("ALTER TABLE group_members ADD COLUMN chatCount INTEGER DEFAULT 0");
 
 export function updateMemberChat(groupJid: string, memberJid: string) {
   db.run(
@@ -302,12 +294,20 @@ export function getPoll(groupJid: string) {
   } | null;
 }
 
+export function getPollOptions(poll: { options: string }): string[] {
+  return JSON.parse(poll.options) as string[];
+}
+
+export function getPollVotes(poll: { votes: string }): Record<string, number> {
+  return JSON.parse(poll.votes) as Record<string, number>;
+}
+
 export function votePoll(pollId: number, voter: string, optionIndex: number) {
   const poll = db.query("SELECT votes FROM polls WHERE id = ?").get(pollId) as {
     votes: string;
   } | null;
   if (!poll) return false;
-  const votes = JSON.parse(poll.votes) as Record<string, number>;
+  const votes = getPollVotes(poll);
   votes[voter] = optionIndex;
   db.run("UPDATE polls SET votes = ? WHERE id = ?", [JSON.stringify(votes), pollId]);
   return true;

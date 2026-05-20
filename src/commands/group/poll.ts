@@ -1,6 +1,13 @@
 import { defineCommand } from "@/core/types";
 import { type Button, sendInteractive } from "@/handlers/interactive";
-import { closePoll, createPoll, getPoll, votePoll } from "@/infra/database";
+import {
+  closePoll,
+  createPoll,
+  getPoll,
+  getPollOptions,
+  getPollVotes,
+  votePoll,
+} from "@/infra/database";
 
 export default defineCommand({
   name: "Poll",
@@ -13,10 +20,10 @@ export default defineCommand({
     if (sub === "vote") {
       const poll = getPoll(msg.jid);
       if (!poll) return msg.reply("❌ Tidak ada poll aktif.");
-      const votes = JSON.parse(poll.votes) as Record<string, number>;
+      const votes = getPollVotes(poll);
       if (votes[msg.sender] !== undefined) return msg.reply("❌ Kamu sudah melakukan vote!");
       const idx = parseInt(msg.args[1] || "0", 10) - 1;
-      const options = JSON.parse(poll.options) as string[];
+      const options = getPollOptions(poll);
       if (Number.isNaN(idx) || idx < 0 || idx >= options.length)
         return msg.reply(`❌ Pilih 1-${options.length}`);
       votePoll(poll.id, msg.sender, idx);
@@ -29,8 +36,8 @@ export default defineCommand({
       const poll = getPoll(msg.jid);
       if (!poll) return msg.reply("❌ Tidak ada poll aktif.");
       closePoll(poll.id);
-      const options = JSON.parse(poll.options) as string[];
-      const votes = JSON.parse(poll.votes) as Record<string, number>;
+      const options = getPollOptions(poll);
+      const votes = getPollVotes(poll);
       const counts = options.map((_, i) => Object.values(votes).filter((v) => v === i).length);
       const result = options.map((o, i) => `${i + 1}. ${o} — ${counts[i]} vote`).join("\n");
       return msg.reply(`📊 *Hasil Poll*\n\n❓ ${poll.question}\n\n${result}`);
@@ -40,8 +47,8 @@ export default defineCommand({
     if (sub === "result") {
       const poll = getPoll(msg.jid);
       if (!poll) return msg.reply("❌ Tidak ada poll aktif.");
-      const options = JSON.parse(poll.options) as string[];
-      const votes = JSON.parse(poll.votes) as Record<string, number>;
+      const options = getPollOptions(poll);
+      const votes = getPollVotes(poll);
       const counts = options.map((_, i) => Object.values(votes).filter((v) => v === i).length);
       const result = options.map((o, i) => `${i + 1}. ${o} — ${counts[i]} vote`).join("\n");
 

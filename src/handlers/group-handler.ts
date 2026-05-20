@@ -1,7 +1,7 @@
 import type { WASocket } from "baileys";
 import { logger } from "@/core/logger";
 import db, { getGroup, updateMemberChat } from "@/infra/database";
-import { getNumber } from "@/utils/helper";
+import { getNumber, getProfilePictureUrl } from "@/utils/helper";
 export async function handleGroupParticipants(
   sock: WASocket,
   { id, participants, action }: { id: string; participants: string[]; action: string },
@@ -28,10 +28,7 @@ export async function handleGroupParticipants(
       const { generateWelcomeImage } = await import("@/canvas/welcomeImage");
       const metadata = await sock.groupMetadata(id);
       for (const m of mentions) {
-        let ppUrl: string | null = null;
-        try {
-          ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
-        } catch {}
+        const ppUrl = await getProfilePictureUrl(sock, m);
         const imageBuffer = await generateWelcomeImage(ppUrl, getNumber(m), metadata.subject);
         await sock.sendMessage(id, {
           image: imageBuffer,
@@ -54,10 +51,7 @@ export async function handleGroupParticipants(
       const { generateGoodbyeImage } = await import("@/canvas/welcomeImage");
       const metadata = await sock.groupMetadata(id);
       for (const m of mentions) {
-        let ppUrl: string | null = null;
-        try {
-          ppUrl = (await sock.profilePictureUrl(m, "image")) ?? null;
-        } catch {}
+        const ppUrl = await getProfilePictureUrl(sock, m);
         const imageBuffer = await generateGoodbyeImage(ppUrl, getNumber(m), metadata.subject);
         await sock.sendMessage(id, {
           image: imageBuffer,

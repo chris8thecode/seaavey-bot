@@ -129,6 +129,14 @@ export function formatTime(seconds: number): string {
 
 const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");
 
+export async function getProfilePictureUrl(sock: WASocket, jid: string): Promise<string | null> {
+  try {
+    return (await sock.profilePictureUrl(jid, "image")) ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export function loadGameData<T>(filename: string): T[] {
   try {
     const raw = readFileSync(join(GAMES_DATA_DIR, filename), "utf-8");
