@@ -8,6 +8,7 @@ interface Config {
   prefix: string;
   owner: string[];
   apiKey: string;
+  googleAiKey: string;
   toxicRegex: RegExp;
 }
 
@@ -22,5 +23,6 @@ export const config: Config = {
   prefix: ".",
   owner: (process.env.OWNER_NUMBER ?? "62123456789").split(","),
   apiKey: process.env.API_KEY ?? "",
+  googleAiKey: process.env.GOOGLE_API_KEY ?? "",
   toxicRegex: new RegExp(`\\b(?:${toxicWords})\\b`, "i"),
 };
