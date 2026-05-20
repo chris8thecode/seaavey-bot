@@ -1,5 +1,8 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { AnyMessageContent, proto, WAMessage, WASocket } from "baileys";
 import { config } from "@/core/config";
+import { logger } from "@/core/logger";
 
 export interface ParsedMessage {
   id: string | undefined;
@@ -122,4 +125,16 @@ export function formatTime(seconds: number): string {
     .map((v) => (v < 10 ? `0${v}` : v))
     .filter((v, i) => v !== "00" || i > 0)
     .join(":");
+}
+
+const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");
+
+export function loadGameData<T>(filename: string): T[] {
+  try {
+    const raw = readFileSync(join(GAMES_DATA_DIR, filename), "utf-8");
+    return JSON.parse(raw) as T[];
+  } catch {
+    logger.error(`Failed to load ${filename}`);
+    return [];
+  }
 }

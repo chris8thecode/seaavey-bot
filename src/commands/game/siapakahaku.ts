@@ -1,25 +1,13 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
-import { getRandomItem } from "@/utils/helper";
+import { getRandomItem, loadGameData } from "@/utils/helper";
 
 const sessions = new Map<
   string,
   { answer: string; hint: string; timeout: Timer; sender?: string }
 >();
 
-let localData: { soal: string; jawaban: string }[] = [];
-try {
-  const fileContent = readFileSync(
-    join(process.cwd(), "src", "data", "games", "siapakahaku.json"),
-    "utf-8",
-  );
-  localData = JSON.parse(fileContent);
-} catch (_e) {
-  logger.error("siapakahaku.json error");
-}
+const localData = loadGameData<{ soal: string; jawaban: string }>("siapakahaku.json");
 
 export default defineCommand({
   name: "Siapakah Aku",

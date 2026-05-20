@@ -1,20 +1,10 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
-import { getRandomItem } from "@/utils/helper";
+import { getRandomItem, loadGameData } from "@/utils/helper";
 
 const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
 
-let localData: { soal: string; jawaban: string }[] = [];
-try {
-  localData = JSON.parse(
-    readFileSync(join(import.meta.dir, "..", "..", "data", "games", "tekateki.json"), "utf-8"),
-  );
-} catch (_e) {
-  logger.error("tekateki.json error");
-}
+const localData = loadGameData<{ soal: string; jawaban: string }>("tekateki.json");
 
 export default defineCommand({
   name: "Teka Teki",

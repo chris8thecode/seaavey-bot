@@ -1,20 +1,10 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { GameManager } from "@/game/game-helper";
-import { getRandomItem } from "@/utils/helper";
+import { getRandomItem, loadGameData } from "@/utils/helper";
 
 const gm = new GameManager(50);
 
-let localData: { flag: string; img: string; name: string }[] = [];
-try {
-  localData = JSON.parse(
-    readFileSync(join(process.cwd(), "src", "data", "games", "tebakbendera.json"), "utf-8"),
-  );
-} catch (_e) {
-  logger.error("tebakbendera error");
-}
+const localData = loadGameData<{ flag: string; img: string; name: string }>("tebakbendera.json");
 
 export default defineCommand({
   name: "Tebak Bendera",

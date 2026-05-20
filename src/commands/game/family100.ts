@@ -1,21 +1,8 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
-import { getRandomItem } from "@/utils/helper";
+import { getRandomItem, loadGameData } from "@/utils/helper";
 
-// Load local database
-let localData: { soal: string; jawaban: string[] }[] = [];
-try {
-  const fileContent = readFileSync(
-    join(import.meta.dir, "..", "..", "data", "games", "family100.json"),
-    "utf-8",
-  );
-  localData = JSON.parse(fileContent);
-} catch (_e) {
-  logger.error("Local family100.json not found or invalid.");
-}
+const localData = loadGameData<{ soal: string; jawaban: string[] }>("family100.json");
 
 const sessions = new Map<
   string,

@@ -1,23 +1,12 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import { logger } from "@/core/logger";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
-import { getRandomItem } from "@/utils/helper";
+import { getRandomItem, loadGameData } from "@/utils/helper";
 
 const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
 
-// Load local database
-let localData: { img: string; jawaban: string; deskripsi: string }[] = [];
-try {
-  const fileContent = readFileSync(
-    join(import.meta.dir, "..", "..", "data", "games", "tebakgambar.json"),
-    "utf-8",
-  );
-  localData = JSON.parse(fileContent);
-} catch (_e) {
-  logger.error("Local tebakgambar.json not found or invalid.");
-}
+const localData = loadGameData<{ img: string; jawaban: string; deskripsi: string }>(
+  "tebakgambar.json",
+);
 
 export default defineCommand({
   name: "Tebak Gambar",
