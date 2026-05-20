@@ -2,7 +2,16 @@ import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomItem } from "@/utils/helper";
 
-const sessions = new Map<string, { board: string[]; turn: "X" | "O"; timeout: Timer }>();
+const sessions = new Map<
+  string,
+  {
+    board: string[];
+    playerX: string;
+    playerO: string;
+    turn: string;
+    timeout: Timer;
+  }
+>();
 
 function renderBoard(board: string[]): string {
   return `${board[0]}│${board[1]}│${board[2]}\n─┼─┼─\n${board[3]}│${board[4]}│${board[5]}\n─┼─┼─\n${board[6]}│${board[7]}│${board[8]}`;
@@ -27,7 +36,6 @@ function checkWin(board: string[], mark: string): boolean {
 
 function botMove(board: string[]): number {
   const empty = board.map((v, i) => (v !== "X" && v !== "O" ? i : -1)).filter((i) => i !== -1);
-  // Try to win
   for (const i of empty) {
     board[i] = "O";
     if (checkWin(board, "O")) {
@@ -36,7 +44,6 @@ function botMove(board: string[]): number {
     }
     board[i] = String(i + 1);
   }
-  // Try to block
   for (const i of empty) {
     board[i] = "X";
     if (checkWin(board, "X")) {
@@ -45,72 +52,109 @@ function botMove(board: string[]): number {
     }
     board[i] = String(i + 1);
   }
-  // Center or random
   if (empty.includes(4)) return 4;
   return getRandomItem(empty) ?? 0;
 }
 
 export default defineCommand({
   name: "tictactoe",
-  description: "Main tic-tac-toe lawan bot",
+  description: "Main tic-tac-toe lawan bot atau member lain",
   handler: async (sock, msg) => {
-    const key = `${msg.jid}:${msg.sender}`;
+    const session = sessions.get(msg.jid);
 
-    if (!msg.args[0]) {
+    if (!msg.args[0] && !session) {
+      const target = msg.mentions?.[0] || "bot";
+      const isBot = target === "bot";
+
       const board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
-      const jid = msg.jid;
       const timeout = setTimeout(() => {
-        sessions.delete(key);
-        sock.sendMessage(jid, { text: "⏰ Waktu habis! Game Tic-Tac-Toe dibatalkan." });
+        sessions.delete(msg.jid);
+        sock.sendMessage(msg.jid, { text: "⏰ Waktu habis! Game Tic-Tac-Toe dihentikan." });
       }, 120_000);
-      sessions.set(key, { board, turn: "X", timeout });
+
+      sessions.set(msg.jid, {
+        board,
+        playerX: msg.sender,
+        playerO: target,
+        turn: msg.sender,
+        timeout,
+      });
+
       return msg.reply(
-        `🎮 *Tic-Tac-Toe*\nKamu: ❌ | Bot: ⭕\n\n${renderBoard(board)}\n\nKetik .tictactoe [1-9] (120 detik)`,
+        `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${target.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
+        { mentions: [msg.sender, ...(isBot ? [] : [target])] },
       );
     }
 
-    const session = sessions.get(key);
-    if (!session) return msg.reply("Ketik .tictactoe untuk mulai game baru.");
+    if (!session) return msg.reply("Ketik .tictactoe atau .tictactoe @tag untuk mulai.");
 
     if (msg.args[0] === "nyerah") {
+      if (msg.sender !== session.playerX && msg.sender !== session.playerO) return;
       clearTimeout(session.timeout);
-      sessions.delete(key);
-      return msg.reply("🏳️ Menyerah! Game selesai.");
+      sessions.delete(msg.jid);
+      return msg.reply("🏳️ Game dihentikan.");
+    }
+
+    if (msg.sender !== session.turn) {
+      return msg.reply(`❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`, {
+        mentions: [session.turn],
+      });
     }
 
     const pos = Number(msg.args[0]) - 1;
-    if (pos < 0 || pos > 8 || session.board[pos] === "X" || session.board[pos] === "O") {
+    if (
+      Number.isNaN(pos) ||
+      pos < 0 ||
+      pos > 8 ||
+      session.board[pos] === "X" ||
+      session.board[pos] === "O"
+    ) {
       return msg.reply("❌ Posisi tidak valid! Pilih 1-9 yang masih kosong.");
     }
 
-    session.board[pos] = "X";
-    if (checkWin(session.board, "X")) {
+    const mark = msg.sender === session.playerX ? "X" : "O";
+    session.board[pos] = mark;
+
+    if (checkWin(session.board, mark)) {
       clearTimeout(session.timeout);
-      sessions.delete(key);
+      sessions.delete(msg.jid);
       addXp(msg.sender, 20);
-      return msg.reply(`${renderBoard(session.board)}\n\n🎉 Kamu menang! (+20 XP)`);
+      return msg.reply(
+        `${renderBoard(session.board)}\n\n🎉 @${msg.sender.split("@")[0]} Menang! (+20 XP)`,
+        { mentions: [msg.sender] },
+      );
     }
 
     if (!session.board.some((v) => v !== "X" && v !== "O")) {
       clearTimeout(session.timeout);
-      sessions.delete(key);
+      sessions.delete(msg.jid);
       return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
     }
 
-    const bot = botMove(session.board);
-    session.board[bot] = "O";
-    if (checkWin(session.board, "O")) {
-      clearTimeout(session.timeout);
-      sessions.delete(key);
-      return msg.reply(`${renderBoard(session.board)}\n\n😢 Bot menang!`);
+    if (session.playerO === "bot") {
+      const botIdx = botMove(session.board);
+      session.board[botIdx] = "O";
+
+      if (checkWin(session.board, "O")) {
+        clearTimeout(session.timeout);
+        sessions.delete(msg.jid);
+        return msg.reply(`${renderBoard(session.board)}\n\n😢 Bot menang!`);
+      }
+
+      if (!session.board.some((v) => v !== "X" && v !== "O")) {
+        clearTimeout(session.timeout);
+        sessions.delete(msg.jid);
+        return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
+      }
+
+      session.turn = session.playerX;
+    } else {
+      session.turn = msg.sender === session.playerX ? session.playerO : session.playerX;
     }
 
-    if (!session.board.some((v) => v !== "X" && v !== "O")) {
-      clearTimeout(session.timeout);
-      sessions.delete(key);
-      return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
-    }
-
-    await msg.reply(`${renderBoard(session.board)}\n\nGiliranmu! Ketik .tictactoe [1-9]`);
+    session.timeout.refresh();
+    await msg.reply(`${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`, {
+      mentions: [session.turn],
+    });
   },
 });
