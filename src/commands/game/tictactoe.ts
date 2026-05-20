@@ -62,9 +62,14 @@ export default defineCommand({
   handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);
 
-    if (!msg.args[0] && !session) {
-      const target = msg.mentioned?.[0] || "bot";
-      const isBot = target === "bot";
+    if (!session) {
+      const target = msg.mentioned?.[0] || (msg.args[0] === "bot" ? "bot" : null);
+      if (msg.args.length > 0 && !target) {
+        return msg.reply("Ketik .tictactoe atau .tictactoe @tag untuk mulai.");
+      }
+
+      const isBot = (target || "bot") === "bot";
+      const finalTarget = target || "bot";
 
       const board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
       const timeout = setTimeout(() => {
@@ -75,18 +80,16 @@ export default defineCommand({
       sessions.set(msg.jid, {
         board,
         playerX: msg.sender,
-        playerO: target,
+        playerO: finalTarget,
         turn: msg.sender,
         timeout,
       });
 
       return msg.send({
-        text: `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${target.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
-        mentions: [msg.sender, ...(isBot ? [] : [target])],
+        text: `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${finalTarget.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
+        mentions: [msg.sender, ...(isBot ? [] : [finalTarget])],
       });
     }
-
-    if (!session) return msg.reply("Ketik .tictactoe atau .tictactoe @tag untuk mulai.");
 
     if (msg.args[0] === "nyerah") {
       if (msg.sender !== session.playerX && msg.sender !== session.playerO) return;
