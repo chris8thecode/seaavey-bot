@@ -12,20 +12,20 @@ export const commandsRoutes = new Elysia({ prefix: "/api/commands" })
     }));
   })
   .patch("/:name", ({ params, body }) => {
-    const cmd = commands.get(params.name);
+    const cmd = commands.get(params.name.toLowerCase());
     if (!cmd) return { error: "Command not found" };
     const data = body as { enabled?: boolean };
     if (data.enabled !== undefined) cmd.enabled = data.enabled;
     return { name: cmd.name, category: cmd.category, enabled: cmd.enabled };
   })
   .post("/:name/enable", ({ params }) => {
-    const cmd = commands.get(params.name);
+    const cmd = commands.get(params.name.toLowerCase());
     if (!cmd) return { error: "Command not found" };
     cmd.enabled = true;
     return { name: cmd.name, enabled: true };
   })
   .post("/:name/disable", ({ params }) => {
-    const cmd = commands.get(params.name);
+    const cmd = commands.get(params.name.toLowerCase());
     if (!cmd) return { error: "Command not found" };
     cmd.enabled = false;
     return { name: cmd.name, enabled: false };

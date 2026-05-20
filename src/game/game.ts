@@ -3,9 +3,11 @@ import { checkCakLontong } from "../commands/game/caklontong";
 import { checkFamily100 } from "../commands/game/family100";
 import { checkMathAnswer } from "../commands/game/math";
 import { checkSiapakahAku } from "../commands/game/siapakahaku";
+import { checkTebakAnime } from "../commands/game/tebakanime";
 import { checkTebakBendera } from "../commands/game/tebakbendera";
 import { checkTebakGambar } from "../commands/game/tebakgambar";
 import { checkTebakKata } from "../commands/game/tebakkata";
+import { checkTebakMemberJKT48 } from "../commands/game/tebakmemberjkt48";
 import { checkTekaTeki } from "../commands/game/tekateki";
 import { checkTrivia } from "../commands/game/trivia";
 
@@ -19,6 +21,8 @@ export function checkGameAnswer(jid: string, text: string, sender: string): stri
     checkTrivia(jid, input, sender) ||
     checkTebakBendera(jid, input, sender) ||
     checkTebakGambar(jid, input, sender) ||
+    checkTebakAnime(jid, input, sender) ||
+    checkTebakMemberJKT48(jid, input, sender) ||
     checkFamily100(jid, input, sender) ||
     checkAsahOtak(jid, input, sender) ||
     checkSiapakahAku(jid, input, sender) ||

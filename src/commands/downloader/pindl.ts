@@ -3,6 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "Pinterest DL",
+  alias: ["pindl", "pinterestdl"],
   description: "Download media dari Pinterest",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

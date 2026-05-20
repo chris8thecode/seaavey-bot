@@ -191,7 +191,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
     if (isBanned(parse.sender)) continue;
     if (parse.isGroup && getGroup(parse.jid).mute && !parse.isAdmin) continue;
 
-    const cmd = commands.get(cmdName);
+    const cmd = commands.get(cmdName.toLowerCase());
     if (cmd) {
       addHit(parse.sender);
       const user = getUser(parse.sender);
