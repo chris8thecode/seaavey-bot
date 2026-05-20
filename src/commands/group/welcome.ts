@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "welcome",
+  name: "Welcome",
   description: "Toggle welcome message on/off",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

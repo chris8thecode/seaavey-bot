@@ -13,7 +13,7 @@ const couriers: Record<string, string> = {
 };
 
 export default defineCommand({
-  name: "resi",
+  name: "Resi",
   description: "Cek resi paket. Contoh: .resi jne JT1234567890",
   handler: async (_sock, msg) => {
     const courier = msg.args[0]?.toLowerCase();

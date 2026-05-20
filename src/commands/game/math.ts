@@ -5,7 +5,7 @@ import { getRandomItem, getRandomNumber } from "@/utils/helper";
 const sessions = new Map<string, { answer: number; timeout: Timer; sender?: string }>();
 
 export default defineCommand({
-  name: "math",
+  name: "Math",
   description: "Soal matematika cepat",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

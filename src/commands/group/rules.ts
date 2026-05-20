@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "rules",
+  name: "Rules",
   description: "Lihat/set aturan grup. .rules set <teks> untuk mengatur.",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

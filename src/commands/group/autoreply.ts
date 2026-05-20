@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { addAutoReply, getAutoReplies, removeAutoReply } from "@/infra/database";
 
 export default defineCommand({
-  name: "autoreply",
+  name: "Auto Reply",
+  alias: ["ar"],
   description: "Kelola auto-reply grup. Sub: add, del, list",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

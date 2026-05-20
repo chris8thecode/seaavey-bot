@@ -4,7 +4,7 @@ import { formatTime } from "@/utils/helper";
 const startTime = Date.now();
 
 export default defineCommand({
-  name: "runtime",
+  name: "Runtime",
   description: "Lihat uptime bot",
   handler: async (_sock, msg) => {
     const ms = Date.now() - startTime;

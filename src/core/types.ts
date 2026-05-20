@@ -3,6 +3,8 @@ import type { ParsedMessage } from "@/utils/helper";
 
 export interface Command {
   name: string;
+  command?: string;
+  alias?: string[];
   category: string;
   description?: string;
   enabled?: boolean;

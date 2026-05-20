@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 import { toMp3 } from "@/utils/convert";
 
 export default defineCommand({
-  name: "tomp3",
+  name: "To MP3",
   description: "Convert video/audio to MP3",
   handler: async (_sock, msg) => {
     const raw = msg.msg;

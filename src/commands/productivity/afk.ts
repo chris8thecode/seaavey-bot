@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { setAfk } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "afk",
+  name: "AFK",
   description: "Set status AFK",
   handler: async (_sock, msg) => {
     const reason = msg.args.join(" ") || "Tidak ada alasan";

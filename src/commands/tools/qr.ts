@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "qr",
+  name: "QR",
   description: "Buat QR code dari teks/URL. Contoh: .qr https://google.com",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

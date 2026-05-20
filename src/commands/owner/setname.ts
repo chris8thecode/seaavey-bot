@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "setname",
+  name: "Set Name",
   description: "Set bot display name (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

@@ -30,7 +30,7 @@ const questions = [
 const sessions = new Map<string, { answer: number; timeout: Timer; sender?: string }>();
 
 export default defineCommand({
-  name: "quiz",
+  name: "Quiz",
   description: "Quiz pilihan ganda",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) {

@@ -5,7 +5,8 @@ import { getRandomNumber } from "@/utils/helper";
 const sessions = new Map<string, { answer: number; attempts: number; timeout: Timer }>();
 
 export default defineCommand({
-  name: "tebakangka",
+  name: "Tebak Angka",
+  alias: ["tba"],
   description: "Tebak angka 1-100 (ada hint higher/lower)",
   handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;

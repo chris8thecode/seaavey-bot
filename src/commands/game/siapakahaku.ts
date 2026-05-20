@@ -22,7 +22,8 @@ try {
 }
 
 export default defineCommand({
-  name: "siapakahaku",
+  name: "Siapakah Aku",
+  alias: ["sah", "siapa"],
   description: "Game siapakah aku (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     const jid = msg.jid;

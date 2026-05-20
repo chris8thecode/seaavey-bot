@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { api } from "@/infra/api";
 
 export default defineCommand({
-  name: "mediafire",
+  name: "MediaFire",
+  alias: ["mf"],
   description: "Download file dari Mediafire",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

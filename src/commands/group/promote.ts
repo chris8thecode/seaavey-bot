@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "promote",
+  name: "Promote",
   description: "Jadikan member sebagai admin",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

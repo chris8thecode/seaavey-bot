@@ -13,7 +13,7 @@ const categories = [
 ];
 
 export default defineCommand({
-  name: "rate",
+  name: "Rate",
   description: "Rate seseorang secara random",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.quoted || msg.sender;

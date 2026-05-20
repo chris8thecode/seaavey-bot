@@ -28,7 +28,8 @@ const sessions = new Map<
 >();
 
 export default defineCommand({
-  name: "family100",
+  name: "Family 100",
+  alias: ["f100"],
   description: "Main game family 100 bareng di grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) {

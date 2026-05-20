@@ -2,7 +2,7 @@ import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "owner",
+  name: "Owner",
   description: "Info owner bot",
   handler: async (sock, msg) => {
     await sock.sendMessage(msg.jid, {

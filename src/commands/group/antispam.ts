@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "antispam",
+  name: "Anti Spam",
   description: "Toggle antispam on/off",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

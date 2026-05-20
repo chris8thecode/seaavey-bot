@@ -21,15 +21,16 @@ const categoryIcons: Record<string, string> = {
 };
 
 export default defineCommand({
-  name: "menu",
+  name: "Menu",
   description: "Tampilkan daftar command",
   handler: async (sock, msg) => {
     const categories = new Map<string, { title: string; id: string; description: string }[]>();
     for (const cmd of commands.values()) {
       const list = categories.get(cmd.category) || [];
+      const trigger = cmd.command ?? cmd.name;
       list.push({
-        title: `${config.prefix}${cmd.name}`,
-        id: `${config.prefix}${cmd.name}`,
+        title: cmd.name,
+        id: `${config.prefix}${trigger}`,
         description: cmd.description || "No description",
       });
       categories.set(cmd.category, list);

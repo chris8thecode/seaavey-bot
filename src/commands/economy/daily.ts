@@ -1,8 +1,9 @@
 import { defineCommand } from "@/core/types";
 import { addWallet, getEconomy, setLastDaily } from "@/infra/database";
 import { getRandomNumber } from "@/utils/helper";
+
 export default defineCommand({
-  name: "daily",
+  name: "Daily",
   description: "Klaim hadiah harian",
   handler: async (_sock, msg) => {
     const eco = getEconomy(msg.sender);

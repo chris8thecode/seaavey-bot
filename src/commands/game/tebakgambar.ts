@@ -20,7 +20,8 @@ try {
 }
 
 export default defineCommand({
-  name: "tebakgambar",
+  name: "Tebak Gambar",
+  alias: ["tbg"],
   description: "Tebak gambar yang dikirim bot",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 import { imageToSticker, videoToSticker } from "@/utils/convert";
 
 export default defineCommand({
-  name: "sticker",
+  name: "Sticker",
   description: "Convert image/video to sticker",
   handler: async (_sock, msg) => {
     const raw = msg.msg;

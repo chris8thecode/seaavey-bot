@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "ping",
+  name: "Ping",
   description: "Cek kecepatan respon bot",
   handler: async (_sock, msg) => {
     const start = Date.now();

@@ -2,7 +2,8 @@ import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "setprefix",
+  name: "Set Prefix",
+  alias: ["prefix"],
   description: "Change bot prefix (owner only)",
   handler: async (_sock, msg) => {
     if (!msg.isOwner) return;

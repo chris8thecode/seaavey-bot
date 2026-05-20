@@ -33,7 +33,7 @@ function render(word: string, guessed: Set<string>): string {
 }
 
 export default defineCommand({
-  name: "hangman",
+  name: "Hangman",
   description: "Tebak huruf satu-satu",
   handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;

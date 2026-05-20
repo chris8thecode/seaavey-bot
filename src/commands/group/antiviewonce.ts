@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { getGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "antiviewonce",
+  name: "Anti View Once",
+  alias: ["avo"],
   description: "Toggle anti-viewonce on/off. Pesan view once akan di-forward ulang.",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

@@ -4,7 +4,7 @@ import { getNumber } from "@/utils/helper";
 const sessions = new Map<string, { title: string; members: Set<string>; creator: string }>();
 
 export default defineCommand({
-  name: "absen",
+  name: "Absen",
   description: "Buat/tutup sesi absen. .absen buka <judul> / .absen hadir / .absen tutup",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { getGroup, getWarns } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "warnlist",
+  name: "Warn List",
+  alias: ["wl", "warns"],
   description: "Lihat daftar warn member",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

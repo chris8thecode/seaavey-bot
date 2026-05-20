@@ -6,7 +6,7 @@ import { defineCommand } from "@/core/types";
 const FILE_PATH = join(import.meta.dir, "..", "..", "assets", "toxic.txt");
 
 export default defineCommand({
-  name: "toxic",
+  name: "Toxic",
   description: "Kelola database kata toxic",
   handler: async (_sock, msg) => {
     const action = msg.args[0];

@@ -28,7 +28,7 @@ const dares = [
 ];
 
 export default defineCommand({
-  name: "tod",
+  name: "Truth or Dare",
   description: "Truth or Dare random",
   handler: async (_sock, msg) => {
     const type = msg.args[0]?.toLowerCase();

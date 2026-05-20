@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { addToxicWord, getGroup, getToxicWords, removeToxicWord, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "antitoxic",
+  name: "Anti Toxic",
+  alias: ["at"],
   description: "Kelola antitoxic & word filter. Sub: on/off, add, del, list",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

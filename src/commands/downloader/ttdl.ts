@@ -10,7 +10,7 @@ interface TikTokData {
 }
 
 export default defineCommand({
-  name: "ttdl",
+  name: "TikTok DL",
   description: "Download TikTok video/images",
   handler: async (_sock, msg) => {
     const url = msg.body.split(" ").slice(1).join(" ").trim();

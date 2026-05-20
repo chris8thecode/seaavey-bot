@@ -7,7 +7,7 @@ interface FBData {
 }
 
 export default defineCommand({
-  name: "fbdl",
+  name: "Facebook DL",
   description: "Download video dari Facebook",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

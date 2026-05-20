@@ -5,6 +5,7 @@ export const commandsRoutes = new Elysia({ prefix: "/api/commands" })
   .get("/", () => {
     return Array.from(commands.values()).map((cmd) => ({
       name: cmd.name,
+      command: cmd.command ?? cmd.name,
       category: cmd.category || "general",
       description: cmd.description || "",
       enabled: cmd.enabled !== false,

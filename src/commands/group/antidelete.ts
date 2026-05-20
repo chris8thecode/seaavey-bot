@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "antidelete",
+  name: "Anti Delete",
   description: "Toggle antidelete on/off",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

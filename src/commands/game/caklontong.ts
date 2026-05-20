@@ -17,7 +17,8 @@ try {
 }
 
 export default defineCommand({
-  name: "caklontong",
+  name: "Cak Lontong",
+  alias: ["cl"],
   description: "Game TTS Cak Lontong (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {

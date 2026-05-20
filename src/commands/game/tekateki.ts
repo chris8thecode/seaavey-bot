@@ -17,7 +17,8 @@ try {
 }
 
 export default defineCommand({
-  name: "tekateki",
+  name: "Teka Teki",
+  alias: ["tt"],
   description: "Game teka-teki",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Selesaikan soal sebelumnya!");

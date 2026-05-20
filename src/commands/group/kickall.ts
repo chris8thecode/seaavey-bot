@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 const pending = new Set<string>();
 
 export default defineCommand({
-  name: "kickall",
+  name: "Kick All",
   description: "Kick semua member kecuali admin (dengan konfirmasi)",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

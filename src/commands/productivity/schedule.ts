@@ -11,7 +11,7 @@ function parseTime(input: string): number | null {
 }
 
 export default defineCommand({
-  name: "schedule",
+  name: "Schedule",
   description: "Jadwal pesan otomatis. Sub: add, list, del",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

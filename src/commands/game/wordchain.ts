@@ -4,7 +4,8 @@ import { addXp } from "@/infra/database";
 const sessions = new Map<string, { lastWord: string; used: Set<string>; timeout: Timer }>();
 
 export default defineCommand({
-  name: "wordchain",
+  name: "Word Chain",
+  alias: ["wc"],
   description: "Sambung kata (huruf terakhir = huruf pertama)",
   handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);

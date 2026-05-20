@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "join",
+  name: "Join",
   description: "Join group via invite link (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

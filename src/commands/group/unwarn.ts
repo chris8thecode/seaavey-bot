@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { removeWarns } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "unwarn",
+  name: "Unwarn",
   description: "Hapus semua warn member",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

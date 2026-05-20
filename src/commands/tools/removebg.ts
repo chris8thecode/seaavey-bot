@@ -3,7 +3,8 @@ import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "removebg",
+  name: "Remove BG",
+  alias: ["rbg"],
   description: "Hapus background gambar. Reply/kirim gambar.",
   handler: async (_sock, msg) => {
     const quotedMsg = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;

@@ -2,7 +2,7 @@ import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "menfess",
+  name: "Menfess",
   description: "Kirim pesan rahasia ke nomor WA via bot (anonim). Gunakan di private chat.",
   handler: async (sock, msg) => {
     if (msg.isGroup)

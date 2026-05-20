@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 import { getUser } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "level",
+  name: "Level",
   description: "Cek level dan XP kamu",
   handler: async (sock, msg) => {
     const user = getUser(msg.sender);

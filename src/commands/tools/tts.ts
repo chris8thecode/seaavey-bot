@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "tts",
+  name: "TTS",
   description: "Text to Speech. Contoh: .tts halo dunia",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

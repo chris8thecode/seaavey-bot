@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 import { sendInteractive } from "@/handlers/interactive";
 
 export default defineCommand({
-  name: "button",
+  name: "Button",
   description: "",
   handler: async (sock, msg) => {
     await sendInteractive(sock, msg.jid, {

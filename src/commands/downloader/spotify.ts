@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { api } from "@/infra/api";
 
 export default defineCommand({
-  name: "spotify",
+  name: "Spotify",
   description: "Download lagu dari Spotify",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

@@ -2,7 +2,8 @@ import util from "node:util";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "=>",
+  name: "Eval Async",
+  command: "=>",
   description: "Eval async JavaScript code",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

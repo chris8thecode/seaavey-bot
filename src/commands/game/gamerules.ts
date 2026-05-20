@@ -4,7 +4,8 @@ import { defineCommand } from "@/core/types";
 const p = config.prefix;
 
 export default defineCommand({
-  name: "gamerules",
+  name: "Game Rules",
+  alias: ["grules"],
   description: "Daftar aturan main game + cara pakai",
   handler: async (_sock, msg) => {
     const text = [

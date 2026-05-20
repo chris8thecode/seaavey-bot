@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "leave",
+  name: "Leave",
   description: "Bot leave from current group (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

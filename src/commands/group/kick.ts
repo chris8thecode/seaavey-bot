@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "kick",
+  name: "Kick",
   description: "Kick member dari grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

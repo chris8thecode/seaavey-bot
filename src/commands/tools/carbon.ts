@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "carbon",
+  name: "Carbon",
   description: "Buat screenshot kode aesthetic. Contoh: .carbon console.log('hello')",
   handler: async (_sock, msg) => {
     const code = msg.args.join(" ");

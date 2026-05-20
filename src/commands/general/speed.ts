@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "speed",
+  name: "Speed",
   description: "Cek response time bot",
   handler: async (_sock, msg) => {
     const start = Date.now();

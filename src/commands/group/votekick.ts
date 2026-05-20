@@ -4,7 +4,8 @@ import { getNumber } from "@/utils/helper";
 const votes = new Map<string, { target: string; voters: Set<string>; timeout: Timer }>();
 
 export default defineCommand({
-  name: "votekick",
+  name: "Vote Kick",
+  alias: ["vk"],
   description: "Vote untuk kick member. Butuh 5 vote.",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

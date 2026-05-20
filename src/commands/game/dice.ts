@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "dice",
+  name: "Dice",
   description: "Tebak angka dadu (1-6)",
   handler: async (_sock, msg) => {
     const guess = Number(msg.args[0]);

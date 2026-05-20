@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { getEconomy, transferMoney } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "transfer",
+  name: "Transfer",
+  alias: ["tf"],
   description: "Transfer uang ke user lain",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.quoted;

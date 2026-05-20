@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "antinsfw",
+  name: "Anti NSFW",
+  alias: ["ansfw"],
   description: "Toggle anti-NSFW di group",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

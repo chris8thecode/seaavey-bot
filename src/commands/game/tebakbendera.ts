@@ -17,7 +17,8 @@ try {
 }
 
 export default defineCommand({
-  name: "tebakbendera",
+  name: "Tebak Bendera",
+  alias: ["tbb", "bendera"],
   description: "Tebak negara dari gambar bendera (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {

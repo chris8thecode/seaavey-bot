@@ -2,7 +2,7 @@ import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "report",
+  name: "Report",
   description: "Laporkan bug/saran ke owner. Contoh: .report bot error di command sticker",
   handler: async (sock, msg) => {
     const text = msg.args.join(" ");

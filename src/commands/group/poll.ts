@@ -3,7 +3,7 @@ import { type Button, sendInteractive } from "@/handlers/interactive";
 import { closePoll, createPoll, getPoll, votePoll } from "@/infra/database";
 
 export default defineCommand({
-  name: "poll",
+  name: "Poll",
   description: "Buat/vote/tutup polling. Format: .poll Pertanyaan? | Opsi1 | Opsi2",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

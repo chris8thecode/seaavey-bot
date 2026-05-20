@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { setGroup } from "@/infra/database";
 
 export default defineCommand({
-  name: "set",
+  name: "Set",
   description: "Set group settings (welcomeMsg, goodbyeMsg, warnMax)",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

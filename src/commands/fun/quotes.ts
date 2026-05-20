@@ -17,7 +17,7 @@ const quotes = [
 ];
 
 export default defineCommand({
-  name: "quotes",
+  name: "Quotes",
   description: "Quotes motivasi random",
   handler: async (_sock, msg) => {
     const q = getRandomItem(quotes);

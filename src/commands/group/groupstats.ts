@@ -2,7 +2,8 @@ import { defineCommand } from "@/core/types";
 import db from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
-  name: "groupstats",
+  name: "Group Stats",
+  alias: ["gstats"],
   description: "Statistik aktivitas group",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

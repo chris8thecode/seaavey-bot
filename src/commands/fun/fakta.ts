@@ -20,7 +20,7 @@ const fakta = [
 ];
 
 export default defineCommand({
-  name: "fakta",
+  name: "Fakta",
   description: "Fakta random yang menarik",
   handler: async (_sock, msg) => {
     const f = getRandomItem(fakta);

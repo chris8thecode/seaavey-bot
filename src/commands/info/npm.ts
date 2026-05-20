@@ -9,7 +9,7 @@ interface NpmPackage {
 }
 
 export default defineCommand({
-  name: "npm",
+  name: "NPM",
   description: "Info package NPM. Contoh: .npm express",
   handler: async (_sock, msg) => {
     const pkg = msg.args[0];

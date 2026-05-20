@@ -15,7 +15,13 @@ async function loadFile(path: string) {
   const cmd: Command = mod.default;
   if (cmd?.name) {
     cmd.category = category;
-    commands.set(cmd.name, cmd);
+    const trigger = cmd.command ?? cmd.name;
+    commands.set(trigger, cmd);
+    if (cmd.alias?.length) {
+      for (const a of cmd.alias) {
+        if (!commands.has(a)) commands.set(a, cmd);
+      }
+    }
     logger.info(`Loaded command: ${cmd.name} [${category}]`);
   }
 }

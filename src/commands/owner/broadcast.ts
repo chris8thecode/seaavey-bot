@@ -1,7 +1,8 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "broadcast",
+  name: "Broadcast",
+  alias: ["bc"],
   description: "Broadcast message to all groups (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

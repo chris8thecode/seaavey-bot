@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { isBanned, setBanned } from "@/infra/database";
 
 export default defineCommand({
-  name: "ban",
+  name: "Ban",
   description: "Ban/unban user (owner only)",
   handler: async (_sock, msg) => {
     if (!msg.isOwner) return;

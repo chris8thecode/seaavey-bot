@@ -1,7 +1,8 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "groupinfo",
+  name: "Group Info",
+  alias: ["ginfo"],
   description: "Lihat info grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

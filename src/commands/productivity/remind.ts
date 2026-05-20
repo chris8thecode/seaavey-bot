@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { addReminder } from "@/infra/database";
 
 export default defineCommand({
-  name: "remind",
+  name: "Remind",
   description: "Set pengingat. Contoh: .remind 30m Makan siang",
   handler: async (_sock, msg) => {
     const timeStr = msg.args[0];

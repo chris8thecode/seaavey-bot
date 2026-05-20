@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 import { getNumber, getRandomItem } from "@/utils/helper";
 export default defineCommand({
-  name: "siapayg",
+  name: "Siapa YG",
   description: "Random pilih member grup. Contoh: .siapayg paling ganteng",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

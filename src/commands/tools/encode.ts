@@ -1,7 +1,7 @@
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
-  name: "encode",
+  name: "Encode",
   description: "Encode teks ke Base64",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

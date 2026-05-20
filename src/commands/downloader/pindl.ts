@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { api } from "@/infra/api";
 
 export default defineCommand({
-  name: "pindl",
+  name: "Pinterest DL",
   description: "Download media dari Pinterest",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

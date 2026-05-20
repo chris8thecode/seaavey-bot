@@ -5,7 +5,7 @@ import { getRandomItem } from "@/utils/helper";
 const symbols = ["🍒", "🍋", "🍊", "🍇", "⭐", "💎"];
 
 export default defineCommand({
-  name: "slot",
+  name: "Slot",
   description: "Slot machine 🎰",
   handler: async (_sock, msg) => {
     const s1 = getRandomItem(symbols);

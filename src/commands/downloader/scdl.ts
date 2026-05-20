@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 import { api } from "@/infra/api";
 
 export default defineCommand({
-  name: "scdl",
+  name: "SoundCloud DL",
   description: "Download lagu dari SoundCloud",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

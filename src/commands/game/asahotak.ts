@@ -17,7 +17,8 @@ try {
 }
 
 export default defineCommand({
-  name: "asahotak",
+  name: "Asah Otak",
+  alias: ["ao"],
   description: "Game asah otak (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {
