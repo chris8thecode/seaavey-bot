@@ -28,7 +28,7 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
   })
   .get("/:jid", ({ params }) => {
     const g = db.query("SELECT * FROM groups WHERE jid = ?").get(params.jid) as Group | null;
-    if (!g) return null;
+    if (!g) return { error: "Group not found" };
     return {
       jid: g.jid,
       name: g.name || g.jid.split("@")[0],
@@ -52,7 +52,20 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
     };
   })
   .patch("/:jid", ({ params, body }) => {
-    const data = body as Record<string, unknown>;
+    const data = body as {
+      name?: string;
+      status?: string;
+      welcome?: boolean;
+      goodbye?: boolean;
+      antiSpam?: boolean;
+      antilink?: boolean;
+      antidelete?: boolean;
+      antitoxic?: boolean;
+      antinsfw?: boolean;
+      antiviewonce?: boolean;
+      autosticker?: boolean;
+      onlyAdmin?: boolean;
+    };
     if (data.name !== undefined) setGroup(params.jid, "name", data.name);
     if (data.status !== undefined) setGroup(params.jid, "mute", data.status === "muted" ? 1 : 0);
     if (data.welcome !== undefined) setGroup(params.jid, "welcome", data.welcome ? 1 : 0);
@@ -67,7 +80,8 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
     if (data.autosticker !== undefined)
       setGroup(params.jid, "autosticker", data.autosticker ? 1 : 0);
     if (data.onlyAdmin !== undefined) setGroup(params.jid, "onlyAdmin", data.onlyAdmin ? 1 : 0);
-    const g = db.query("SELECT * FROM groups WHERE jid = ?").get(params.jid) as Group;
+    const g = db.query("SELECT * FROM groups WHERE jid = ?").get(params.jid) as Group | null;
+    if (!g) return { error: "Group not found" };
     return {
       jid: g.jid,
       name: g.name || g.jid.split("@")[0],

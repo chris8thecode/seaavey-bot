@@ -13,7 +13,7 @@ export const commandsRoutes = new Elysia({ prefix: "/api/commands" })
   .patch("/:name", ({ params, body }) => {
     const cmd = commands.get(params.name);
     if (!cmd) return { error: "Command not found" };
-    const data = body as Record<string, unknown>;
+    const data = body as { enabled?: boolean };
     if (data.enabled !== undefined) cmd.enabled = data.enabled;
     return { name: cmd.name, category: cmd.category, enabled: cmd.enabled };
   })

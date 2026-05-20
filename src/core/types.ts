@@ -5,6 +5,7 @@ export interface Command {
   name: string;
   category: string;
   description?: string;
+  enabled?: boolean;
   handler: (sock: WASocket, msg: ParsedMessage) => Promise<void>;
 }
 

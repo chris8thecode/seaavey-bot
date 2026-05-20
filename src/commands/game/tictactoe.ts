@@ -80,7 +80,7 @@ export default defineCommand({
         timeout,
       });
 
-      return msg.reply({
+      return msg.send({
         text: `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${target.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
         mentions: [msg.sender, ...(isBot ? [] : [target])],
       });
@@ -96,7 +96,7 @@ export default defineCommand({
     }
 
     if (msg.sender !== session.turn) {
-      return msg.reply({
+      return msg.send({
         text: `❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`,
         mentions: [session.turn],
       });
@@ -120,7 +120,7 @@ export default defineCommand({
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
       addXp(msg.sender, 20);
-      return msg.reply({
+      return msg.send({
         text: `${renderBoard(session.board)}\n\n🎉 @${msg.sender.split("@")[0]} Menang! (+20 XP)`,
         mentions: [msg.sender],
       });
@@ -154,7 +154,7 @@ export default defineCommand({
     }
 
     session.timeout.refresh();
-    await msg.reply({
+    await msg.send({
       text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
       mentions: [session.turn],
     });
