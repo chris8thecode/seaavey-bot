@@ -3,7 +3,7 @@ import { getEconomy } from "@/infra/database";
 
 export default defineCommand({
   name: "Wallet",
-  alias: ["bal", "saldo"],
+  alias: ["bal", "saldo", "wallet"],
   description: "Cek saldo kamu",
   handler: async (_sock, msg) => {
     const eco = getEconomy(msg.sender);

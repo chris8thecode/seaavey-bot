@@ -7,6 +7,7 @@ const emojis = { batu: "🪨", gunting: "✂️", kertas: "📄" };
 
 export default defineCommand({
   name: "Suit",
+  alias: ["suit"],
   description: "Batu gunting kertas lawan bot",
   handler: async (_sock, msg) => {
     const input = msg.args[0]?.toLowerCase();

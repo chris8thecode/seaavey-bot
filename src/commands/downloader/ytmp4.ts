@@ -8,6 +8,7 @@ interface YTData {
 
 export default defineCommand({
   name: "YT MP4",
+  alias: ["ytmp4"],
   description: "Download video dari YouTube",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

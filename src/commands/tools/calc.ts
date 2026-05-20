@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Calc",
+  alias: ["calc"],
   description: "Kalkulator. Contoh: .calc 2+2*5",
   handler: async (_sock, msg) => {
     const expr = msg.args.join(" ");

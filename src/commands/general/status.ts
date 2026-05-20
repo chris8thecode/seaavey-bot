@@ -6,6 +6,7 @@ const startTime = Date.now();
 
 export default defineCommand({
   name: "Status",
+  alias: ["sts", "status"],
   description: "Cek status server dan bot",
   handler: async (_sock, msg) => {
     const uptime = formatTime((Date.now() - startTime) / 1000);

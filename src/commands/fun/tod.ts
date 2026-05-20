@@ -29,6 +29,7 @@ const dares = [
 
 export default defineCommand({
   name: "Truth or Dare",
+  alias: ["truthordare"],
   description: "Truth or Dare random",
   handler: async (_sock, msg) => {
     const type = msg.args[0]?.toLowerCase();

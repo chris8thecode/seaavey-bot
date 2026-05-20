@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Set Desc",
+  alias: ["sd", "setdesc"],
   description: "Ubah deskripsi grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

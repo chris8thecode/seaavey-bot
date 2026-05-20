@@ -7,6 +7,7 @@ const FILE_PATH = join(import.meta.dir, "..", "..", "assets", "toxic.txt");
 
 export default defineCommand({
   name: "Toxic",
+  alias: ["txc", "toxic"],
   description: "Kelola database kata toxic",
   handler: async (_sock, msg) => {
     const action = msg.args[0];

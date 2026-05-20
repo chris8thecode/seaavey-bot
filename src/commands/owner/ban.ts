@@ -3,6 +3,7 @@ import { isBanned, setBanned } from "@/infra/database";
 
 export default defineCommand({
   name: "Ban",
+  alias: ["ban"],
   description: "Ban/unban user (owner only)",
   handler: async (_sock, msg) => {
     if (!msg.isOwner) return;

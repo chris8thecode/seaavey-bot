@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Translate",
-  alias: ["tr"],
+  alias: ["tr", "translate"],
   description: "Terjemahkan teks. Contoh: .translate en Halo dunia",
   handler: async (_sock, msg) => {
     const lang = msg.args[0];

@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Link",
+  alias: ["link"],
   description: "Dapatkan link invite grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

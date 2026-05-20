@@ -3,6 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "SS Web",
+  alias: ["ssweb"],
   description: "Screenshot website. Contoh: .ssweb https://google.com",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

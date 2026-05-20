@@ -21,6 +21,7 @@ const fakta = [
 
 export default defineCommand({
   name: "Fakta",
+  alias: ["fakta"],
   description: "Fakta random yang menarik",
   handler: async (_sock, msg) => {
     const f = getRandomItem(fakta);

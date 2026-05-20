@@ -9,6 +9,7 @@ const SHOP_ITEMS = [
 
 export default defineCommand({
   name: "Shop",
+  alias: ["shop"],
   description: "Lihat toko item",
   handler: async (_sock, msg) => {
     const buyId = msg.args[0];

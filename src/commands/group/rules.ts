@@ -3,6 +3,7 @@ import { getGroup, setGroup } from "@/infra/database";
 
 export default defineCommand({
   name: "Rules",
+  alias: ["rules"],
   description: "Lihat/set aturan grup. .rules set <teks> untuk mengatur.",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

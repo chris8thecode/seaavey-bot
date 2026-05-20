@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Anonymous",
-  alias: ["anon"],
+  alias: ["anon", "anonymous"],
   description: "Kirim pesan anonim ke member grup. Format: .anonymous @tag pesan",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

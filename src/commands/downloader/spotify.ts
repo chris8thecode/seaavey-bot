@@ -3,6 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "Spotify",
+  alias: ["spot", "spotify"],
   description: "Download lagu dari Spotify",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

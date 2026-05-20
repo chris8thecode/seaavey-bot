@@ -9,7 +9,7 @@ interface SCResult {
 
 export default defineCommand({
   name: "SoundCloud",
-  alias: ["sc"],
+  alias: ["sc", "soundcloud"],
   description: "Cari lagu di SoundCloud. Contoh: .soundcloud lofi beats",
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");

@@ -14,7 +14,7 @@ const sessions = new Map<string, { answer: string; timeout: Timer; sender?: stri
 
 export default defineCommand({
   name: "Tebak Anime",
-  alias: ["tba"],
+  alias: ["tba", "tebakanime"],
   description: "Tebak judul anime dari gambar (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

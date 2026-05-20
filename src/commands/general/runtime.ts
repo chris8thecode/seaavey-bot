@@ -5,6 +5,7 @@ const startTime = Date.now();
 
 export default defineCommand({
   name: "Runtime",
+  alias: ["run", "runtime"],
   description: "Lihat uptime bot",
   handler: async (_sock, msg) => {
     const ms = Date.now() - startTime;

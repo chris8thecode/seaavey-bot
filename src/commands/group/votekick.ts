@@ -5,7 +5,7 @@ const votes = new Map<string, { target: string; voters: Set<string>; timeout: Ti
 
 export default defineCommand({
   name: "Vote Kick",
-  alias: ["vk"],
+  alias: ["vk", "votekick"],
   description: "Vote untuk kick member. Butuh 5 vote.",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

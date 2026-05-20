@@ -41,7 +41,7 @@ function shuffle(word: string): string {
 
 export default defineCommand({
   name: "Tebak Kata",
-  alias: ["tbk"],
+  alias: ["tbk", "tebakkata"],
   description: "Tebak kata dari huruf acak",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

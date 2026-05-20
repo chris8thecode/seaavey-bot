@@ -10,7 +10,7 @@ const localData = loadGameData<{ img: string; jawaban: string; deskripsi: string
 
 export default defineCommand({
   name: "Tebak Gambar",
-  alias: ["tbg"],
+  alias: ["tbg", "tebakgambar"],
   description: "Tebak gambar yang dikirim bot",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

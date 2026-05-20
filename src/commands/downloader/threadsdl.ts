@@ -3,7 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "Threads DL",
-  alias: ["tdl"],
+  alias: ["tdl", "threadsdl"],
   description: "Download media dari Threads",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

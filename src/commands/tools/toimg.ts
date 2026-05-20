@@ -4,6 +4,7 @@ import { stickerToImage } from "@/utils/convert";
 
 export default defineCommand({
   name: "To Image",
+  alias: ["toimage"],
   description: "Convert sticker to image",
   handler: async (_sock, msg) => {
     const raw = msg.msg;

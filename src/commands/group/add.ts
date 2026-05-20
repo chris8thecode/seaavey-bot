@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Add",
+  alias: ["add"],
   description: "Tambah member ke grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

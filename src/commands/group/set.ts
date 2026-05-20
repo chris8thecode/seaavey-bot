@@ -3,6 +3,7 @@ import { setGroup } from "@/infra/database";
 
 export default defineCommand({
   name: "Set",
+  alias: ["set"],
   description: "Set group settings (welcomeMsg, goodbyeMsg, warnMax)",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

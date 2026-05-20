@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Revoke",
+  alias: ["rev", "revoke"],
   description: "Reset link invite grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

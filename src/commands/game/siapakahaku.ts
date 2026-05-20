@@ -11,7 +11,7 @@ const localData = loadGameData<{ soal: string; jawaban: string }>("siapakahaku.j
 
 export default defineCommand({
   name: "Siapakah Aku",
-  alias: ["sah", "siapa"],
+  alias: ["sah", "siapa", "siapakahaku"],
   description: "Game siapakah aku (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     const jid = msg.jid;

@@ -58,7 +58,7 @@ function botMove(board: string[]): number {
 
 export default defineCommand({
   name: "Tic Tac Toe",
-  alias: ["ttt", "tic"],
+  alias: ["ttt", "tic", "tictactoe"],
   description: "Main tic-tac-toe lawan bot atau member lain",
   handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);

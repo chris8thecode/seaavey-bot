@@ -3,7 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "MediaFire",
-  alias: ["mf"],
+  alias: ["mf", "mediafire"],
   description: "Download file dari Mediafire",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

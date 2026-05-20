@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Tag All",
+  alias: ["tag", "tagall"],
   description: "Tag semua member grup",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

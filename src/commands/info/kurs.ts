@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Kurs",
+  alias: ["kurs"],
   description: "Cek kurs mata uang terhadap IDR",
   handler: async (_sock, msg) => {
     const currency = (msg.args[0] || "USD").toUpperCase();

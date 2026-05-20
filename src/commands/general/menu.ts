@@ -22,6 +22,7 @@ const categoryIcons: Record<string, string> = {
 
 export default defineCommand({
   name: "Menu",
+  alias: ["menu"],
   description: "Tampilkan daftar command",
   handler: async (sock, msg) => {
     const categories = new Map<string, { title: string; id: string; description: string }[]>();

@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "List Group",
-  alias: ["lg", "groups"],
+  alias: ["lg", "groups", "listgroup"],
   description: "List all groups bot joined (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

@@ -9,6 +9,7 @@ interface GeniusResult {
 
 export default defineCommand({
   name: "Lirik",
+  alias: ["lirik"],
   description: "Cari lirik lagu. Contoh: .lirik Bohemian Rhapsody",
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");

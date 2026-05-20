@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Meme",
+  alias: ["meme"],
   description: "Generate meme. Contoh: .meme text atas | text bawah",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

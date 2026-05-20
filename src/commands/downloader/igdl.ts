@@ -8,6 +8,7 @@ interface IGData {
 
 export default defineCommand({
   name: "Instagram DL",
+  alias: ["instagramdl"],
   description: "Download media dari Instagram",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

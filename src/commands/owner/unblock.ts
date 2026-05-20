@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Unblock",
+  alias: ["ublk", "unblock"],
   description: "Unblock a user (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

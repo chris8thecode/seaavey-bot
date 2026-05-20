@@ -66,6 +66,7 @@ const zodiak: Record<string, string[]> = {
 
 export default defineCommand({
   name: "Zodiak",
+  alias: ["zod", "zodiak"],
   description: "Ramalan zodiak. Contoh: .zodiak aries",
   handler: async (_sock, msg) => {
     const sign = msg.args[0]?.toLowerCase();

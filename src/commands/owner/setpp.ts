@@ -3,6 +3,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Set PP",
+  alias: ["setpp"],
   description: "Set bot profile picture (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

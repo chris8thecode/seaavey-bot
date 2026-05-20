@@ -5,7 +5,7 @@ const p = config.prefix;
 
 export default defineCommand({
   name: "Game Rules",
-  alias: ["grules"],
+  alias: ["grules", "gamerules"],
   description: "Daftar aturan main game + cara pakai",
   handler: async (_sock, msg) => {
     const text = [

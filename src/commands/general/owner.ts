@@ -3,6 +3,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Owner",
+  alias: ["own", "owner"],
   description: "Info owner bot",
   handler: async (sock, msg) => {
     await sock.sendMessage(msg.jid, {

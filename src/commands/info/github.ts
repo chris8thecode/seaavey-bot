@@ -13,6 +13,7 @@ interface GitHubUser {
 
 export default defineCommand({
   name: "GitHub",
+  alias: ["gh", "github"],
   description: "Info profil GitHub. Contoh: .github seaavey",
   handler: async (_sock, msg) => {
     const username = msg.args[0];

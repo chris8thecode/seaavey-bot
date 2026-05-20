@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Emoji Mix",
+  alias: ["emix", "emojimix"],
   description: "Gabungkan 2 emoji. Contoh: .emojimix 😀+🔥",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

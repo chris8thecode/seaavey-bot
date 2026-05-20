@@ -8,7 +8,7 @@ const localData = loadGameData<{ soal: string; jawaban: string }>("asahotak.json
 
 export default defineCommand({
   name: "Asah Otak",
-  alias: ["ao"],
+  alias: ["ao", "asahotak"],
   description: "Game asah otak (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {

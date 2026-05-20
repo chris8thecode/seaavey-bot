@@ -3,7 +3,7 @@ import { addToxicWord, getGroup, getToxicWords, removeToxicWord, setGroup } from
 
 export default defineCommand({
   name: "Anti Toxic",
-  alias: ["at"],
+  alias: ["at", "antitoxic"],
   description: "Kelola antitoxic & word filter. Sub: on/off, add, del, list",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

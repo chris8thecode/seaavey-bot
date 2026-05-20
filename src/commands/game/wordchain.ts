@@ -5,7 +5,7 @@ const sessions = new Map<string, { lastWord: string; used: Set<string>; timeout:
 
 export default defineCommand({
   name: "Word Chain",
-  alias: ["wc"],
+  alias: ["wc", "wordchain"],
   description: "Sambung kata (huruf terakhir = huruf pertama)",
   handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);

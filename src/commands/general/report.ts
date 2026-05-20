@@ -3,6 +3,7 @@ import { defineCommand } from "@/core/types";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Report",
+  alias: ["rpt", "report"],
   description: "Laporkan bug/saran ke owner. Contoh: .report bot error di command sticker",
   handler: async (sock, msg) => {
     const text = msg.args.join(" ");

@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 import { getNumber, getRandomNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Ship",
+  alias: ["ship"],
   description: "Cek kecocokan 2 orang. Tag 2 user.",
   handler: async (_sock, msg) => {
     const a = msg.mentioned[0];

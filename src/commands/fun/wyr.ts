@@ -18,6 +18,7 @@ const questions = [
 
 export default defineCommand({
   name: "Would You Rather",
+  alias: ["wouldyourather"],
   description: "Would You Rather — pilih salah satu!",
   handler: async (_sock, msg) => {
     const q = getRandomItem(questions) as (typeof questions)[number];

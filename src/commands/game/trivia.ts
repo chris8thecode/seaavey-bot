@@ -24,6 +24,7 @@ const sessions = new Map<string, { answer: string; timeout: Timer; sender?: stri
 
 export default defineCommand({
   name: "Trivia",
+  alias: ["trivia"],
   description: "Quiz pengetahuan umum",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

@@ -13,6 +13,7 @@ db.run(`
 
 export default defineCommand({
   name: "Todo",
+  alias: ["todo"],
   description: "Personal todo list. .todo add/list/done/del",
   handler: async (_sock, msg) => {
     const sub = msg.args[0]?.toLowerCase();

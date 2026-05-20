@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Decode",
+  alias: ["dec", "decode"],
   description: "Decode Base64 ke teks",
   handler: async (_sock, msg) => {
     const text = msg.args.join(" ");

@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Short",
+  alias: ["short"],
   description: "Perpendek URL. Contoh: .short https://google.com",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

@@ -9,7 +9,7 @@ interface PinResult {
 
 export default defineCommand({
   name: "Pinterest",
-  alias: ["pin"],
+  alias: ["pin", "pinterest"],
   description: "Cari gambar di Pinterest. Contoh: .pinterest anime wallpaper",
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");

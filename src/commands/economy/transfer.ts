@@ -3,7 +3,7 @@ import { getEconomy, transferMoney } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Transfer",
-  alias: ["tf"],
+  alias: ["tf", "transfer"],
   description: "Transfer uang ke user lain",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.quoted;

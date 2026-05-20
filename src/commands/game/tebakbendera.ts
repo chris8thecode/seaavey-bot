@@ -8,7 +8,7 @@ const localData = loadGameData<{ flag: string; img: string; name: string }>("teb
 
 export default defineCommand({
   name: "Tebak Bendera",
-  alias: ["tbb", "bendera"],
+  alias: ["tbb", "bendera", "tebakbendera"],
   description: "Tebak negara dari gambar bendera (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {

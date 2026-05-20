@@ -3,6 +3,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "OCR",
+  alias: ["ocr"],
   description: "Extract teks dari gambar. Reply gambar dengan .ocr",
   handler: async (_sock, msg) => {
     const quotedMsg = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;

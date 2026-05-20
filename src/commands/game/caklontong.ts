@@ -10,7 +10,7 @@ const localData = loadGameData<{ soal: string; jawaban: string; deskripsi: strin
 
 export default defineCommand({
   name: "Cak Lontong",
-  alias: ["cl"],
+  alias: ["cl", "caklontong"],
   description: "Game TTS Cak Lontong (Ketik 'hint' untuk bantuan)",
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {

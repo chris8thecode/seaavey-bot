@@ -4,6 +4,7 @@ const pending = new Set<string>();
 
 export default defineCommand({
   name: "Kick All",
+  alias: ["ka", "kickall"],
   description: "Kick semua member kecuali admin (dengan konfirmasi)",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");

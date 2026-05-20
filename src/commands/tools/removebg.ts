@@ -4,7 +4,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Remove BG",
-  alias: ["rbg"],
+  alias: ["rbg", "removebg"],
   description: "Hapus background gambar. Reply/kirim gambar.",
   handler: async (_sock, msg) => {
     const quotedMsg = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;

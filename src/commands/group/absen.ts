@@ -5,6 +5,7 @@ const sessions = new Map<string, { title: string; members: Set<string>; creator:
 
 export default defineCommand({
   name: "Absen",
+  alias: ["absen"],
   description: "Buat/tutup sesi absen. .absen buka <judul> / .absen hadir / .absen tutup",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

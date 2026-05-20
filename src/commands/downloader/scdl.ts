@@ -3,6 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "SoundCloud DL",
+  alias: ["soundclouddl"],
   description: "Download lagu dari SoundCloud",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

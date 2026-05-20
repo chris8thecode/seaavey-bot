@@ -3,6 +3,7 @@ import { api } from "@/infra/api";
 
 export default defineCommand({
   name: "X (Twitter) DL",
+  alias: ["x(twitter)dl"],
   description: "Download media dari X/Twitter",
   handler: async (_sock, msg) => {
     const url = msg.args[0];

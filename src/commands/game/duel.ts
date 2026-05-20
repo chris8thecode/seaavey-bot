@@ -9,6 +9,7 @@ const sessions = new Map<
 
 export default defineCommand({
   name: "Duel",
+  alias: ["duel"],
   description: "Duel lawan player lain",
   handler: async (sock, msg) => {
     const key = msg.jid;

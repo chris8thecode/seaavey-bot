@@ -3,6 +3,7 @@ import db, { getUser } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Profile",
+  alias: ["pro", "profile"],
   description: "Lihat profile card / rank kamu",
   handler: async (_sock, msg) => {
     const target = msg.mentioned[0] || msg.sender;

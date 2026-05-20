@@ -11,6 +11,7 @@ import {
 
 export default defineCommand({
   name: "Poll",
+  alias: ["poll"],
   description: "Buat/vote/tutup polling. Format: .poll Pertanyaan? | Opsi1 | Opsi2",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");

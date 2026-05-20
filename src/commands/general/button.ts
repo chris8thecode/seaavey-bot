@@ -4,6 +4,7 @@ import { sendInteractive } from "@/handlers/interactive";
 
 export default defineCommand({
   name: "Button",
+  alias: ["btn", "button"],
   description: "",
   handler: async (sock, msg) => {
     await sendInteractive(sock, msg.jid, {

@@ -8,7 +8,7 @@ const localData = loadGameData<{ soal: string; jawaban: string }>("tekateki.json
 
 export default defineCommand({
   name: "Teka Teki",
-  alias: ["tt"],
+  alias: ["tt", "tekateki"],
   description: "Game teka-teki",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Selesaikan soal sebelumnya!");

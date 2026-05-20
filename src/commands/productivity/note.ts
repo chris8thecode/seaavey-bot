@@ -13,6 +13,7 @@ db.run(`
 
 export default defineCommand({
   name: "Note",
+  alias: ["note"],
   description:
     "Simpan/ambil catatan. .note save <judul> <isi> / .note get <judul> / .note list / .note del <judul>",
   handler: async (_sock, msg) => {

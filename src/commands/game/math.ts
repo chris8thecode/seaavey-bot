@@ -6,6 +6,7 @@ const sessions = new Map<string, { answer: number; timeout: Timer; sender?: stri
 
 export default defineCommand({
   name: "Math",
+  alias: ["math"],
   description: "Soal matematika cepat",
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");

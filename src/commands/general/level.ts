@@ -4,6 +4,7 @@ import { getUser } from "@/infra/database";
 import { getNumber, getProfilePictureUrl } from "@/utils/helper";
 export default defineCommand({
   name: "Level",
+  alias: ["lvl", "level"],
   description: "Cek level dan XP kamu",
   handler: async (sock, msg) => {
     const user = getUser(msg.sender);

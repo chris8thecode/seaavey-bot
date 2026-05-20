@@ -3,6 +3,7 @@ import db, { getSiders, updateMemberChat } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Sider",
+  alias: ["sider"],
   description: "List member yang tidak chat selama 3+ hari",
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

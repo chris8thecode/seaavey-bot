@@ -2,6 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Del PP",
+  alias: ["delpp"],
   description: "Remove bot profile picture (owner only)",
   handler: async (sock, msg) => {
     if (!msg.isOwner) return;

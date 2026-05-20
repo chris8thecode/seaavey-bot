@@ -3,7 +3,7 @@ import { addXp } from "@/infra/database";
 
 export default defineCommand({
   name: "Coin Flip",
-  alias: ["cf", "flip"],
+  alias: ["cf", "flip", "coinflip"],
   description: "Tebak heads atau tails",
   handler: async (_sock, msg) => {
     const input = msg.args[0]?.toLowerCase();

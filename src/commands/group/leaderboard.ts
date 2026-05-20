@@ -3,7 +3,7 @@ import db from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Leaderboard",
-  alias: ["lb", "top"],
+  alias: ["lb", "top", "leaderboard"],
   description: "Top 10 member paling aktif di group",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");

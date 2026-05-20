@@ -4,6 +4,7 @@ import { getRandomNumber } from "@/utils/helper";
 
 export default defineCommand({
   name: "Daily",
+  alias: ["daily"],
   description: "Klaim hadiah harian",
   handler: async (_sock, msg) => {
     const eco = getEconomy(msg.sender);

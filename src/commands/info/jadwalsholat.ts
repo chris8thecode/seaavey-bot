@@ -2,7 +2,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Jadwal Sholat",
-  alias: ["sholat", "jadwal"],
+  alias: ["sholat", "jadwal", "jadwalsholat"],
   description: "Jadwal sholat hari ini. Contoh: .jadwalsholat Jakarta",
   handler: async (_sock, msg) => {
     const city = msg.args.join(" ");

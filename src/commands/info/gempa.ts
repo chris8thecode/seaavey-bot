@@ -12,6 +12,7 @@ interface Gempa {
 
 export default defineCommand({
   name: "Gempa",
+  alias: ["gempa"],
   description: "Info gempa terkini dari BMKG",
   handler: async (_sock, msg) => {
     const res = await fetch("https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json");

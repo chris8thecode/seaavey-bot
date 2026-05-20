@@ -8,6 +8,7 @@ interface YTData {
 
 export default defineCommand({
   name: "YT MP3",
+  alias: ["ytmp3"],
   description: "Download audio dari YouTube",
   handler: async (_sock, msg) => {
     const url = msg.args[0];
