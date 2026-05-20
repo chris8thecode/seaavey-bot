@@ -63,7 +63,7 @@ export default defineCommand({
     const session = sessions.get(msg.jid);
 
     if (!msg.args[0] && !session) {
-      const target = msg.mentions?.[0] || "bot";
+      const target = msg.mentioned?.[0] || "bot";
       const isBot = target === "bot";
 
       const board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -80,10 +80,10 @@ export default defineCommand({
         timeout,
       });
 
-      return msg.reply(
-        `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${target.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
-        { mentions: [msg.sender, ...(isBot ? [] : [target])] },
-      );
+      return msg.reply({
+        text: `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${target.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
+        mentions: [msg.sender, ...(isBot ? [] : [target])],
+      });
     }
 
     if (!session) return msg.reply("Ketik .tictactoe atau .tictactoe @tag untuk mulai.");
@@ -96,7 +96,8 @@ export default defineCommand({
     }
 
     if (msg.sender !== session.turn) {
-      return msg.reply(`❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`, {
+      return msg.reply({
+        text: `❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`,
         mentions: [session.turn],
       });
     }
@@ -119,10 +120,10 @@ export default defineCommand({
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
       addXp(msg.sender, 20);
-      return msg.reply(
-        `${renderBoard(session.board)}\n\n🎉 @${msg.sender.split("@")[0]} Menang! (+20 XP)`,
-        { mentions: [msg.sender] },
-      );
+      return msg.reply({
+        text: `${renderBoard(session.board)}\n\n🎉 @${msg.sender.split("@")[0]} Menang! (+20 XP)`,
+        mentions: [msg.sender],
+      });
     }
 
     if (!session.board.some((v) => v !== "X" && v !== "O")) {
@@ -153,7 +154,8 @@ export default defineCommand({
     }
 
     session.timeout.refresh();
-    await msg.reply(`${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`, {
+    await msg.reply({
+      text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
       mentions: [session.turn],
     });
   },
