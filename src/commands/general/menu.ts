@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { config } from "@/core/config";
-import { defineCommand } from "@/core/types";
+import { type Command, defineCommand } from "@/core/types";
 import { sendInteractive } from "@/handlers/interactive";
 import { getUser } from "@/infra/database";
 import { commands } from "@/infra/loader";
@@ -25,8 +25,11 @@ export default defineCommand({
   alias: ["menu"],
   description: "Tampilkan daftar command",
   handler: async (sock, msg) => {
+    const seen = new Set<Command>();
     const categories = new Map<string, { title: string; id: string; description: string }[]>();
     for (const cmd of commands.values()) {
+      if (seen.has(cmd)) continue;
+      seen.add(cmd);
       const list = categories.get(cmd.category) || [];
       const trigger = cmd.command ?? cmd.name;
       list.push({

@@ -3,7 +3,7 @@ import { commands } from "@/infra/loader";
 
 export const commandsRoutes = new Elysia({ prefix: "/api/commands" })
   .get("/", () => {
-    return Array.from(commands.values()).map((cmd) => ({
+    return Array.from(new Set(commands.values())).map((cmd) => ({
       name: cmd.name,
       command: cmd.command ?? cmd.name,
       category: cmd.category || "general",
