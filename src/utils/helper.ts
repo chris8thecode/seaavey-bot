@@ -45,14 +45,24 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   const isGroup = !!key.remoteJid?.endsWith("@g.us");
   const jid = key.remoteJid || "";
 
-  const cleanId = (id: string) => id.replace(/:.+@/, "@");
-
-  const resolveId = (...ids: (string | undefined | null)[]) => {
-    const all = ids.filter((i): i is string => !!i).map(cleanId);
-    return all.find((i) => i.endsWith("@s.whatsapp.net")) || all[0] || "";
+  const resolveId = async (...ids: (string | undefined | null)[]) => {
+    const all = ids.filter((i): i is string => !!i).map((id) => id.replace(/:.+@/, "@"));
+    const found = all.find((i) => i.endsWith("@s.whatsapp.net"));
+    if (found) return found;
+    const lid = all.find((i) => i.endsWith("@lid"));
+    if (lid) {
+      const resolved = await sock.signalRepository.lidMapping.getPNForLID(lid);
+      if (resolved) return resolved.replace(/:.+@/, "@");
+    }
+    return all[0] || "";
   };
 
-  const senderId = resolveId(key.participantAlt, key.participant, key.remoteJidAlt, key.remoteJid);
+  const senderId = await resolveId(
+    key.participantAlt,
+    key.participant,
+    key.remoteJidAlt,
+    key.remoteJid,
+  );
   let sender = senderId;
 
   let isAdmin = false;
@@ -61,30 +71,36 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   if (isGroup) {
     const metadata = await sock.groupMetadata(jid);
     const participant = metadata.participants.find(
-      (p) => cleanId(p.id) === senderId || (p.lid && cleanId(p.lid) === senderId),
+      (p) =>
+        p.id.replace(/:.+@/, "@") === senderId ||
+        (p.lid && p.lid.replace(/:.+@/, "@") === senderId),
     );
 
     if (participant) {
-      sender = cleanId(participant.id);
+      sender = participant.id.replace(/:.+@/, "@");
     }
 
     isAdmin = !!participant?.admin;
-    const botId = cleanId(sock.user?.id || "");
-    const botLid = cleanId(sock.user?.lid || "");
+    const botId = sock.user?.id?.replace(/:.+@/, "@") || "";
+    const botLid = sock.user?.lid?.replace(/:.+@/, "@") || "";
     isBotAdmin = metadata.participants.some(
-      (p) => p.admin && (cleanId(p.id) === botId || (p.lid && cleanId(p.lid) === botLid)),
+      (p) =>
+        p.admin &&
+        (p.id.replace(/:.+@/, "@") === botId || (p.lid && p.lid.replace(/:.+@/, "@") === botLid)),
     );
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
-  const mentioned = (contextInfo?.mentionedJid || []).map(cleanId);
-  const quoted = contextInfo?.participant ? cleanId(contextInfo.participant) : undefined;
+  const mentioned = await Promise.all((contextInfo?.mentionedJid || []).map((id) => resolveId(id)));
+  const quoted = contextInfo?.participant
+    ? contextInfo.participant.replace(/:.+@/, "@")
+    : undefined;
   const body = extractBody(msg.message);
   const args = body.split(" ").slice(1);
 
   return {
     id: key.id ?? undefined,
-    jid: resolveId(key.remoteJidAlt, key.remoteJid),
+    jid: await resolveId(key.remoteJidAlt, key.remoteJid),
     lid: key.remoteJid || "",
     sender,
     body,
