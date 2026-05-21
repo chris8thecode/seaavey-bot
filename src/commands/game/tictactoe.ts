@@ -153,10 +153,14 @@ export default defineCommand({
       }
 
       session.turn = session.playerX;
-    } else {
-      session.turn = msg.sender === session.playerX ? session.playerO : session.playerX;
+      session.timeout.refresh();
+      return msg.send({
+        text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
+        mentions: [session.turn],
+      });
     }
 
+    session.turn = msg.sender === session.playerX ? session.playerO : session.playerX;
     session.timeout.refresh();
     await msg.send({
       text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
