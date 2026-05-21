@@ -68,11 +68,25 @@ export function setLevel(jid: string, level: number) {
   );
 }
 
+export function addLevel(jid: string, amount: number) {
+  db.run(
+    "INSERT INTO users (jid, level) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET level = level + EXCLUDED.level",
+    [jid, amount],
+  );
+}
+
 export function setXp(jid: string, xp: number) {
   db.run("INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = EXCLUDED.xp", [
     jid,
     xp,
   ]);
+}
+
+export function addXpManual(jid: string, amount: number) {
+  db.run(
+    "INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = xp + EXCLUDED.xp",
+    [jid, amount],
+  );
 }
 
 export function setBanned(jid: string, banned: boolean) {
