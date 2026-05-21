@@ -121,11 +121,10 @@ db.run(`
     welcomeMsg TEXT DEFAULT '',
     goodbyeMsg TEXT DEFAULT '',
     warnMax INTEGER DEFAULT 3,
-    antinsfw INTEGER DEFAULT 0
+    antiviewonce INTEGER DEFAULT 0
   )
 `);
 
-safeMigrate("ALTER TABLE groups ADD COLUMN antinsfw INTEGER DEFAULT 0");
 safeMigrate("ALTER TABLE groups ADD COLUMN antiviewonce INTEGER DEFAULT 0");
 
 export interface Group {
@@ -143,7 +142,6 @@ export interface Group {
   welcomeMsg: string;
   goodbyeMsg: string;
   warnMax: number;
-  antinsfw: number;
   antiviewonce: number;
 }
 

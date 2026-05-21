@@ -19,7 +19,6 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
       antilink: !!g.antilink,
       antidelete: !!g.antidelete,
       antitoxic: !!g.antitoxic,
-      antinsfw: !!g.antinsfw,
       antiviewonce: !!g.antiviewonce,
       autosticker: !!g.autosticker,
       onlyAdmin: !!g.onlyAdmin,
@@ -44,7 +43,6 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
       antilink: !!g.antilink,
       antidelete: !!g.antidelete,
       antitoxic: !!g.antitoxic,
-      antinsfw: !!g.antinsfw,
       antiviewonce: !!g.antiviewonce,
       autosticker: !!g.autosticker,
       onlyAdmin: !!g.onlyAdmin,
@@ -61,7 +59,6 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
       antilink?: boolean;
       antidelete?: boolean;
       antitoxic?: boolean;
-      antinsfw?: boolean;
       antiviewonce?: boolean;
       autosticker?: boolean;
       onlyAdmin?: boolean;
@@ -74,7 +71,6 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
     if (data.antilink !== undefined) setGroup(params.jid, "antilink", data.antilink ? 1 : 0);
     if (data.antidelete !== undefined) setGroup(params.jid, "antidelete", data.antidelete ? 1 : 0);
     if (data.antitoxic !== undefined) setGroup(params.jid, "antitoxic", data.antitoxic ? 1 : 0);
-    if (data.antinsfw !== undefined) setGroup(params.jid, "antinsfw", data.antinsfw ? 1 : 0);
     if (data.antiviewonce !== undefined)
       setGroup(params.jid, "antiviewonce", data.antiviewonce ? 1 : 0);
     if (data.autosticker !== undefined)
@@ -97,7 +93,6 @@ export const groupsRoutes = new Elysia({ prefix: "/api/groups" })
       antilink: !!g.antilink,
       antidelete: !!g.antidelete,
       antitoxic: !!g.antitoxic,
-      antinsfw: !!g.antinsfw,
       antiviewonce: !!g.antiviewonce,
       autosticker: !!g.autosticker,
       onlyAdmin: !!g.onlyAdmin,

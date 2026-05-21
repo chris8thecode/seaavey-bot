@@ -1,5 +1,5 @@
 import { writeFile } from "node:fs/promises";
-import { downloadMediaMessage, proto, type WAMessage, type WASocket } from "baileys";
+import { proto, type WAMessage, type WASocket } from "baileys";
 import { config, isDev } from "@/core/config";
 import { logger } from "@/core/logger";
 import { checkGameAnswer } from "@/game/game";
@@ -118,30 +118,6 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
             mentions: [parse.sender],
           });
           continue;
-        }
-      }
-
-      // Anti-NSFW
-      if (group.antinsfw && !parse.isAdmin && msg.message?.imageMessage) {
-        try {
-          const buffer = await downloadMediaMessage(msg, "buffer", {});
-          const base64 = Buffer.from(buffer).toString("base64");
-          const res = await fetch("https://api.seaavey.com/tools/nsfw-detect", {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "X-API-KEY": config.apiKey },
-            body: JSON.stringify({ image: base64 }),
-          });
-          const data = (await res.json()) as { data?: { nsfw?: boolean } };
-          if (data.data?.nsfw) {
-            await sock.sendMessage(parse.jid, { delete: msg.key });
-            await sock.sendMessage(parse.jid, {
-              text: `🚫 @${getNumber(parse.sender)} gambar NSFW terdeteksi dan dihapus!`,
-              mentions: [parse.sender],
-            });
-            continue;
-          }
-        } catch (e) {
-          logger.error(`NSFW Check Error: ${e}`);
         }
       }
     }
