@@ -95,6 +95,13 @@ export default defineCommand({
   alias: ["hd", "remini", "hdr"],
   description: "Upscale gambar ke HD menggunakan Cloudinary",
   handler: async (sock: WASocket, msg) => {
+    const quoted = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const isImage = msg.msg.message?.imageMessage || quoted?.imageMessage;
+
+    if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .hd");
+
+    await msg.reply("⏳ Sedang memproses gambar ke HD...");
+
     try {
       const mediaMsg = quoted
         ? {
