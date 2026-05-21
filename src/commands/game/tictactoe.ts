@@ -99,7 +99,7 @@ export default defineCommand({
       return msg.reply("🏳️ Game dihentikan.");
     }
 
-    if (msg.sender !== session.turn) {
+    if (msg.sender !== session.turn && !msg.sender.includes(session.turn.split("@")[0])) {
       return msg.send({
         text: `❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`,
         mentions: [session.turn],
