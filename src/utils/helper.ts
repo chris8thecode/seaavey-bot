@@ -1,53 +1,58 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import type { AnyMessageContent, proto, WAMessage, WASocket } from "baileys";
-import { config } from "@/core/config";
-import { logger } from "@/core/logger";
-
-export interface ParsedMessage {
-  id: string | undefined;
-  jid: string;
-  lid: string;
-  sender: string;
-  body: string;
-  isGroup: boolean;
-  isAdmin: boolean;
-  isBotAdmin: boolean;
-  fromMe: boolean;
-  isOwner: boolean;
-  mentioned: string[];
-  quoted: string | undefined;
-  args: string[];
-  msg: WAMessage;
-  reply: (text: string) => Promise<void>;
-  send: (content: AnyMessageContent) => Promise<void>;
-}
-
-function extractBody(m: proto.IMessage | null | undefined): string {
-  if (m?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson) {
-    try {
-      const params = JSON.parse(m.interactiveResponseMessage.nativeFlowResponseMessage.paramsJson);
-      if (params.id) return params.id;
-    } catch {}
-  }
-  return (
-    m?.conversation ||
-    m?.extendedTextMessage?.text ||
-    m?.imageMessage?.caption ||
-    m?.videoMessage?.caption ||
-    m?.templateButtonReplyMessage?.selectedId ||
-    ""
-  );
-}
-
-export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<ParsedMessage> {
+     1|import { readFileSync } from "node:fs";
+     2|import { join } from "node:path";
+     3|import type { AnyMessageContent, proto, WAMessage, WASocket } from "baileys";
+     4|import { config } from "@/core/config";
+     5|import { logger } from "@/core/logger";
+     6|
+     7|export interface ParsedMessage {
+     8|  id: string | undefined;
+     9|  jid: string;
+    10|  lid: string;
+    11|  sender: string;
+    12|  body: string;
+    13|  isGroup: boolean;
+    14|  isAdmin: boolean;
+    15|  isBotAdmin: boolean;
+    16|  fromMe: boolean;
+    17|  isOwner: boolean;
+    18|  mentioned: string[];
+    19|  quoted: string | undefined;
+    20|  args: string[];
+    21|  msg: WAMessage;
+    22|  reply: (text: string) => Promise<void>;
+    23|  send: (content: AnyMessageContent) => Promise<void>;
+    24|}
+    25|
+    26|function extractBody(m: proto.IMessage | null | undefined): string {
+    27|  if (m?.interactiveResponseMessage?.nativeFlowResponseMessage?.paramsJson) {
+    28|    try {
+    29|      const params = JSON.parse(m.interactiveResponseMessage.nativeFlowResponseMessage.paramsJson);
+    30|      if (params.id) return params.id;
+    31|    } catch {}
+    32|  }
+    33|  return (
+    34|    m?.conversation ||
+    35|    m?.extendedTextMessage?.text ||
+    36|    m?.imageMessage?.caption ||
+    37|    m?.videoMessage?.caption ||
+    38|    m?.templateButtonReplyMessage?.selectedId ||
+    39|    ""
+    40|  );
+    41|}
+    42|
+    43|export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<ParsedMessage> {
   const key = msg.key;
   const isGroup = !!key.remoteJid?.endsWith("@g.us");
   const jid = key.remoteJid || "";
 
   const cleanId = (id: string) => id.replace(/:.+@/, "@");
 
-  const senderId = cleanId(key.participant || key.remoteJid || "");
+  const resolveId = (...ids: (string | undefined | null)[]) => {
+    const all = ids.filter((i): i is string => !!i).map(cleanId);
+    return all.find((i) => i.endsWith("@s.whatsapp.net")) || all[0] || "";
+  };
+
+  const senderId = resolveId(key.participantAlt, key.participant, key.remoteJidAlt, key.remoteJid);
   let sender = senderId;
 
   let isAdmin = false;
@@ -60,7 +65,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     );
 
     if (participant) {
-      sender = cleanId(participant.id); // Always resolve to JID
+      sender = cleanId(participant.id);
     }
 
     isAdmin = !!participant?.admin;
@@ -79,7 +84,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
 
   return {
     id: key.id ?? undefined,
-    jid: getJid(key.remoteJidAlt, key.remoteJid),
+    jid: resolveId(key.remoteJidAlt, key.remoteJid),
     lid: key.remoteJid || "",
     sender,
     body,
@@ -100,52 +105,51 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
       await sock.sendMessage(jid, content, { quoted: msg });
     },
   };
-}
-
-export function getRandomItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)] as T;
-}
-
-export function getRandomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-export function getNumber(jid: string): string {
-  return jid.replace(/@.+/, "");
-}
-
-export function formatSize(bytes: number): string {
-  if (bytes === 0) return "0 B";
-  const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
-}
-
-export function formatTime(ms: number): string {
-  const seconds = Math.floor(ms / 1000);
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  return `${h > 0 ? `${h} jam ` : ""}${m > 0 ? `${m} menit ` : ""}${s} detik`;
-}
-
-const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");
-
-export async function getProfilePictureUrl(sock: WASocket, jid: string): Promise<string | null> {
-  try {
-    return (await sock.profilePictureUrl(jid, "image")) ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export function loadGameData<T>(filename: string): T[] {
-  try {
-    const raw = readFileSync(join(GAMES_DATA_DIR, filename), "utf-8");
-    return JSON.parse(raw) as T[];
-  } catch {
-    logger.error(`Failed to load ${filename}`);
-    return [];
-  }
-}
+}\n\nexport function getRandomItem<T>(arr: T[]): T {
+   106|  return arr[Math.floor(Math.random() * arr.length)] as T;
+   107|}
+   108|
+   109|export function getRandomNumber(min: number, max: number): number {
+   110|  return Math.floor(Math.random() * (max - min + 1)) + min;
+   111|}
+   112|
+   113|export function getNumber(jid: string): string {
+   114|  return jid.replace(/@.+/, "");
+   115|}
+   116|
+   117|export function formatSize(bytes: number): string {
+   118|  if (bytes === 0) return "0 B";
+   119|  const k = 1024;
+   120|  const sizes = ["B", "KB", "MB", "GB", "TB"];
+   121|  const i = Math.floor(Math.log(bytes) / Math.log(k));
+   122|  return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
+   123|}
+   124|
+   125|export function formatTime(ms: number): string {
+   126|  const seconds = Math.floor(ms / 1000);
+   127|  const h = Math.floor(seconds / 3600);
+   128|  const m = Math.floor((seconds % 3600) / 60);
+   129|  const s = Math.floor(seconds % 60);
+   130|  return `${h > 0 ? `${h} jam ` : ""}${m > 0 ? `${m} menit ` : ""}${s} detik`;
+   131|}
+   132|
+   133|const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");
+   134|
+   135|export async function getProfilePictureUrl(sock: WASocket, jid: string): Promise<string | null> {
+   136|  try {
+   137|    return (await sock.profilePictureUrl(jid, "image")) ?? null;
+   138|  } catch {
+   139|    return null;
+   140|  }
+   141|}
+   142|
+   143|export function loadGameData<T>(filename: string): T[] {
+   144|  try {
+   145|    const raw = readFileSync(join(GAMES_DATA_DIR, filename), "utf-8");
+   146|    return JSON.parse(raw) as T[];
+   147|  } catch {
+   148|    logger.error(`Failed to load ${filename}`);
+   149|    return [];
+   150|  }
+   151|}
+   152|
