@@ -19,8 +19,6 @@ export default defineCommand({
     }
 
     addLevel(target, amount);
-    await msg.reply(
-      `✅ Berhasil menambah *${amount}* level untuk @${getNumber(target)}`,
-    );
+    await msg.reply(`✅ Berhasil menambah *${amount}* level untuk @${getNumber(target)}`);
   },
 });

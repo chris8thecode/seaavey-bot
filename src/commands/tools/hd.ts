@@ -1,9 +1,9 @@
-import axios from "axios";
 import crypto from "node:crypto";
-import FormData from "form-data";
 import fs from "node:fs/promises";
 import path from "node:path";
+import axios from "axios";
 import { downloadMediaMessage, type WAMessage, type WASocket } from "baileys";
+import FormData from "form-data";
 import { defineCommand } from "@/core/types";
 
 const SIGN_API = "https://cloudinary-tools.netlify.app/.netlify/functions/sign-upload-params";
@@ -29,8 +29,8 @@ async function getSignature(timestamp: number) {
     paramsToSign: {
       timestamp,
       upload_preset: UPLOAD_PRESET,
-      source: SOURCE
-    }
+      source: SOURCE,
+    },
   };
 
   const { data, status } = await axios.post(SIGN_API, payload, {
@@ -42,7 +42,7 @@ async function getSignature(timestamp: number) {
       referer: "https://cloudinary.com/",
     },
     timeout: 30000,
-    validateStatus: () => true
+    validateStatus: () => true,
   });
 
   if (status < 200 || status >= 300 || !data?.signature) {
@@ -62,7 +62,7 @@ async function upscaleCloudinary(filePath: string): Promise<string> {
   form.append("signature", signature);
   form.append("timestamp", String(timestamp));
   form.append("api_key", API_KEY);
-  
+
   // Create readable stream for FormData
   const { createReadStream } = await import("node:fs");
   form.append("file", createReadStream(filePath));
@@ -80,7 +80,7 @@ async function upscaleCloudinary(filePath: string): Promise<string> {
     maxBodyLength: Infinity,
     maxContentLength: Infinity,
     timeout: 120000,
-    validateStatus: () => true
+    validateStatus: () => true,
   });
 
   if (status < 200 || status >= 300 || !data?.secure_url) {
@@ -95,30 +95,33 @@ export default defineCommand({
   alias: ["hd", "remini", "hdr"],
   description: "Upscale gambar ke HD menggunakan Cloudinary",
   handler: async (sock: WASocket, msg) => {
-    const quoted = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const isImage = msg.msg.message?.imageMessage || quoted?.imageMessage;
-
-    if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .hd");
-
-    await msg.reply("⏳ Sedang memproses gambar ke HD...");
-
     try {
-      const mediaMsg = quoted ? { message: quoted, key: msg.msg.message?.extendedTextMessage?.contextInfo?.stanzaId } : msg.msg;
+      const mediaMsg = quoted
+        ? {
+            message: quoted,
+            key: msg.msg.message?.extendedTextMessage?.contextInfo?.stanzaId,
+          }
+        : msg.msg;
       const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {});
-      
+
       const tempPath = path.join(process.cwd(), `tmp_${Date.now()}.jpg`);
       await fs.writeFile(tempPath, buffer);
 
       const resultUrl = await upscaleCloudinary(tempPath);
-      
-      await sock.sendMessage(msg.jid, { 
-        image: { url: resultUrl }, 
-        caption: "✅ Berhasil meningkatkan kualitas gambar ke HD!" 
-      }, { quoted: msg.msg });
+
+      await sock.sendMessage(
+        msg.jid,
+        {
+          image: { url: resultUrl },
+          caption: "✅ Berhasil meningkatkan kualitas gambar ke HD!",
+        },
+        { quoted: msg.msg },
+      );
 
       await fs.unlink(tempPath);
-    } catch (e: any) {
-      await msg.reply(`❌ Gagal memproses gambar: ${e.message}`);
+    } catch (e: unknown) {
+      const error = e as Error;
+      await msg.reply(`❌ Gagal memproses gambar: ${error.message}`);
     }
   },
 });

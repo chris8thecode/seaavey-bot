@@ -19,8 +19,6 @@ export default defineCommand({
     }
 
     addXpManual(target, amount);
-    await msg.reply(
-      `✅ Berhasil menambah *${amount}* XP untuk @${getNumber(target)}`,
-    );
+    await msg.reply(`✅ Berhasil menambah *${amount}* XP untuk @${getNumber(target)}`);
   },
 });

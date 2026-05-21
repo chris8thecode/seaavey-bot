@@ -76,10 +76,10 @@ export function addLevel(jid: string, amount: number) {
 }
 
 export function setXp(jid: string, xp: number) {
-  db.run("INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = EXCLUDED.xp", [
-    jid,
-    xp,
-  ]);
+  db.run(
+    "INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = EXCLUDED.xp",
+    [jid, xp],
+  );
 }
 
 export function addXpManual(jid: string, amount: number) {

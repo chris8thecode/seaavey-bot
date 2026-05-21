@@ -61,7 +61,8 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     const botLid = sock.user?.lid?.replace(/:\d+/, "");
 
     isAdmin = adminIds.includes(sender) || adminPns.includes(sender);
-    isBotAdmin = adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
+    isBotAdmin =
+      adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
