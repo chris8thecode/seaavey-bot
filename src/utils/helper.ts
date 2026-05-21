@@ -46,7 +46,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   const jid = key.remoteJid || "";
 
   // Force JID, ignore LID
-  const sender = (key.participantAlt || key.remoteJidAlt || key.participant || key.remoteJid || "")
+  const sender = (key.participant || key.remoteJid || "")
     .replace(/:.+@/, "@")
     .replace(/@lid/, "@s.whatsapp.net");
 
@@ -74,7 +74,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
 
   return {
     id: key.id ?? undefined,
-    jid: cleanId(key.remoteJidAlt || key.remoteJid || ""),
+    jid: cleanId(key.remoteJid || ""),
     lid: key.remoteJid || "",
     sender,
     body,
