@@ -13,13 +13,15 @@ const sessions = new Map<
   }
 >();
 
-function debug(msg: string, data?: Record<string, unknown>) {
-  // biome-ignore lint/suspicious/noConsole: debug log
-  console.log(`[TicTacToe] ${msg}`, data ?? "");
-}
-
 function renderBoard(board: string[]): string {
-  return `${board[0]}│${board[1]}│${board[2]}\n─┼─┼─\n${board[3]}│${board[4]}│${board[5]}\n─┼─┼─\n${board[6]}│${board[7]}│${board[8]}`;
+  const cell = (v: string | undefined) => (v === "X" ? "✕" : v === "O" ? "◯" : v ?? "");
+  return `
+ ${cell(board[0])} │ ${cell(board[1])} │ ${cell(board[2])}
+───┼───┼───
+ ${cell(board[3])} │ ${cell(board[4])} │ ${cell(board[5])}
+───┼───┼───
+ ${cell(board[6])} │ ${cell(board[7])} │ ${cell(board[8])}
+`.trim();
 }
 
 function checkWin(board: string[], mark: string): boolean {
@@ -66,30 +68,20 @@ export default defineCommand({
   alias: ["ttt", "tic", "tictactoe"],
   description: "Main tic-tac-toe lawan bot atau member lain",
   handler: async (sock, msg) => {
-    debug("Handler invoked", { jid: msg.jid, sender: msg.sender, args: msg.args, body: msg.body });
     const session = sessions.get(msg.jid);
-    debug("Session lookup", { exists: !!session, jid: msg.jid });
 
     if (!session) {
       const target = msg.mentioned?.[0] || (msg.args[0] === "bot" ? "bot" : null);
-      debug("No existing session, creating new", {
-        target,
-        mentioned: msg.mentioned,
-        argsLen: msg.args.length,
-      });
 
       if (msg.args.length > 0 && !target) {
-        debug("Invalid start attempt", { args: msg.args });
         return msg.reply("Ketik .tictactoe atau .tictactoe @tag untuk mulai.");
       }
 
       const isBot = (target || "bot") === "bot";
       const finalTarget = target || "bot";
-      debug("Session params", { isBot, finalTarget, creator: msg.sender });
 
       const board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
       const timeout = setTimeout(() => {
-        debug("Session expired", { jid: msg.jid });
         sessions.delete(msg.jid);
         sock.sendMessage(msg.jid, { text: "⏰ Waktu habis! Game Tic-Tac-Toe dihentikan." });
       }, 120_000);
@@ -102,14 +94,6 @@ export default defineCommand({
         timeout,
       });
 
-      debug("Session created", {
-        jid: msg.jid,
-        playerX: msg.sender,
-        playerO: finalTarget,
-        turn: msg.sender,
-      });
-      debug("Session count", { total: sessions.size });
-
       return msg.send({
         text: `🎮 *Tic-Tac-Toe*\n❌: @${msg.sender.split("@")[0]}\n⭕: ${isBot ? "Bot" : `@${finalTarget.split("@")[0]}`}\n\n${renderBoard(board)}\n\nGiliran: @${msg.sender.split("@")[0]}\nKetik .tictactoe [1-9]`,
         mentions: [msg.sender, ...(isBot ? [] : [finalTarget])],
@@ -117,22 +101,13 @@ export default defineCommand({
     }
 
     if (msg.args[0] === "nyerah") {
-      if (msg.sender !== session.playerX && msg.sender !== session.playerO) {
-        debug("Surrender denied - not a player", {
-          sender: msg.sender,
-          playerX: session.playerX,
-          playerO: session.playerO,
-        });
-        return;
-      }
-      debug("Surrender accepted", { sender: msg.sender });
+      if (msg.sender !== session.playerX && msg.sender !== session.playerO) return;
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
       return msg.reply("🏳️ Game dihentikan.");
     }
 
     if (msg.sender !== session.turn) {
-      debug("Turn mismatch", { sender: msg.sender, expectedTurn: session.turn });
       return msg.send({
         text: `❌ Bukan giliranmu! Tunggu @${session.turn.split("@")[0]}`,
         mentions: [session.turn],
@@ -147,21 +122,13 @@ export default defineCommand({
       session.board[pos] === "X" ||
       session.board[pos] === "O"
     ) {
-      debug("Invalid position", { raw: msg.args[0], pos, board: session.board.join("") });
       return msg.reply("❌ Posisi tidak valid! Pilih 1-9 yang masih kosong.");
     }
 
     const mark = msg.sender === session.playerX ? "X" : "O";
     session.board[pos] = mark;
-    debug("Move placed", {
-      pos: pos + 1,
-      mark,
-      board: session.board.join(""),
-      player: msg.sender === session.playerX ? "playerX" : "playerO",
-    });
 
     if (checkWin(session.board, mark)) {
-      debug("Win detected", { mark, winner: msg.sender, board: session.board.join("") });
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
       addXp(msg.sender, 20);
@@ -172,28 +139,22 @@ export default defineCommand({
     }
 
     if (!session.board.some((v) => v !== "X" && v !== "O")) {
-      debug("Draw detected", { board: session.board.join("") });
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
       return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
     }
 
     if (session.playerO === "bot") {
-      debug("Bot turn - calculating move", { board: session.board.join("") });
       const botIdx = botMove(session.board);
-      debug("Bot chose position", { pos: botIdx + 1, board: session.board.join("") });
       session.board[botIdx] = "O";
-      debug("Bot placed O", { board: session.board.join("") });
 
       if (checkWin(session.board, "O")) {
-        debug("Bot wins", { board: session.board.join("") });
         clearTimeout(session.timeout);
         sessions.delete(msg.jid);
         return msg.reply(`${renderBoard(session.board)}\n\n😢 Bot menang!`);
       }
 
       if (!session.board.some((v) => v !== "X" && v !== "O")) {
-        debug("Draw after bot move", { board: session.board.join("") });
         clearTimeout(session.timeout);
         sessions.delete(msg.jid);
         return msg.reply(`${renderBoard(session.board)}\n\n🤝 Seri!`);
@@ -201,7 +162,6 @@ export default defineCommand({
 
       session.turn = session.playerX;
       session.timeout.refresh();
-      debug("Turn switched back to playerX", { turn: session.turn });
       return msg.send({
         text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
         mentions: [session.turn],
@@ -210,11 +170,6 @@ export default defineCommand({
 
     session.turn = msg.sender === session.playerX ? session.playerO : session.playerX;
     session.timeout.refresh();
-    debug("Turn switched", {
-      newTurn: session.turn,
-      sender: msg.sender,
-      wasPlayerX: msg.sender === session.playerX,
-    });
     await msg.send({
       text: `${renderBoard(session.board)}\n\nGiliran: @${session.turn.split("@")[0]}`,
       mentions: [session.turn],
