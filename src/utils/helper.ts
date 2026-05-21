@@ -43,8 +43,12 @@ function extractBody(m: proto.IMessage | null | undefined): string {
 export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<ParsedMessage> {
   const key = msg.key;
   const isGroup = !!key.remoteJid?.endsWith("@g.us");
-  const sender = key.participantAlt || key.participant || key.remoteJidAlt || key.remoteJid;
   const jid = key.remoteJid || "";
+
+  // Force JID, ignore LID
+  const sender = (key.participantAlt || key.remoteJidAlt || key.participant || key.remoteJid || "")
+    .replace(/:.+@/, "@")
+    .replace(/@lid/, "@s.whatsapp.net");
 
   let isAdmin = false;
   let isBotAdmin = false;
@@ -53,36 +57,31 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
     const metadata = await sock.groupMetadata(jid);
     const adminIds = metadata.participants.filter((p) => p.admin).map((p) => p.id);
     const adminPns = metadata.participants.filter((p) => p.admin).map((p) => p.phoneNumber || "");
-    const senderLid = key.participant;
-    const senderJid = key.participantAlt;
-    isAdmin =
-      adminIds.includes(senderLid || "") ||
-      adminIds.includes(senderJid || "") ||
-      adminPns.includes(senderJid || "");
     const botId = `${sock.user?.id?.replace(/:\d+/, "")}@s.whatsapp.net`;
     const botLid = sock.user?.lid?.replace(/:\d+/, "");
-    isBotAdmin =
-      adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
+
+    isAdmin = adminIds.includes(sender) || adminPns.includes(sender);
+    isBotAdmin = adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
-  const lidToJid = (id: string) => id.replace(/:\d+@/, "@");
-  const mentioned = (contextInfo?.mentionedJid || []).map(lidToJid);
-  const quoted = contextInfo?.participant ? lidToJid(contextInfo.participant) : undefined;
+  const cleanId = (id: string) => id.replace(/:.+@/, "@").replace(/@lid/, "@s.whatsapp.net");
+  const mentioned = (contextInfo?.mentionedJid || []).map(cleanId);
+  const quoted = contextInfo?.participant ? cleanId(contextInfo.participant) : undefined;
   const body = extractBody(msg.message);
   const args = body.split(" ").slice(1);
 
   return {
     id: key.id ?? undefined,
-    jid: key.remoteJidAlt || key.remoteJid || "",
+    jid: cleanId(key.remoteJidAlt || key.remoteJid || ""),
     lid: key.remoteJid || "",
-    sender: sender || "",
+    sender,
     body,
     fromMe: !!key.fromMe,
     isGroup,
     isAdmin,
     isBotAdmin,
-    isOwner: config.owner.includes(sender?.replace(/@.+/, "") || ""),
+    isOwner: config.owner.includes(sender.replace(/@.+/, "")),
     mentioned,
     quoted,
     args,

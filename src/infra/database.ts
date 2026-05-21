@@ -62,17 +62,15 @@ export function addHit(jid: string) {
 }
 
 export function setLevel(jid: string, level: number) {
-  db.run("INSERT INTO users (jid, level) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET level = ?", [
-    jid,
-    level,
-    level,
-  ]);
+  db.run(
+    "INSERT INTO users (jid, level) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET level = EXCLUDED.level",
+    [jid, level],
+  );
 }
 
 export function setXp(jid: string, xp: number) {
-  db.run("INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = ?", [
+  db.run("INSERT INTO users (jid, xp) VALUES (?, ?) ON CONFLICT(jid) DO UPDATE SET xp = EXCLUDED.xp", [
     jid,
-    xp,
     xp,
   ]);
 }
