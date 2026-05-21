@@ -45,28 +45,33 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   const isGroup = !!key.remoteJid?.endsWith("@g.us");
   const jid = key.remoteJid || "";
 
-  // Force JID, ignore LID
-  const sender = (key.participant || key.remoteJid || "")
-    .replace(/:.+@/, "@")
-    .replace(/@lid/, "@s.whatsapp.net");
+  const cleanId = (id: string) => id.replace(/:.+@/, "@");
+
+  const getJid = (...ids: (string | undefined | null)[]) => {
+    const all = ids.filter((i): i is string => !!i).map(cleanId);
+    return all.find((i) => i.endsWith("@s.whatsapp.net")) || all[0] || "";
+  };
+
+  const sender = getJid(key.participantAlt, key.participant, key.remoteJidAlt, key.remoteJid);
 
   let isAdmin = false;
   let isBotAdmin = false;
 
   if (isGroup) {
     const metadata = await sock.groupMetadata(jid);
-    const adminIds = metadata.participants.filter((p) => p.admin).map((p) => p.id);
-    const adminPns = metadata.participants.filter((p) => p.admin).map((p) => p.phoneNumber || "");
-    const botId = `${sock.user?.id?.replace(/:\d+/, "")}@s.whatsapp.net`;
-    const botLid = sock.user?.lid?.replace(/:\d+/, "");
+    const adminIds = metadata.participants.map((p) => cleanId(p.id));
+    const botId = cleanId(sock.user?.id || "");
+    const botLid = cleanId(sock.user?.lid || "");
 
-    isAdmin = adminIds.includes(sender) || adminPns.includes(sender);
-    isBotAdmin =
-      adminIds.includes(botId) || adminIds.includes(botLid || "") || adminPns.includes(botId);
+    isAdmin = metadata.participants.some(
+      (p) => p.admin && (cleanId(p.id) === sender || p.id.includes(sender.split("@")[0])),
+    );
+    isBotAdmin = metadata.participants.some(
+      (p) => p.admin && (cleanId(p.id) === botId || cleanId(p.id) === botLid),
+    );
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
-  const cleanId = (id: string) => id.replace(/:.+@/, "@").replace(/@lid/, "@s.whatsapp.net");
   const mentioned = (contextInfo?.mentionedJid || []).map(cleanId);
   const quoted = contextInfo?.participant ? cleanId(contextInfo.participant) : undefined;
   const body = extractBody(msg.message);
@@ -74,7 +79,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
 
   return {
     id: key.id ?? undefined,
-    jid: cleanId(key.remoteJid || ""),
+    jid: getJid(key.remoteJidAlt, key.remoteJid),
     lid: key.remoteJid || "",
     sender,
     body,
