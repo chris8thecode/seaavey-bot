@@ -45,7 +45,7 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
   const isGroup = !!key.remoteJid?.endsWith("@g.us");
   const jid = key.remoteJid || "";
 
-  const cleanId = (id: string) => id.replace(/:.+@/, "@").replace(/@lid/, "@s.whatsapp.net");
+  const cleanId = (id: string) => id.replace(/:.+@/, "@");
 
   const getJid = (...ids: (string | undefined | null)[]) => {
     const all = ids.filter((i): i is string => !!i).map(cleanId);
