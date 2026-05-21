@@ -47,27 +47,27 @@ export async function parseMessage(sock: WASocket, msg: WAMessage): Promise<Pars
 
   const cleanId = (id: string) => id.replace(/:.+@/, "@");
 
-  const getJid = (...ids: (string | undefined | null)[]) => {
-    const all = ids.filter((i): i is string => !!i).map(cleanId);
-    return all.find((i) => i.endsWith("@s.whatsapp.net")) || all[0] || "";
-  };
-
-  const sender = getJid(key.participantAlt, key.participant, key.remoteJidAlt, key.remoteJid);
+  const senderId = cleanId(key.participant || key.remoteJid || "");
+  let sender = senderId;
 
   let isAdmin = false;
   let isBotAdmin = false;
 
   if (isGroup) {
     const metadata = await sock.groupMetadata(jid);
-    const adminIds = metadata.participants.map((p) => cleanId(p.id));
+    const participant = metadata.participants.find(
+      (p) => cleanId(p.id) === senderId || (p.lid && cleanId(p.lid) === senderId),
+    );
+
+    if (participant) {
+      sender = cleanId(participant.id); // Always resolve to JID
+    }
+
+    isAdmin = !!participant?.admin;
     const botId = cleanId(sock.user?.id || "");
     const botLid = cleanId(sock.user?.lid || "");
-
-    isAdmin = metadata.participants.some(
-      (p) => p.admin && (cleanId(p.id) === sender || p.id.includes(sender.split("@")[0])),
-    );
     isBotAdmin = metadata.participants.some(
-      (p) => p.admin && (cleanId(p.id) === botId || cleanId(p.id) === botLid),
+      (p) => p.admin && (cleanId(p.id) === botId || (p.lid && cleanId(p.lid) === botLid)),
     );
   }
 
