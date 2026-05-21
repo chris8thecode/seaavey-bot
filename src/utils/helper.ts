@@ -117,14 +117,12 @@ export function formatSize(bytes: number): string {
   return `${(bytes / k ** i).toFixed(2)} ${sizes[i]}`;
 }
 
-export function formatTime(seconds: number): string {
+export function formatTime(ms: number): string {
+  const seconds = Math.floor(ms / 1000);
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = Math.floor(seconds % 60);
-  return [h, m, s]
-    .map((v) => (v < 10 ? `0${v}` : v))
-    .filter((v, i) => v !== "00" || i > 0)
-    .join(":");
+  return `${h > 0 ? `${h} jam ` : ""}${m > 0 ? `${m} menit ` : ""}${s} detik`;
 }
 
 const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");

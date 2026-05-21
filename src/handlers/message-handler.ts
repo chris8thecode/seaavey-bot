@@ -15,7 +15,7 @@ import db, {
   updateMemberChat,
 } from "@/infra/database";
 import { commands } from "@/infra/loader";
-import { getNumber, parseMessage } from "@/utils/helper";
+import { formatTime, getNumber, parseMessage } from "@/utils/helper";
 
 const messageStore = new Map<string, WAMessage>();
 const spamTracker = new Map<string, number[]>();
@@ -151,7 +151,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
     if (senderAfk) {
       removeAfk(parse.sender);
       await sock.sendMessage(parse.jid, {
-        text: `👋 @${getNumber(parse.sender)} sudah kembali! (AFK ${Math.floor((Date.now() - senderAfk.timestamp) / 60000)} menit)`,
+        text: `👋 @${getNumber(parse.sender)} sudah kembali! (AFK ${formatTime(Date.now() - senderAfk.timestamp)})`,
         mentions: [parse.sender],
       });
     }
@@ -161,7 +161,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
         const afk = getAfk(m);
         if (afk) {
           await sock.sendMessage(parse.jid, {
-            text: `💤 @${getNumber(m)} sedang AFK\nAlasan: ${afk.reason}\nSejak: ${Math.floor((Date.now() - afk.timestamp) / 60000)} menit lalu`,
+            text: `💤 @${getNumber(m)} sedang AFK\nAlasan: ${afk.reason}\nSejak: ${formatTime(Date.now() - afk.timestamp)} lalu`,
             mentions: [m],
           });
         }
