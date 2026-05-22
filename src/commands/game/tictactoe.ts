@@ -14,7 +14,7 @@ const sessions = new Map<
 >();
 
 function renderBoard(board: string[]): string {
-  const cell = (v: string | undefined) => (v === "X" ? "✕" : v === "O" ? "◯" : v ?? "");
+  const cell = (v: string | undefined) => (v === "X" ? "✕" : v === "O" ? "◯" : (v ?? ""));
   return `
  ${cell(board[0])} │ ${cell(board[1])} │ ${cell(board[2])}
 ───┼───┼───
