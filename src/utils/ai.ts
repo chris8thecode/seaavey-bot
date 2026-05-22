@@ -21,7 +21,7 @@ export async function img2img(
   prompt: string,
 ): Promise<Img2ImgResponse> {
   const response = await ai.models.generateContent({
-    model: "gemini-2.0-flash-exp-image-generation",
+    model: "gemini-2.5-flash-image",
     contents: [
       { text: prompt },
       { inlineData: { mimeType, data: imageBuffer.toString("base64") } },
