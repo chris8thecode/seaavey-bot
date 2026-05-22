@@ -25,6 +25,8 @@
     },
   },
   "trustedDependencies": [
+    "@google/genai",
+    "sharp",
     "baileys",
     "protobufjs",
   ],
