@@ -1,4 +1,3 @@
-import { existsSync } from "node:fs";
 import { createInterface } from "node:readline";
 import type { Boom } from "@hapi/boom";
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from "baileys";
@@ -15,34 +14,37 @@ import { startServer } from "./server";
 async function startBot() {
   await loadCommands();
 
-  const isRegistered = existsSync("auth/creds.json");
-  let pairingNumber: string | undefined;
+  const { state, saveCreds } = await useMultiFileAuthState("auth");
 
-  if (!isRegistered) {
+  const sock = makeWASocket({ auth: state, logger });
+  sock.ev.on("creds.update", saveCreds);
+
+  if (!state.creds.registered && !state.creds.me?.id) {
     const rl = createInterface({
       input: process.stdin,
       output: process.stdout,
     });
-    pairingNumber = await new Promise<string>((r) =>
+    const pairingNumber = await new Promise<string>((r) =>
       rl.question("Masukkan nomor WhatsApp (contoh: 62123456789): ", r),
     );
     rl.close();
+
+    try {
+      await sock.waitForSocketOpen();
+      const code = await sock.requestPairingCode(pairingNumber);
+      logger.info(`\n📱 Pairing code: ${code}`);
+      process.stdout.write(`\n📱 Pairing code: ${code}\n\n`);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : String(error);
+      logger.error({ error }, "Gagal mendapatkan pairing code");
+      process.stdout.write(`\n❌ Error: ${msg}\n\n`);
+    }
   }
-
-  const { state, saveCreds } = await useMultiFileAuthState("auth");
-  const sock = makeWASocket({ auth: state, logger });
-
-  sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
     if (qr) {
-      if (pairingNumber) {
-        const code = await sock.requestPairingCode(pairingNumber);
-        logger.info(`Pairing code: ${code}`);
-      } else {
-        await QRCode.toFile("qr.png", qr);
-        logger.info("QR code saved to qr.png");
-      }
+      await QRCode.toFile("qr.png", qr);
+      logger.info("QR code saved to qr.png");
     }
 
     if (connection === "close") {
