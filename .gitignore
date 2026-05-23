@@ -43,8 +43,7 @@ qr.png
 *.db-shm
 
 # debug
-message.txt
-plans/*
+dev/
 
 # web-ui (separate repo)
 web-ui
