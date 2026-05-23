@@ -2,7 +2,7 @@ import type { WASocket } from "baileys";
 import { defineCommand } from "@/core/types";
 import type { Group } from "@/infra/database";
 import { getGroup, setGroup } from "@/infra/database";
-import type { ParsedMessage } from "@/utils/helper";
+import type { ParsedMessage } from "@/utils/message-resolver";
 
 type GroupField = keyof Omit<Group, "jid">;
 

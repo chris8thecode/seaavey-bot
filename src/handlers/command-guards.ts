@@ -1,7 +1,7 @@
 import type { WASocket } from "baileys";
 import { config } from "@/core/config";
 import type { Command } from "@/core/types";
-import type { ParsedMessage } from "@/utils/helper";
+import type { ParsedMessage } from "@/utils/message-resolver";
 import { TtlMap } from "@/utils/ttl-map";
 
 const cooldowns = new TtlMap<string, number>(300_000);

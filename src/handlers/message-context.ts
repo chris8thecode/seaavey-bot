@@ -1,6 +1,6 @@
 import type { WAMessage, WASocket } from "baileys";
 import type { Group } from "@/infra/repositories/group-repo";
-import type { ParsedMessage } from "@/utils/helper";
+import type { ParsedMessage } from "@/utils/message-resolver";
 
 export interface MessageContext {
   sock: WASocket;

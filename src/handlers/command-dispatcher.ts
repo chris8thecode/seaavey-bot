@@ -5,7 +5,8 @@ import { checkGuards } from "@/handlers/command-guards";
 import { commands } from "@/infra/loader";
 import { getGroup } from "@/infra/repositories/group-repo";
 import { addHit, getUser, isBanned } from "@/infra/repositories/user-repo";
-import { getNumber, type ParsedMessage } from "@/utils/helper";
+import { getNumber } from "@/utils/helper";
+import type { ParsedMessage } from "@/utils/message-resolver";
 
 export async function dispatchCommand(sock: WASocket, parse: ParsedMessage) {
   let cmdName: string | undefined;

@@ -8,7 +8,8 @@ import { getCachedGroupMetadata } from "@/infra/cache/group-metadata-cache";
 import db from "@/infra/db/client";
 import { getGroup, updateMemberChat } from "@/infra/repositories/group-repo";
 import { runMiddlewares } from "@/middleware";
-import { getNumber, parseMessage } from "@/utils/helper";
+import { getNumber } from "@/utils/helper";
+import { resolveMessage } from "@/utils/message-resolver";
 import { TtlMap } from "@/utils/ttl-map";
 
 const messageStore = new TtlMap<string, WAMessage>(10 * 60 * 1000);
@@ -40,7 +41,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       await writeFile("dev/message.txt", JSON.stringify(msg, null, 2));
     }
 
-    const parse = await parseMessage(sock, msg);
+    const parse = await resolveMessage(sock, msg);
 
     if (parse.isGroup) {
       updateMemberChat(parse.jid, parse.sender);

@@ -1,4 +1,4 @@
-import { toggleCommand } from "@/utils/command-factory";
+import { toggleCommand } from "@/utils/group-toggle";
 
 export default toggleCommand({
   name: "Anti Delete",
