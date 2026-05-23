@@ -24,8 +24,13 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
 
     if (msg.key.id) messageStore.set(msg.key.id, msg);
 
+    const parse = await resolveMessage(sock, msg);
+
     // For development purposes, store the raw message data and group participantship in the "dev" folder. This can be helpful for debugging and testing.
     if (isDev) {
+      // Store the parsed message data to a JSON file for easier debugging and analysis of the message structure and content.
+      await writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2));
+
       // Store group participant data to a JSON file for easier debugging of group-related features.
       await sock.groupFetchAllParticipating().then((groups) => {
         writeFile("dev/group-participants.json", JSON.stringify(groups, null, 2));
@@ -40,8 +45,6 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       // Store the raw message data to a separate file for quick access and debugging of individual messages.
       await writeFile("dev/message.txt", JSON.stringify(msg, null, 2));
     }
-
-    const parse = await resolveMessage(sock, msg);
 
     if (parse.isGroup) {
       updateMemberChat(parse.jid, parse.sender);

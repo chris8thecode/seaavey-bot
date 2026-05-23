@@ -16,7 +16,7 @@ export default defineCommand({
       const { generateRankCard } = await import("@/canvas/rankCard");
       const ppUrl = await getProfilePictureUrl(sock, msg.sender);
 
-      const userName = msg.msg.pushName || getNumber(msg.sender);
+      const userName = msg.pushName || getNumber(msg.sender);
       const imageBuffer = await generateRankCard(ppUrl, userName, level, xp, nextLevel);
 
       await sock.sendMessage(
@@ -25,11 +25,10 @@ export default defineCommand({
           image: imageBuffer,
           caption: `🎮 *Level ${level}* (${xp}/${nextLevel} XP)`,
         },
-        { quoted: msg.msg },
+        { quoted: msg.raw },
       );
     } catch (e) {
       logger.error(e);
-      // Fallback text
       const bar =
         "█".repeat(Math.floor((xp / nextLevel) * 10)) +
         "░".repeat(10 - Math.floor((xp / nextLevel) * 10));

@@ -8,7 +8,7 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     if (!msg.isAdmin) return msg.reply("❌ Khusus admin.");
-    const target = msg.mentioned[0] || msg.quoted;
+    const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag atau reply user yang ingin diwarn.");
     const reason =
       msg.args.filter((a: string) => !a.startsWith("@")).join(" ") || "Tidak ada alasan";

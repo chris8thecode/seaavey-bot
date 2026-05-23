@@ -9,13 +9,12 @@ export default defineCommand({
     if (!msg.isOwner) return;
     if (!sock.user?.id) return;
 
-    const raw = msg.msg;
-    const quotedMsg = raw.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const imageMsg = raw.message?.imageMessage || quotedMsg?.imageMessage;
+    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
 
     if (!imageMsg) return msg.reply("Kirim/reply gambar dengan caption .setpp");
 
-    const message = quotedMsg ? ({ key: raw.key, message: quotedMsg } as WAMessage) : raw;
+    const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
     const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
 
     await sock.updateProfilePicture(sock.user.id, buffer);

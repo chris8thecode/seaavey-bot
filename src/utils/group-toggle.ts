@@ -2,7 +2,7 @@ import type { WASocket } from "baileys";
 import { defineCommand } from "@/core/types";
 import type { Group } from "@/infra/database";
 import { getGroup, setGroup } from "@/infra/database";
-import type { ParsedMessage } from "@/utils/message-resolver";
+import type { MessageResolver } from "@/utils/message-resolver";
 
 type GroupField = keyof Omit<Group, "jid">;
 
@@ -18,7 +18,7 @@ export function toggleCommand({ name, field, description, alias }: ToggleConfig)
     name,
     ...(alias ? { alias } : {}),
     description,
-    handler: async (_sock: WASocket, msg: ParsedMessage) => {
+    handler: async (_sock: WASocket, msg: MessageResolver) => {
       if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
       if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
       const group = getGroup(msg.jid);

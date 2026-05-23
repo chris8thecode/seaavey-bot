@@ -1,14 +1,14 @@
 import type { WASocket } from "baileys";
 import { config } from "@/core/config";
 import type { Command } from "@/core/types";
-import type { ParsedMessage } from "@/utils/message-resolver";
+import type { MessageResolver } from "@/utils/message-resolver";
 import { TtlMap } from "@/utils/ttl-map";
 
 const cooldowns = new TtlMap<string, number>(300_000);
 
 export async function checkGuards(
   sock: WASocket,
-  parse: ParsedMessage,
+  parse: MessageResolver,
   cmd: Command,
 ): Promise<boolean> {
   if (cmd.enabled === false) {

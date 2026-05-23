@@ -7,8 +7,7 @@ export default defineCommand({
   alias: ["toimage"],
   description: "Convert sticker to image",
   handler: async (_sock, msg) => {
-    const raw = msg.msg;
-    const contextInfo = raw.message?.extendedTextMessage?.contextInfo;
+    const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
     const quotedMsg = contextInfo?.quotedMessage;
     const sticker =
       quotedMsg?.stickerMessage ||
@@ -20,7 +19,7 @@ export default defineCommand({
     }
 
     const message = {
-      key: { ...raw.key, id: contextInfo?.stanzaId, participant: contextInfo?.participant },
+      key: { ...msg.key, id: contextInfo?.stanzaId, participant: contextInfo?.participant },
       message: { stickerMessage: sticker },
     } as WAMessage;
 

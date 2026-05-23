@@ -6,9 +6,9 @@ import { commands } from "@/infra/loader";
 import { getGroup } from "@/infra/repositories/group-repo";
 import { addHit, getUser, isBanned } from "@/infra/repositories/user-repo";
 import { getNumber } from "@/utils/helper";
-import type { ParsedMessage } from "@/utils/message-resolver";
+import type { MessageResolver } from "@/utils/message-resolver";
 
-export async function dispatchCommand(sock: WASocket, parse: ParsedMessage) {
+export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
   let cmdName: string | undefined;
   if (parse.body.startsWith("=> ") || parse.body === "=>") cmdName = "=>";
   else if (parse.body.startsWith("> ") || parse.body === ">") cmdName = ">";

@@ -50,7 +50,7 @@ export default defineCommand({
 
     // Start new duel
     if (session) return msg.reply("⏳ Masih ada duel yang berlangsung!");
-    const target = msg.mentioned[0] || msg.quoted;
+    const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag lawan: .duel @user");
     if (target === msg.sender) return msg.reply("❌ Gak bisa duel sendiri!");
 

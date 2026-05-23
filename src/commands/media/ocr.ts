@@ -6,12 +6,12 @@ export default defineCommand({
   alias: ["ocr"],
   description: "Extract teks dari gambar. Reply gambar dengan .ocr",
   handler: async (_sock, msg) => {
-    const quotedMsg = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const imgMsg = msg.msg.message?.imageMessage || quotedMsg?.imageMessage;
+    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const imgMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
     if (!imgMsg) return msg.reply("❌ Reply gambar dengan .ocr");
     await msg.reply("🔍 Membaca teks...");
     const buffer = await downloadMediaMessage(
-      { message: { imageMessage: imgMsg }, key: msg.msg.key } as Parameters<
+      { message: { imageMessage: imgMsg }, key: msg.key } as Parameters<
         typeof downloadMediaMessage
       >[0],
       "buffer",

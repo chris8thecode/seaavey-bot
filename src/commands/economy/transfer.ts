@@ -1,12 +1,13 @@
 import { defineCommand } from "@/core/types";
 import { getEconomy, transferMoney } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
+
 export default defineCommand({
   name: "Transfer",
   alias: ["tf", "transfer"],
   description: "Transfer uang ke user lain",
   handler: async (_sock, msg) => {
-    const target = msg.mentioned[0] || msg.quoted;
+    const target = msg.mentioned[0] || msg.quoted?.sender;
     const amount = parseInt(msg.args.find((a: string) => /^\d+$/.test(a)) || "0", 10);
     if (!target)
       return msg.reply("Tag atau reply user yang ingin ditransfer.\nContoh: .transfer @user 1000");

@@ -1,11 +1,17 @@
-import type { AnyMessageContent, proto, WAMessage, WASocket } from "baileys";
+import {
+  type AnyMessageContent,
+  isJidGroup,
+  jidNormalizedUser,
+  type proto,
+  type WAMessage,
+  type WASocket,
+} from "baileys";
 import { config } from "@/core/config";
 import { getCachedGroupMetadata } from "@/infra/cache/group-metadata-cache";
 
-export interface ParsedMessage {
+export interface MessageResolver {
   id: string | undefined;
   jid: string;
-  lid: string;
   sender: string;
   body: string;
   isGroup: boolean;
@@ -14,9 +20,21 @@ export interface ParsedMessage {
   fromMe: boolean;
   isOwner: boolean;
   mentioned: string[];
-  quoted: string | undefined;
+  mtype: keyof proto.Message | undefined;
+  quoted:
+    | {
+        id: MessageResolver["id"];
+        sender: string;
+        mtype: keyof proto.Message | undefined;
+        body: string;
+        msg: proto.IMessage[keyof proto.IMessage] | undefined;
+      }
+    | undefined;
   args: string[];
-  msg: WAMessage;
+  message: proto.IMessage | null | undefined;
+  key: WAMessage["key"];
+  pushName: string | null | undefined;
+  raw: WAMessage;
   reply: (text: string) => Promise<void>;
   send: (content: AnyMessageContent) => Promise<void>;
 }
@@ -38,68 +56,57 @@ function extractBody(m: proto.IMessage | null | undefined): string {
   );
 }
 
-export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<ParsedMessage> {
-  const key = msg.key;
-  const isGroup = !!key.remoteJid?.endsWith("@g.us");
-  const jid = key.remoteJid || "";
-
-  const resolveId = async (...ids: (string | undefined | null)[]) => {
-    const all = ids.filter((i): i is string => !!i).map((id) => id.replace(/:.+@/, "@"));
-    const found = all.find((i) => i.endsWith("@s.whatsapp.net"));
-    if (found) return found;
-    const lid = all.find((i) => i.endsWith("@lid"));
-    if (lid) {
-      const resolved = await sock.signalRepository.lidMapping.getPNForLID(lid);
-      if (resolved) return resolved.replace(/:.+@/, "@");
-    }
-    return all[0] || "";
+export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<MessageResolver> {
+  // Helper function to convert LID to JID
+  const LIDToJid = async (lid: string): Promise<string | null> => {
+    if (lid.endsWith("@g.us")) return lid;
+    if (lid.endsWith("@s.whatsapp.net")) return lid;
+    const jid = await sock.signalRepository.lidMapping.getPNForLID(lid);
+    return jidNormalizedUser(jid ?? undefined) || lid;
   };
 
-  const senderId = await resolveId(
-    key.participantAlt,
-    key.participant,
-    key.remoteJidAlt,
-    key.remoteJid,
-  );
-  let sender = senderId;
+  const key = msg.key;
+  const mid = key.id || "";
+  const isGroup = isJidGroup(key.remoteJid ?? "") || false;
+  const jid = key.remoteJidAlt || (await LIDToJid(key.remoteJid || "")) || "";
+  const sender = isGroup
+    ? key.participantAlt || (await LIDToJid(key.participant || "")) || ""
+    : jid;
 
   let isAdmin = false;
   let isBotAdmin = false;
 
   if (isGroup) {
     const metadata = await getCachedGroupMetadata(sock, jid);
-    const participant = metadata.participants.find(
-      (p) =>
-        p.id.replace(/:.+@/, "@") === senderId ||
-        (p.lid && p.lid.replace(/:.+@/, "@") === senderId),
-    );
-
-    if (participant) {
-      sender = participant.id.replace(/:.+@/, "@");
-    }
+    const participant = metadata.participants.find((p) => p.phoneNumber === sender);
 
     isAdmin = !!participant?.admin;
-    const botId = sock.user?.id?.replace(/:.+@/, "@") || "";
-    const botLid = sock.user?.lid?.replace(/:.+@/, "@") || "";
-    isBotAdmin = metadata.participants.some(
-      (p) =>
-        p.admin &&
-        (p.id.replace(/:.+@/, "@") === botId || (p.lid && p.lid.replace(/:.+@/, "@") === botLid)),
-    );
+    const botId = jidNormalizedUser(sock.user?.id);
+    isBotAdmin = metadata.participants.some((p) => p.admin && p.phoneNumber === botId);
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
-  const mentioned = await Promise.all((contextInfo?.mentionedJid || []).map((id) => resolveId(id)));
-  const quoted = contextInfo?.participant
-    ? contextInfo.participant.replace(/:.+@/, "@")
-    : undefined;
+  const mentioned = contextInfo?.mentionedJid || [];
+
   const body = extractBody(msg.message);
   const args = body.split(" ").slice(1);
+  const quotedMsg = contextInfo?.quotedMessage;
+  const quotedData = quotedMsg
+    ? quotedMsg[Object.keys(quotedMsg)[0] as keyof proto.IMessage]
+    : null;
+  const quoted = contextInfo?.stanzaId
+    ? {
+        id: contextInfo.stanzaId ?? undefined,
+        sender: (await LIDToJid(contextInfo?.participant || "")) || "",
+        mtype: quotedMsg ? (Object.keys(quotedMsg)[0] as keyof proto.Message) : undefined,
+        body: extractBody(quotedMsg),
+        msg: quotedData ?? undefined,
+      }
+    : undefined;
 
   return {
-    id: key.id ?? undefined,
-    jid: await resolveId(key.remoteJidAlt, key.remoteJid),
-    lid: key.remoteJid || "",
+    id: mid,
+    jid,
     sender,
     body,
     fromMe: !!key.fromMe,
@@ -109,8 +116,12 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Pa
     isOwner: config.owner.includes(sender.replace(/@.+/, "")),
     mentioned,
     quoted,
+    mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
-    msg,
+    message: msg.message,
+    key: msg.key,
+    pushName: msg.pushName,
+    raw: msg,
     reply: async (text) => {
       const mentions = [...text.matchAll(/@(\d+)/g)].map((m) => `${m[1]}@s.whatsapp.net`);
       await sock.sendMessage(jid, { text, mentions }, { quoted: msg });

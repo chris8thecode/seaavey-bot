@@ -7,16 +7,15 @@ export default defineCommand({
   alias: ["stiker", "sticker"],
   description: "Convert image/video to sticker",
   handler: async (_sock, msg) => {
-    const raw = msg.msg;
-    const quotedMsg = raw.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const imageMsg = raw.message?.imageMessage || quotedMsg?.imageMessage;
-    const videoMsg = raw.message?.videoMessage || quotedMsg?.videoMessage;
+    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
+    const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
 
     if (!imageMsg && !videoMsg) {
       return msg.reply("Kirim/reply gambar atau video (max 10s) dengan caption .sticker");
     }
 
-    const message = quotedMsg ? ({ key: raw.key, message: quotedMsg } as WAMessage) : raw;
+    const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
     const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
 
     const pack = msg.args[0] || "SeaaveyBot";

@@ -7,7 +7,7 @@ export default defineCommand({
   description: "Lihat daftar warn member",
   handler: async (_sock, msg) => {
     if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
-    const target = msg.mentioned[0] || msg.quoted || msg.sender;
+    const target = msg.mentioned[0] || msg.quoted?.sender || msg.sender;
     const warns = getWarns(msg.jid, target);
     const max = getGroup(msg.jid).warnMax || 3;
     if (!warns.length) return msg.reply(`✅ @${getNumber(target)} tidak punya warn.`);

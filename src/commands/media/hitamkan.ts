@@ -6,8 +6,8 @@ export default defineCommand({
   name: "hitamkan",
   alias: ["hitamkan"],
   handler: async (sock, msg) => {
-    const quoted = msg.msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const isImage = msg.msg.message?.imageMessage || quoted?.imageMessage;
+    const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const isImage = msg.message?.imageMessage || quoted?.imageMessage;
 
     if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .hitamkan");
 
@@ -17,9 +17,9 @@ export default defineCommand({
       const mediaMsg = quoted
         ? {
             message: quoted,
-            key: msg.msg.message?.extendedTextMessage?.contextInfo?.stanzaId,
+            key: msg.message?.extendedTextMessage?.contextInfo?.stanzaId,
           }
-        : msg.msg;
+        : msg.raw;
       const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {});
 
       const result = await img2img(
@@ -33,7 +33,7 @@ export default defineCommand({
       await sock.sendMessage(
         msg.jid,
         { image: result.buffer, caption: "✅ Done" },
-        { quoted: msg.msg },
+        { quoted: msg.raw },
       );
     } catch (e: unknown) {
       const error = e as Error;

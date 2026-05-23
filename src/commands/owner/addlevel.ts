@@ -9,7 +9,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     if (!msg.isOwner) return msg.reply("❌ Fitur khusus Owner!");
 
-    const target = msg.quoted || msg.mentioned[0];
+    const target = msg.quoted?.sender || msg.mentioned[0];
     const amount = Number.parseInt(msg.args[1] || msg.args[0] || "0", 10);
 
     if (!target || Number.isNaN(amount)) {
