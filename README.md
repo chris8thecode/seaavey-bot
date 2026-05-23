@@ -21,15 +21,21 @@
 
 - 🔄 **Auto-reconnect** — Automatically reconnects on disconnect
 - 📱 **QR & Pairing Code** — Login via QR code or pairing code
-- ⚡ **Hot-reload** — Instant command reload in development
-- 📂 **Category-based** — Organized command structure
-- 🛡️ **Group Admin** — Full group management commands
-- 🧩 **Extensible** — Easy to add new commands
-- 🎛️ **Interactive Messages** — Buttons, lists, and more
-- 🎮 **Game Database** — 10+ local games from BochilTeam
-- 💰 **Economy System** — Wallet, bank, and secure transfers
+- ⚡ **Hot-reload** — Instant command reload in development mode
+- 🧩 **Extensible** — Easy to add commands with auto-loading from filesystem
+- 🛡️ **Middleware Pipeline** — Anti-link, anti-spam, anti-toxic, anti-viewonce, AFK, auto-reply, and game answer interception
+- 📂 **13 Command Categories** — 150+ commands organized by category
+- 🎮 **19 Games** — Trivia, TicTacToe, Hangman, Word Chain, and 16 word-guessing games with JSON data
+- 💰 **Economy System** — Wallet, bank, daily rewards, shop, secure transfers
+- 📊 **Leveling & XP** — Earn XP per command, level up with rank card images (Sharp canvas)
+- 🤖 **AI Integration** — Google Gemini 2.5 Flash for image generation/editing
+- 🌐 **HTTP API Server** — Elysia server (port 8080) with stats, users, groups, commands, logs, settings, schedules, and broadcast endpoints
+- 🗳️ **Group Voting** — Polls and Votekick sessions with anti-double-vote
+- ⚠️ **Warning System** — Per-group configurable max warns
 - 📢 **AFK Status** — Auto-respond and clear status on activity
-- 🗳️ **Group Voting** — Polls and Votekick sessions with anti-double vote
+- 🖼️ **Media Conversion** — Image/Video to sticker, sticker to image, video/audio to MP3
+- 📅 **Scheduler** — Reminders and scheduled messages with repeat support
+- 🖥️ **Web UI Dashboard** — Nuxt.js-based dashboard in `web-ui/`
 
 ## Requirements
 
@@ -38,39 +44,195 @@
 
 ## Installation
 
+### Quick Start (VPS / Linux)
+
 ```bash
-# Clone the repository
 git clone https://github.com/seaavey/seaavey-bot.git
 cd seaavey-bot
+bash setup_vps.sh
+```
 
-# Run installer (installs Bun, FFmpeg, dependencies)
-bash bin/install.sh
+### Quick Start (Termux / Android)
 
-# Or manual install
+```bash
+git clone https://github.com/seaavey/seaavey-bot.git
+cd seaavey-bot
+bash setup_termux.sh
+```
+
+### Manual Install
+
+```bash
 bun install
 cp .env.example .env
-
-# Start the bot
+# Edit .env with your OWNER_NUMBER
 bun run start
 ```
 
 Scan the QR code from `qr.png` or enter your phone number for pairing code.
 
+---
+
+## Architecture (Deep Dive)
+
+### Project Structure
+
+```
+src/
+├── index.ts                 # Entry point — connects WhatsApp, loads commands, starts server
+├── core/
+│   ├── config.ts            # Global config (prefix, owner, API keys)
+│   ├── types.ts             # Command interface & defineCommand helper
+│   └── logger.ts            # Pino logger (console + daily file)
+├── commands/                # 13 categories, 150+ commands (auto-loaded)
+│   ├── general/             # Menu, ping, runtime, profile, level, etc.
+│   ├── converter/           # Encode, decode, toimg, tomp3
+│   ├── downloader/          # YouTube, TikTok, Instagram, Spotify, etc.
+│   ├── economy/             # Wallet, daily, shop, transfer
+│   ├── fun/                 # Meme, quotes, ship, zodiak, waifu, etc.
+│   ├── game/                # Trivia, TicTacToe, Hangman, Word Chain, etc.
+│   ├── group/               # Admin tools, antilink, welcome, poll, etc.
+│   ├── info/                # Weather, earthquake, GitHub, npm, etc.
+│   ├── media/               # Sticker, QR, TTS, OCR, Carbon, etc.
+│   ├── owner/               # Bot management commands
+│   ├── productivity/        # Notes, todo, reminders, schedule, AFK
+│   ├── search/              # Pinterest, SoundCloud, lyrics
+│   └── tools/               # Calculator, translate, shortlink, tracking
+├── handlers/
+│   ├── message-handler.ts   # Incoming message processing
+│   ├── command-dispatcher.ts# Command resolution & level-up detection
+│   └── command-guards.ts    # Permission & cooldown checks
+├── middleware/               # Pipeline executed per message
+│   ├── anti-link.ts         # Auto-delete links when antilink enabled
+│   ├── anti-spam.ts         # Rate-limit: 5 msgs / 10s
+│   ├── anti-toxic.ts        # Built-in + custom toxic word filter
+│   ├── anti-viewonce.ts     # Forwards view-once to owner
+│   ├── afk.ts               # Auto-clears AFK on activity; notifies if mentioned
+│   ├── auto-reply.ts        # SQLite-based keyword auto-replies
+│   └── game-answer.ts       # Captures game answers from any text
+├── services/
+│   ├── command-service.ts   # List/find/enable-disable commands (for API)
+│   └── group-service.ts     # List/get/update groups (for API)
+├── game/
+│   ├── game.ts              # Central game answer dispatcher (19 games)
+│   └── word-game-factory.ts # Generic word-game command generator
+├── canvas/
+│   ├── rankCard.ts          # Sharp-based level rank card image
+│   └── welcomeImage.ts      # Welcome + goodbye cards
+├── utils/
+│   ├── helper.ts            # Utilities (random, format, profile pics)
+│   ├── convert.ts           # Sticker/img/mp3 conversion via ffmpeg
+│   ├── ai.ts                # Google GenAI wrapper (gemini-2.5-flash)
+│   └── group-toggle.ts      # Generic on/off toggle command factory
+├── server/
+│   ├── index.ts             # Elysia HTTP server (port 8080)
+│   └── routes/              # 8 route modules
+│       ├── stats.ts         # /api/stats
+│       ├── users.ts         # /api/users
+│       ├── groups.ts        # /api/groups
+│       ├── commands.ts      # /api/commands
+│       ├── logs.ts          # /api/logs
+│       ├── settings.ts      # /api/settings
+│       ├── schedules.ts     # /api/schedules
+│       └── broadcast.ts     # /api/broadcast
+└── infra/
+    ├── loader.ts            # Auto-loads commands, hot-reload in dev
+    ├── database.ts          # Database facade
+    ├── scheduler.ts         # 30s-interval poller for reminders & schedules
+    ├── db/client.ts         # bun:sqlite singleton (WAL mode)
+    └── repositories/        # 9 SQLite data repositories
+        ├── user-repo.ts     # users table (xp, level, banned)
+        ├── economy-repo.ts  # economy table (wallet, bank, daily)
+        ├── group-repo.ts    # groups + group_members
+        ├── afk-repo.ts      # afk table
+        ├── autoreply-repo.ts# autoreplies table
+        ├── poll-repo.ts     # polls table
+        ├── warn-repo.ts     # warns table
+        ├── toxic-repo.ts    # toxic_words table
+        └── schedule-repo.ts # reminders + schedules
+```
+
+### Middleware Pipeline
+
+Every incoming message flows through this pipeline in order:
+
+```
+Message → Anti-ViewOnce → Anti-Link → Anti-Spam → Anti-Toxic → AFK → Game Answer → Auto-Reply
+```
+
+Each middleware can intercept, modify, or delete messages. The pipeline runs before the command dispatcher.
+
+### Database
+
+Built-in SQLite via `bun:sqlite` with WAL mode. 11 tables covering users, economy, groups, AFK, auto-replies, polls, warns, toxic words, reminders, and schedules. No external database setup required.
+
+### HTTP API
+
+An Elysia server runs on port `API_PORT` (default: 8080) providing:
+
+| Endpoint         | Description                                         |
+| ---------------- | --------------------------------------------------- |
+| `/api/stats`     | Server stats, 7-day activity chart, recent activity |
+| `/api/users`     | CRUD, ban/unban users                               |
+| `/api/groups`    | List, update settings, mute/unmute                  |
+| `/api/commands`  | List, enable/disable commands                       |
+| `/api/logs`      | Tail recent log lines with level filter             |
+| `/api/settings`  | Get/update bot settings                             |
+| `/api/schedules` | CRUD for scheduled messages                         |
+| `/api/broadcast` | Broadcast endpoint                                  |
+
+### Game System
+
+19 games including:
+
+- **Standalone games:** Trivia, Math, Family100, Coinflip, Dice, Duel, Hangman, Quiz, Slot, Suit, TebakAngka, TicTacToe, Word Chain
+- **Word games (16 JSON data files):** AsahOtak, CakLontong, SiapakahAku, SusunKata, TebakAnime, TebakBendera, TebakGambar, TebakKabupaten, TebakKalimat, TebakKimia, TebakLirik, TebakMemberJKT48, TebakTebakan, TebakWaifu, TekaTeki
+
+All games feature 60s timeouts, hint systems, and XP rewards.
+
+---
+
+## Command Categories
+
+| Category       | Description                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| `general`      | Menu, ping, runtime, profile, level, confess, etc.                                         |
+| `tools`        | Calculator, translate, shortlink, tracking                                                 |
+| `converter`    | Encode, decode, image-to-image, video-to-mp3                                               |
+| `media`        | Sticker maker, QR code, TTS, OCR, Carbon, screenshot                                       |
+| `downloader`   | YouTube, TikTok, Instagram, Facebook, Twitter/X, Spotify, SoundCloud, Pinterest, MediaFire |
+| `fun`          | Meme, quotes, ship, zodiak, waifu, emojimix, fakta, etc.                                   |
+| `game`         | Trivia, TicTacToe, Hangman, Word Chain, Duel, Slot, and 13+ word guessing games            |
+| `economy`      | Wallet, daily, shop, transfer                                                              |
+| `productivity` | Notes, todo, reminders, schedule, AFK                                                      |
+| `group`        | Admin tools (kick, promote, demote), antilink, welcome, poll, votekick, warn, sider        |
+| `info`         | Weather, earthquake, GitHub, npm packages, prayer times                                    |
+| `search`       | Pinterest, SoundCloud, lyrics                                                              |
+| `owner`        | Bot management (eval, broadcast, block, setprefix, etc.)                                   |
+
 ## Scripts
 
-| Script | Description |
-|--------|-------------|
-| `bin/install.sh` | Install Bun, FFmpeg, dependencies, setup .env |
-| `bin/update.sh` | Pull latest changes & update dependencies |
-| `bin/uninstall.sh` | Remove node_modules, auth, database, .env |
-| `bin/create.sh` | Generate new command file interactively |
+| Script                 | Description                                              |
+| ---------------------- | -------------------------------------------------------- |
+| `setup_vps.sh`         | Ubuntu/Debian installer — Bun, FFmpeg, PM2, dependencies |
+| `setup_termux.sh`      | Termux/Android installer — Bun, dependencies             |
+| `ecosystem.config.cjs` | PM2 process manager configuration                        |
+
+### Development
+
+```bash
+bun run dev    # Runs with NODE_ENV=development (hot-reload enabled)
+bun run start  # Production mode
+bun run lint   # Biome check + TypeScript check
+bun run format # Auto-format with Biome
+```
 
 ## Adding Commands
 
-Create a file in `commands/<category>/`:
+Create a file in `src/commands/<category>/`:
 
 ```ts
-// commands/general/hello.ts
+// src/commands/general/hello.ts
 import { defineCommand } from "@/types";
 
 export default defineCommand({
@@ -82,42 +244,26 @@ export default defineCommand({
 });
 ```
 
-Or use the generator: `bash bin/create.sh`
-
 Commands are auto-loaded on startup. In dev mode, changes are hot-reloaded.
-
-## Command Categories
-
-| Category | Description |
-|----------|-------------|
-| `general` | Menu, ping, runtime, etc. |
-| `tools` | Sticker, OCR, TTS, QR, translate, etc. |
-| `productivity` | Notes, todo, reminders, schedule, AFK |
-| `downloader` | YouTube, TikTok, Instagram, etc. |
-| `fun` | Meme, quotes, ship, zodiak, etc. |
-| `game` | Trivia, tictactoe, hangman, etc. |
-| `group` | Admin tools, antilink, welcome, etc. |
-| `economy` | Wallet, daily, shop, transfer |
-| `search` | Pinterest, SoundCloud, lyrics |
-| `info` | Weather, GitHub, earthquake, etc. |
-| `owner` | Bot management commands |
 
 ## Docker
 
 ```bash
 docker build -t seaaveybot .
-docker run -v ./auth:/app/auth seaaveybot
+docker run -v ./auth:/app/auth -v ./data:/app/data seaaveybot
 ```
 
 ## Configuration
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `NODE_ENV` | `production` | `development` or `production` |
-| `OWNER_NUMBER` | - | Owner WhatsApp number(s), comma-separated |
-| `API_KEY` | - | API key for external services |
+| Variable         | Default       | Description                               |
+| ---------------- | ------------- | ----------------------------------------- |
+| `NODE_ENV`       | `production`  | `development` or `production`             |
+| `OWNER_NUMBER`   | `62123456789` | Owner WhatsApp number(s), comma-separated |
+| `API_KEY`        | —             | API key for api.seaavey.com               |
+| `GEMINI_API_KEY` | —             | Google AI Studio API key (AI features)    |
+| `API_PORT`       | `8080`        | HTTP API server port                      |
 
-Bot prefix default: `.` (configurable in `lib/config.ts`)
+Bot prefix default: `.` (configurable at runtime via `setprefix` command)
 
 ## Contributing
 
@@ -129,10 +275,10 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=seaavey%2Fseaavey-bot&type=date&legend=top-left">
+<a href="https://www.star-history.com/#seaavey/seaavey-bot&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=seaavey/seaavey-bot&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" />
  </picture>
 </a>
