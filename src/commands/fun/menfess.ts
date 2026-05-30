@@ -3,7 +3,7 @@ import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Menfess",
-  alias: ["mf", "menfess"],
+  alias: ["menfess"],
   description: "Kirim pesan rahasia ke nomor WA via bot (anonim). Gunakan di private chat.",
   handler: async (sock, msg) => {
     if (msg.isGroup)
