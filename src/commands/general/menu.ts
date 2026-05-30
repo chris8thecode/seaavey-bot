@@ -53,11 +53,10 @@ export default defineCommand({
       const cmds = categories.get(targetCategory);
       if (!cmds) return;
 
-      let text = `╭━━━━[ *${targetCategory.toUpperCase()}* ]━━━━\n`;
+      let text = `*${targetCategory.toUpperCase()}*\n`;
       for (const cmd of cmds) {
-        text += `┃ 🔹 *${cmd.title}*\n┃ └ ${cmd.description}\n`;
+        text += `*${cmd.title}* - ${cmd.description}\n`;
       }
-      text += `╰━━━━━━━━━━━━━━━━\n`;
       await msg.reply(text);
       return;
     }
@@ -102,7 +101,7 @@ export default defineCommand({
         body: caption,
         footer: "SeaaveyBot Open Source",
         header: {
-          image: readFileSync("src/assets/thumbnail.jpg"),
+          image: readFileSync("src/assets/banner.png"),
         },
         buttons: [
           {
