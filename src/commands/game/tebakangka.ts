@@ -6,7 +6,7 @@ const sessions = new Map<string, { answer: number; attempts: number; timeout: Ti
 
 export default defineCommand({
   name: "Tebak Angka",
-  alias: ["tba", "tebakangka"],
+  alias: ["tbka", "tebakangka"],
   description: "Tebak angka 1-100 (ada hint higher/lower)",
   handler: async (sock, msg) => {
     const key = `${msg.jid}:${msg.sender}`;
