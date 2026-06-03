@@ -7,7 +7,7 @@ mkdirSync("logs", { recursive: true });
 const today = new Date().toISOString().slice(0, 10);
 
 export const logger = pino({
-  level: isDev ? "info" : "silent",
+  level: isDev ? "info" : "warn",
   transport: {
     targets: [
       { target: "pino/file", options: { destination: `logs/${today}.log` } },
