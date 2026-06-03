@@ -11,12 +11,31 @@ import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
 import { startServer } from "./server";
 
+let isRestarting = false;
+let restartAttempts = 0;
+let currentSock: ReturnType<typeof makeWASocket> | null = null;
+
+process.on("unhandledRejection", (err) => {
+  logger.error({ err }, "Unhandled rejection — connection handler will recover");
+});
+
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught exception — exiting");
+  process.exit(1);
+});
+
 async function startBot() {
   await loadCommands();
+
+  // Cleanup old socket before creating a new one
+  if (currentSock) {
+    try { currentSock.end(undefined); } catch {}
+  }
 
   const { state, saveCreds } = await useMultiFileAuthState("auth");
 
   const sock = makeWASocket({ auth: state, logger });
+  currentSock = sock;
   sock.ev.on("creds.update", saveCreds);
 
   if (!state.creds.registered && !state.creds.me?.id) {
@@ -49,10 +68,24 @@ async function startBot() {
 
     if (connection === "close") {
       const error = lastDisconnect?.error as Boom | undefined;
-      const shouldReconnect = error?.output?.statusCode !== DisconnectReason.loggedOut;
-      if (shouldReconnect) startBot();
-      else logger.info("Logged out.");
+      if (error?.output?.statusCode === DisconnectReason.loggedOut) {
+        logger.info("Logged out.");
+        return;
+      }
+      if (isRestarting) return;
+      isRestarting = true;
+      const delay = Math.min(1000 * 2 ** restartAttempts, 60_000);
+      restartAttempts++;
+      logger.warn({ delay }, `Connection closed, reconnecting in ${delay}ms...`);
+      await new Promise((r) => setTimeout(r, delay));
+      try {
+        await startBot();
+        restartAttempts = 0;
+      } finally {
+        isRestarting = false;
+      }
     } else if (connection === "open") {
+      restartAttempts = 0;
       logger.info("Connected to WhatsApp!");
       startSchedulers(sock);
 
