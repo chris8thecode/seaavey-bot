@@ -18,7 +18,6 @@
 
 
     // Path alias
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
