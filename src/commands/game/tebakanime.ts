@@ -20,8 +20,7 @@ const { command, checkAnswer } = createWordGame<AnimeData>({
     item.karakter
       ? `⏰ Habis! Jawabannya: *${item.jawaban}* (${item.karakter})`
       : `⏰ Habis! Jawabannya: *${item.jawaban}*`,
-  correctMessage: (item, _ans) =>
-    `✅ Benar! Judulnya *${item.jawaban}* (+15 XP)`,
+  correctMessage: (item, _ans) => `✅ Benar! Judulnya *${item.jawaban}* (+15 XP)`,
 });
 
 export default command;

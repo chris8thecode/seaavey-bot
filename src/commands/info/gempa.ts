@@ -17,7 +17,7 @@ export default defineCommand({
   description: "Info gempa terkini dari BMKG",
   handler: async (_sock, msg) => {
     const data = await safeFetchJSON<{ Infogempa?: { gempa?: Gempa } }>(
-      "https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json"
+      "https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json",
     );
     const g = data?.Infogempa?.gempa;
     if (!g) return msg.reply("❌ Data gempa tidak tersedia.");

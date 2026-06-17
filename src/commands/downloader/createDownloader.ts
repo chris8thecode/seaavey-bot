@@ -35,9 +35,7 @@ export function createDownloader(cfg: DownloaderConfig) {
 
       await msg.reply(cfg.progressText ?? "⏳ Downloading...");
 
-      const res = await api.get<ApiData>(
-        `${cfg.endpoint}?url=${encodeURIComponent(url)}`,
-      );
+      const res = await api.get<ApiData>(`${cfg.endpoint}?url=${encodeURIComponent(url)}`);
 
       const data = res.data;
 

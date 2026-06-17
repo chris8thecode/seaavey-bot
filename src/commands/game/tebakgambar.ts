@@ -18,8 +18,7 @@ const { command, checkAnswer } = createWordGame<TBGData>({
   image: (item) => item.img,
   timeoutMessage: (item, _ans) =>
     `⏰ Waktu habis!\n\nJawabannya: *${item.jawaban}*\nDeskripsi: ${item.deskripsi}`,
-  correctMessage: (item, _ans) =>
-    `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
+  correctMessage: (item, _ans) => `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
 });
 
 export default command;

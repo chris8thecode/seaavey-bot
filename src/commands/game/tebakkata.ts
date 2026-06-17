@@ -24,8 +24,7 @@ const { command, checkAnswer } = createWordGame<TBKData>({
     return `Susun huruf berikut:\n\n*${s.toUpperCase()}*`;
   },
   answer: (item) => item.word,
-  correctMessage: (item, _ans) =>
-    `✅ Benar! Jawabannya *${item.word}* (+20 XP)`,
+  correctMessage: (item, _ans) => `✅ Benar! Jawabannya *${item.word}* (+20 XP)`,
 });
 
 export default command;

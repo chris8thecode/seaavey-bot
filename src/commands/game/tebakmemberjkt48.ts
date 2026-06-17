@@ -21,8 +21,7 @@ const { command, checkAnswer } = createWordGame<MemberData>({
     item.nama_panggilan
       ? `⏰ Habis! Jawabannya: *${item.jawaban}* (${item.nama_panggilan})`
       : `⏰ Habis! Jawabannya: *${item.jawaban}*`,
-  correctMessage: (item, _ans) =>
-    `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
+  correctMessage: (item, _ans) => `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
 });
 
 export default command;

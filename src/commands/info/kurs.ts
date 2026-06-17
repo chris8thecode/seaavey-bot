@@ -8,9 +8,10 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const currency = (msg.args[0] || "USD").toUpperCase();
     const data = await safeFetchJSON<{ result?: string; rates?: Record<string, number> }>(
-      `https://open.er-api.com/v6/latest/${currency}`
+      `https://open.er-api.com/v6/latest/${currency}`,
     );
-    if (!data || data.result !== "success" || !data.rates) return msg.reply("❌ Mata uang tidak ditemukan.");
+    if (!data || data.result !== "success" || !data.rates)
+      return msg.reply("❌ Mata uang tidak ditemukan.");
     const idr = data.rates.IDR;
     const usd = data.rates.USD;
     const eur = data.rates.EUR;

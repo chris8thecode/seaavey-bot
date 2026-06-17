@@ -19,7 +19,9 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const username = msg.args[0];
     if (!username) return msg.reply("Format: .github <username>");
-    const u = await safeFetchJSON<GitHubUser>(`https://api.github.com/users/${encodeURIComponent(username)}`);
+    const u = await safeFetchJSON<GitHubUser>(
+      `https://api.github.com/users/${encodeURIComponent(username)}`,
+    );
     if (!u) return msg.reply("❌ User tidak ditemukan.");
     await msg.send({
       image: { url: u.avatar_url },

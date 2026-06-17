@@ -30,10 +30,9 @@ export default defineCommand({
     const data = await safeFetchJSON<{
       status?: number;
       data?: { summary?: { status: string; desc: string; courier: string; date: string } };
-    }>(
-      `https://api.binderbyte.com/v1/track?api_key=free&courier=${couriers[courier]}&awb=${awb}`,
-    );
-    if (!data || data.status !== 200 || !data.data?.summary) return msg.reply("❌ Resi tidak ditemukan.");
+    }>(`https://api.binderbyte.com/v1/track?api_key=free&courier=${couriers[courier]}&awb=${awb}`);
+    if (!data || data.status !== 200 || !data.data?.summary)
+      return msg.reply("❌ Resi tidak ditemukan.");
     const s = data.data.summary;
     await msg.reply(
       `📦 *Tracking ${courier.toUpperCase()}*\n\n📋 Resi: ${awb}\n📊 Status: ${s.status}\n📝 ${s.desc}\n📅 ${s.date}`,

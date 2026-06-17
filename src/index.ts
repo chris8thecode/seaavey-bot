@@ -29,7 +29,9 @@ async function startBot() {
 
   // Cleanup old socket before creating a new one
   if (currentSock) {
-    try { currentSock.end(undefined); } catch {}
+    try {
+      currentSock.end(undefined);
+    } catch {}
   }
 
   const { state, saveCreds } = await useMultiFileAuthState("auth");

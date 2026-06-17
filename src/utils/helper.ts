@@ -65,4 +65,3 @@ export async function safeFetchJSON<T>(url: string): Promise<T | null> {
     return null;
   }
 }
-
