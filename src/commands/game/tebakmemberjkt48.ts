@@ -1,6 +1,4 @@
-import { defineCommand } from "@/core/types";
-import { addXp } from "@/infra/database";
-import { getRandomItem, loadGameData } from "@/utils/helper";
+import { createWordGame } from "@/game/word-game-factory";
 
 interface MemberData {
   img: string;
@@ -8,50 +6,24 @@ interface MemberData {
   nama_panggilan?: string;
 }
 
-const localData = loadGameData<MemberData>("tebakmemberjkt48.json");
-
-const sessions = new Map<string, { answer: string; timeout: Timer; sender?: string }>();
-
-export default defineCommand({
+const { command, checkAnswer } = createWordGame<MemberData>({
   name: "Tebak Member JKT48",
-  alias: ["tmjkt", "tebakjkt", "tebakmemberjkt48"],
+  triggers: ["tebakmemberjkt48", "tmjkt", "tebakjkt"],
   description: "Tebak nama member JKT48 dari foto",
-  handler: async (sock, msg) => {
-    if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
-    if (!localData.length) return msg.reply("❌ Data member belum tersedia.");
-
-    const item = getRandomItem(localData);
-
-    const jid = msg.jid;
-    const timeout = setTimeout(() => {
-      sessions.delete(jid);
-      sock.sendMessage(jid, {
-        text: item.nama_panggilan
-          ? `⏰ Habis! Jawabannya: *${item.jawaban}* (${item.nama_panggilan})`
-          : `⏰ Habis! Jawabannya: *${item.jawaban}*`,
-      });
-    }, 60_000);
-
-    sessions.set(jid, { answer: item.jawaban.toLowerCase(), timeout, sender: msg.sender });
-
-    const nicknameLine = item.nama_panggilan ? `\n\nClue: ${item.nama_panggilan}` : "";
-    await msg.send({
-      image: { url: item.img },
-      caption: `👩 *Tebak Member JKT48!*\n\nSiapa nama member ini?${nicknameLine}\n\nWaktu 60s!`,
-    });
-  },
+  dataFile: "tebakmemberjkt48.json",
+  emoji: "👩",
+  reward: 20,
+  question: (item) =>
+    `Siapa nama member ini?${item.nama_panggilan ? `\n\nClue: ${item.nama_panggilan}` : ""}`,
+  answer: (item) => item.jawaban,
+  image: (item) => item.img,
+  timeoutMessage: (item, _ans) =>
+    item.nama_panggilan
+      ? `⏰ Habis! Jawabannya: *${item.jawaban}* (${item.nama_panggilan})`
+      : `⏰ Habis! Jawabannya: *${item.jawaban}*`,
+  correctMessage: (item, _ans) =>
+    `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
 });
 
-export function checkTebakMemberJKT48(jid: string, text: string, sender: string): string | null {
-  const session = sessions.get(jid);
-  if (!session) return null;
-  if (!jid.endsWith("@g.us") && sender !== session.sender) return null;
-
-  const input = text.toLowerCase().trim();
-  if (input !== session.answer) return null;
-
-  clearTimeout(session.timeout);
-  sessions.delete(jid);
-  addXp(sender, 20);
-  return `✅ Benar! Jawabannya *${session.answer}* (+20 XP)`;
-}
+export default command;
+export const checkTebakMemberJKT48 = checkAnswer;
