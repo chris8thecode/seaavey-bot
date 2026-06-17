@@ -14,3 +14,5 @@ export function scraperError<T>(error: string): ScraperResult<T> {
 
 export type { FbdlData } from "./fbdl";
 export { fsaver } from "./fbdl";
+export type { SpotifyData, SpotifySearchResult, SpotifyTrack } from "./spotify";
+export { spotify, spotifySearch } from "./spotify";
