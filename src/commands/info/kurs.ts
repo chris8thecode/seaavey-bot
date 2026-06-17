@@ -1,4 +1,5 @@
 import { defineCommand } from "@/core/types";
+import { safeFetchJSON } from "@/utils/helper";
 
 export default defineCommand({
   name: "Kurs",
@@ -6,9 +7,10 @@ export default defineCommand({
   description: "Cek kurs mata uang terhadap IDR",
   handler: async (_sock, msg) => {
     const currency = (msg.args[0] || "USD").toUpperCase();
-    const res = await fetch(`https://open.er-api.com/v6/latest/${currency}`);
-    const data = (await res.json()) as { result?: string; rates?: Record<string, number> };
-    if (data.result !== "success" || !data.rates) return msg.reply("❌ Mata uang tidak ditemukan.");
+    const data = await safeFetchJSON<{ result?: string; rates?: Record<string, number> }>(
+      `https://open.er-api.com/v6/latest/${currency}`
+    );
+    if (!data || data.result !== "success" || !data.rates) return msg.reply("❌ Mata uang tidak ditemukan.");
     const idr = data.rates.IDR;
     const usd = data.rates.USD;
     const eur = data.rates.EUR;

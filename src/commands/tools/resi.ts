@@ -1,4 +1,5 @@
 import { defineCommand } from "@/core/types";
+import { safeFetchJSON } from "@/utils/helper";
 
 const couriers: Record<string, string> = {
   jne: "jne",
@@ -26,14 +27,13 @@ export default defineCommand({
       );
     }
     if (!couriers[courier]) return msg.reply("❌ Kurir tidak dikenali.");
-    const res = await fetch(
-      `https://api.binderbyte.com/v1/track?api_key=free&courier=${couriers[courier]}&awb=${awb}`,
-    );
-    const data = (await res.json()) as {
+    const data = await safeFetchJSON<{
       status?: number;
       data?: { summary?: { status: string; desc: string; courier: string; date: string } };
-    };
-    if (data.status !== 200 || !data.data?.summary) return msg.reply("❌ Resi tidak ditemukan.");
+    }>(
+      `https://api.binderbyte.com/v1/track?api_key=free&courier=${couriers[courier]}&awb=${awb}`,
+    );
+    if (!data || data.status !== 200 || !data.data?.summary) return msg.reply("❌ Resi tidak ditemukan.");
     const s = data.data.summary;
     await msg.reply(
       `📦 *Tracking ${courier.toUpperCase()}*\n\n📋 Resi: ${awb}\n📊 Status: ${s.status}\n📝 ${s.desc}\n📅 ${s.date}`,

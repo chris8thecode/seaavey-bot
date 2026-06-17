@@ -1,4 +1,5 @@
 import { defineCommand } from "@/core/types";
+import { safeFetchJSON } from "@/utils/helper";
 
 export default defineCommand({
   name: "Cuaca",
@@ -7,9 +8,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const city = msg.args.join(" ");
     if (!city) return msg.reply("Format: .cuaca <nama kota>\nContoh: .cuaca Jakarta");
-    const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
-    if (!res.ok) return msg.reply("❌ Kota tidak ditemukan.");
-    const data = (await res.json()) as {
+    const data = await safeFetchJSON<{
       current_condition?: Array<{
         temp_C: string;
         weatherDesc: Array<{ value: string }>;
@@ -20,7 +19,8 @@ export default defineCommand({
         areaName: Array<{ value: string }>;
         country: Array<{ value: string }>;
       }>;
-    };
+    }>(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+    if (!data) return msg.reply("❌ Kota tidak ditemukan.");
     const cur = data.current_condition?.[0];
     const area = data.nearest_area?.[0];
     if (!cur) return msg.reply("❌ Data cuaca tidak tersedia.");

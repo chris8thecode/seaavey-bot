@@ -1,4 +1,5 @@
 import { defineCommand } from "@/core/types";
+import { safeFetchJSON } from "@/utils/helper";
 
 export default defineCommand({
   name: "Translate",
@@ -11,11 +12,10 @@ export default defineCommand({
       return msg.reply(
         "Format: .translate <kode_bahasa> <teks>\nContoh: .translate en Apa kabar?\n\nKode: id, en, ja, ko, ar, zh, fr, de, es",
       );
-    const res = await fetch(
+    const data = await safeFetchJSON<{ responseData?: { translatedText?: string } }>(
       `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=auto|${lang}`,
     );
-    const data = (await res.json()) as { responseData?: { translatedText?: string } };
-    const translated = data.responseData?.translatedText;
+    const translated = data?.responseData?.translatedText;
     if (!translated) return msg.reply("❌ Gagal menerjemahkan.");
     await msg.reply(`🌐 *Translate* → ${lang.toUpperCase()}\n\n${translated}`);
   },

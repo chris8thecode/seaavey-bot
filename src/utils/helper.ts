@@ -50,3 +50,19 @@ export function loadGameData<T>(filename: string): T[] {
     return [];
   }
 }
+
+/**
+ * Fetches a URL and returns parsed JSON, or null on failure.
+ * Eliminates repeated res.ok ↔ res.json() ↔ null-check boilerplate
+ * across 14 bare-fetch commands.
+ */
+export async function safeFetchJSON<T>(url: string): Promise<T | null> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
