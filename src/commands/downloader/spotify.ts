@@ -1,18 +1,11 @@
-import { defineCommand } from "@/core/types";
-import { api } from "@/infra/api";
+import { createDownloader } from "./createDownloader";
 
-export default defineCommand({
+export default createDownloader({
   name: "Spotify",
-  alias: ["spot", "spotify"],
+  aliases: ["spot", "spotify"],
   description: "Download lagu dari Spotify",
-  handler: async (_sock, msg) => {
-    const url = msg.args[0];
-    if (!url)
-      return msg.reply("Kirim URL Spotify.\nContoh: .spotify https://open.spotify.com/track/...");
-    await msg.reply("⏳ Downloading...");
-    const res = await api.get<{ title: string; url: string }>(
-      `/downloader/spotify?url=${encodeURIComponent(url)}`,
-    );
-    await msg.send({ audio: { url: res.data.url }, mimetype: "audio/mpeg" });
-  },
+  platform: "Spotify",
+  helpExample: "https://open.spotify.com/track/...",
+  endpoint: "/downloader/spotify",
+  mediaType: "audio",
 });
