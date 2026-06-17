@@ -48,5 +48,10 @@ dev/
 # web-ui (separate repo)
 web-ui
 
+# Agent folder
+.commandcode
+.agents
+.claude
+
 # test files
 *.test.*
