@@ -9,7 +9,6 @@ import { invalidateGroupMetadata } from "@/infra/cache/group-metadata-cache";
 import { setGroup, updateMemberChat } from "@/infra/database";
 import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
-import { startServer } from "./server";
 
 let isRestarting = false;
 let restartAttempts = 0;
@@ -142,4 +141,3 @@ async function startBot() {
 }
 
 startBot();
-startServer();

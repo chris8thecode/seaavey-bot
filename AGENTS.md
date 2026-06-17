@@ -46,12 +46,11 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 
 ## Architecture
 
-- **Entry**: `src/index.ts` — connects WhatsApp, loads commands, starts Elysia server (port 8080)
+- **Entry**: `src/index.ts` — connects WhatsApp, loads commands
 - **Message flow**: `resolveMessage()` → 7 middlewares (anti-viewonce → anti-link → anti-spam →
   anti-toxic → afk → game-answer → auto-reply) → `dispatchCommand()`
 - **Database**: `bun:sqlite` WAL mode, single `data.db` file. Tables created lazily via
   `safeMigrate()` in each repository. No external DB needed.
-- **HTTP API**: Elysia on `API_PORT` (default 8080), 8 route modules under `src/server/routes/`
 - **AI**: Google Gemini 2.5 Flash via `@google/genai` (requires `GEMINI_API_KEY`)
 
 ## Key packages
@@ -59,7 +58,6 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 | Package                | Purpose                             |
 | ---------------------- | ----------------------------------- |
 | baileys ^7.0.0-rc11    | WhatsApp Web protocol               |
-| elysia ^1.4.28         | HTTP API server                     |
 | sharp ^0.34.5          | Rank card / welcome image rendering |
 | @google/genai ^2.3.0   | Gemini AI                           |
 | @biomejs/biome ^2.4.15 | Linter + formatter                  |
