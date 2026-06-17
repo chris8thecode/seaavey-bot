@@ -35,7 +35,7 @@
 - 📢 **AFK Status** — Auto-respond and clear status on activity
 - 🖼️ **Media Conversion** — Image/Video to sticker, sticker to image, video/audio to MP3
 - 📅 **Scheduler** — Reminders and scheduled messages with repeat support
-- 🖥️ **Web UI Dashboard** — Nuxt.js-based dashboard in `web-ui/`
+
 
 ## Requirements
 

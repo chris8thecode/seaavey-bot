@@ -39,5 +39,5 @@
     "noPropertyAccessFromIndexSignature": false,
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "web-ui"],
+  "exclude": ["node_modules"],
 }
