@@ -46,24 +46,30 @@ Already in `package.json`:
 - Updated `src/commands/downloader/spotify.ts` to use new scraper
 - Created tests in `src/infra/scrapers/__tests__/spotify.test.ts`
 
+### ✅ Threads Downloader (2026-06-18)
+
+- Created `src/infra/scrapers/threads.ts` — scrapes threadsvideo.romitkr5539.workers.dev
+- Updated `src/commands/downloader/threadsdl.ts` to use new scraper
+- Created tests in `src/infra/scrapers/__tests__/threads.test.ts`
+
 ## Commands to Migrate
 
-| Command        | Target Website                        | Scraper File                       | Status |
-| -------------- | ------------------------------------- | ---------------------------------- | ------ |
-| `.fbdl`        | `fsaver.net`                          | `src/infra/scrapers/fbdl.ts`       | ✅     |
-| `.spotify`     | `musicfab.io` + `spotify.xwolf.space` | `src/infra/scrapers/spotify.ts`    | ✅     |
-| `.ytmp3`       | `y2mate.com`                          | `src/infra/scrapers/youtube.ts`    | ⏳     |
-| `.ytmp4`       | `y2mate.com`                          | `src/infra/scrapers/youtube.ts`    | ⏳     |
-| `.igdl`        | `saveig.app`                          | `src/infra/scrapers/instagram.ts`  | ⏳     |
-| `.soundcloud`  | `scdownloader.com`                    | `src/infra/scrapers/soundcloud.ts` | ⏳     |
-| `.scdl`        | `scdownloader.com`                    | `src/infra/scrapers/soundcloud.ts` | ⏳     |
-| `.pinterest`   | `pinterest.com` (internal API)        | `src/infra/scrapers/pinterest.ts`  | ⏳     |
-| `.pinterestdl` | `pinterestdownloader.com`             | `src/infra/scrapers/pinterest.ts`  | ⏳     |
-| `.lirik`       | `genius.com` (public API)             | `src/infra/scrapers/genius.ts`     | ⏳     |
-| `.mediafire`   | `mediafire.com` (direct)              | `src/infra/scrapers/mediafire.ts`  | ⏳     |
-| `.threadsdl`   | `savefrom.net`                        | `src/infra/scrapers/threads.ts`    | ⏳     |
-| `.xdl`         | `savetwitter.net`                     | `src/infra/scrapers/twitter.ts`    | ⏳     |
-| `.ssweb`       | `pageshot.site`                       | `src/infra/scrapers/ssweb.ts`      | ⏳     |
+| Command        | Target Website                         | Scraper File                       | Status |
+| -------------- | -------------------------------------- | ---------------------------------- | ------ |
+| `.fbdl`        | `fsaver.net`                           | `src/infra/scrapers/fbdl.ts`       | ✅     |
+| `.spotify`     | `musicfab.io` + `spotify.xwolf.space`  | `src/infra/scrapers/spotify.ts`    | ✅     |
+| `.ytmp3`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
+| `.ytmp4`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
+| `.igdl`        | `saveig.app`                           | `src/infra/scrapers/instagram.ts`  | ⏳     |
+| `.soundcloud`  | `scdownloader.com`                     | `src/infra/scrapers/soundcloud.ts` | ⏳     |
+| `.scdl`        | `scdownloader.com`                     | `src/infra/scrapers/soundcloud.ts` | ⏳     |
+| `.pinterest`   | `pinterest.com` (internal API)         | `src/infra/scrapers/pinterest.ts`  | ⏳     |
+| `.pinterestdl` | `pinterestdownloader.com`              | `src/infra/scrapers/pinterest.ts`  | ⏳     |
+| `.lirik`       | `genius.com` (public API)              | `src/infra/scrapers/genius.ts`     | ⏳     |
+| `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ⏳     |
+| `.threadsdl`   | `threadsvideo.romitkr5539.workers.dev` | `src/infra/scrapers/threads.ts`    | ✅     |
+| `.xdl`         | `savetwitter.net`                      | `src/infra/scrapers/twitter.ts`    | ⏳     |
+| `.ssweb`       | `pageshot.site`                        | `src/infra/scrapers/ssweb.ts`      | ⏳     |
 
 ## Downloader Websites per Service
 
@@ -179,18 +185,10 @@ Parse download link from HTML using cheerio.
 
 ### Threads
 
-**Primary:** `savefrom.net`
+**Primary:** `threadsvideo.romitkr5539.workers.dev`
 
 ```
-POST https://savefrom.net/savefrom.php
-Body: { url: threads_url }
-```
-
-**Backup:** Threads GraphQL API
-
-```
-POST https://www.threads.net/api/graphql
-Body: { doc_id: "...", variables: { shortcode: "..." } }
+GET https://threadsvideo.romitkr5539.workers.dev?url={threads_url}
 ```
 
 ### X / Twitter
@@ -235,12 +233,13 @@ src/infra/scrapers/
 ├── pinterest.ts       # pinterest search + download (TODO)
 ├── genius.ts          # lyrics search (TODO)
 ├── mediafire.ts       # mediafire download (TODO)
-├── threads.ts         # threadsdl (TODO)
+├── threads.ts         # threadsdl
 ├── twitter.ts         # xdl (TODO)
 ├── ssweb.ts           # screenshot web (TODO)
 └── __tests__/
     ├── fbdl.test.ts
-    └── spotify.test.ts
+    ├── spotify.test.ts
+    └── threads.test.ts
 ```
 
 ## Scraper Pattern
