@@ -85,7 +85,13 @@ Already in `package.json`:
 - Updated `src/commands/search/pinterest.ts` to use new scraper
 - Updated `src/commands/downloader/pindl.ts` to use new scraper
 
-## Commands to Migrate
+### ✅ Genius / Lyrics Scraper (2026-06-18)
+
+- Created `src/infra/scrapers/genius.ts` — search + lyrics via lrclib.net
+ - `geniusSearch(query, limit)` — search songs
+ - `geniusLyrics(artist, track)` — get full lyrics
+- Genius.com blocked by Cloudflare (403), lrclib.net used as backend (free, no auth)
+- Updated `src/commands/search/lirik.ts` to use new scraper
 
 | Command        | Target Website                         | Scraper File                       | Status |
 | -------------- | -------------------------------------- | ---------------------------------- | ------ |
@@ -98,7 +104,7 @@ Already in `package.json`:
 | `.scdl`        | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.pinterest`   | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
 | `.pinterestdl` | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
-| `.lirik`       | `genius.com` (public API)              | `src/infra/scrapers/genius.ts`     | ⏳     |
+|| `.lirik`       | `lrclib.net`                           | `src/infra/scrapers/genius.ts`     | ✅     |
 | `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ⏳     |
 | `.threadsdl`   | `threadsvideo.romitkr5539.workers.dev` | `src/infra/scrapers/threads.ts`    | ✅     |
 | `.xdl`         | `savetwitter.net`                      | `src/infra/scrapers/twitter.ts`    | ⏳     |
@@ -212,11 +218,14 @@ are resolved via redirect chain to extract pin ID first.
 
 ### Genius / Lyrics
 
-**Primary:** Genius public API
+**Primary:** lrclib.net (Genius blocked by Cloudflare)
 
 ```
-GET https://genius.com/api/search/multi?q={query}
+GET https://lrclib.net/api/search?q={query}
+GET https://lrclib.net/api/get?artist_name={artist}&track_name={track}
 ```
+
+No API key required. Returns `plainLyrics` and `syncedLyrics`.
 
 ### MediaFire
 
@@ -276,7 +285,7 @@ src/infra/scrapers/
 ├── instagram.ts       # Instagram media download
 ├── soundcloud.ts      # soundcloud search + download
 ├── pinterest.ts       # pinterest search + download
-├── genius.ts          # lyrics search (TODO)
+├── genius.ts          # lyrics search + get
 ├── mediafire.ts       # mediafire download (TODO)
 ├── threads.ts         # threadsdl
 ├── twitter.ts         # xdl (TODO)
