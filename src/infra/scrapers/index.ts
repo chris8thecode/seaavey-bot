@@ -26,3 +26,5 @@ export type { SpotifyData, SpotifySearchResult, SpotifyTrack } from "./spotify";
 export { spotify, spotifySearch } from "./spotify";
 export type { YouTubeData } from "./youtube";
 export { ytmp3, ytmp4 } from "./youtube";
+export type { GeniusResult, GeniusLyrics } from "./genius";
+export { geniusSearch, geniusLyrics } from "./genius";
