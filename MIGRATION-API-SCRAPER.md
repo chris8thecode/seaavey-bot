@@ -134,7 +134,7 @@ GET {progress_url}
 Response: { progress: 1000, download_url, format }
 ```
 
-Format codes: `128` (mp3), `360`, `480`, `720`, `1080` (mp4)
+Format codes: `mp3` (audio), `360`, `480`, `720`, `1080` (mp4)
 
 ### Instagram
 
@@ -266,7 +266,8 @@ src/infra/scrapers/
     ├── fbdl.test.ts
     ├── soundcloud.test.ts
     ├── spotify.test.ts
-    └── threads.test.ts
+    ├── threads.test.ts
+    └── youtube.test.ts
 ```
 
 ## Scraper Pattern

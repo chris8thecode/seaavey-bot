@@ -14,7 +14,7 @@ export interface YouTubeData {
 }
 
 export async function ytmp3(url: string): Promise<ScraperResult<YouTubeData>> {
-  return youtubeDl(url, "128");
+  return youtubeDl(url, "mp3");
 }
 
 export async function ytmp4(url: string): Promise<ScraperResult<YouTubeData>> {
