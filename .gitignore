@@ -49,6 +49,3 @@ dev/
 .commandcode
 .agents
 .claude
-
-# test files
-*.test.*
