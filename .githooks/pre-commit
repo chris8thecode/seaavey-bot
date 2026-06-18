@@ -1,9 +1,11 @@
 #!/bin/sh
 # Auto format staged files before commit
-FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|js|json)$')
+FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|js|json|md)$')
 [ -z "$FILES" ] && exit 0
 
-echo "$FILES" | xargs bunx biome check --write --no-errors-on-unmatched
+echo "$FILES" | xargs bunx prettier --write
+TS_FILES=$(echo "$FILES" | grep -E '\.ts$')
+[ -n "$TS_FILES" ] && echo "$TS_FILES" | xargs bunx eslint --fix
 echo "$FILES" | xargs git add
 
 exit 0
