@@ -1,6 +1,7 @@
 import { execFile } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import axios from "axios";
 
@@ -19,6 +20,7 @@ export interface YouTubeData {
   format: string;
   duration?: number;
   filesize?: number;
+  localFile?: string;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────
@@ -99,6 +101,41 @@ async function isMediaUrl(url: string): Promise<boolean> {
     return false;
   } catch {
     return false;
+  }
+}
+
+// ─── Audio Download + Convert ─────────────────────────────────────
+
+async function downloadAndConvertMp3(url: string): Promise<string | null> {
+  const tmpDir = mkdtempSync(join(tmpdir(), "yt-"));
+  const inputFile = join(tmpDir, "audio");
+  const outputFile = join(tmpDir, "audio.mp3");
+  try {
+    // Download with yt-dlp
+    const args = ["-f", "bestaudio/best", "-o", inputFile, "--no-playlist", "--no-warnings", url];
+    await execFileAsync(findYtDlp(), args, { timeout: 60_000 });
+    // Find the downloaded file (yt-dlp may add extension)
+    const files = [
+      join(tmpDir, "audio.m4a"),
+      join(tmpDir, "audio.webm"),
+      join(tmpDir, "audio.opus"),
+      join(tmpDir, "audio.mp3"),
+      join(tmpDir, "audio"),
+    ];
+    const input = files.find((f) => existsSync(f));
+    if (!input) return null;
+    // If already mp3, return as-is
+    if (input.endsWith(".mp3")) return input;
+    // Convert to MP3 with FFmpeg
+    await execFileAsync("ffmpeg", ["-i", input, "-codec:a", "libmp3lame", "-q:a", "2", outputFile, "-y"], {
+      timeout: 60_000,
+    });
+    if (existsSync(outputFile)) return outputFile;
+    return null;
+  } catch {
+    return null;
+  } finally {
+    rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
@@ -208,6 +245,14 @@ export async function ytmp3(url: string): Promise<ScraperResult<YouTubeData>> {
   if (ytResult.status) {
     // Verify the URL actually returns media
     if (await isMediaUrl(ytResult.data.downloadUrl)) {
+      // Download + convert to MP3 for WhatsApp compatibility
+      const mp3Path = await downloadAndConvertMp3(ytResult.data.downloadUrl);
+      if (mp3Path) {
+        return scraperSuccess({
+          ...ytResult.data,
+          localFile: mp3Path,
+        });
+      }
       return ytResult;
     }
   }
@@ -216,6 +261,13 @@ export async function ytmp3(url: string): Promise<ScraperResult<YouTubeData>> {
   const loaderResult = await loaderToDownload(url, "mp3");
   if (loaderResult.status) {
     if (await isMediaUrl(loaderResult.data.downloadUrl)) {
+      const mp3Path = await downloadAndConvertMp3(loaderResult.data.downloadUrl);
+      if (mp3Path) {
+        return scraperSuccess({
+          ...loaderResult.data,
+          localFile: mp3Path,
+        });
+      }
       return loaderResult;
     }
   }
