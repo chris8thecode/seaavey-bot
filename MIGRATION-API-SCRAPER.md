@@ -76,6 +76,15 @@ Already in `package.json`:
 - Updated `src/commands/downloader/ytmp3.ts` to use new scraper
 - Updated `src/commands/downloader/ytmp4.ts` to use new scraper
 
+### ✅ Pinterest Scraper (2026-06-18)
+
+- Created `src/infra/scrapers/pinterest.ts` — scrapes pinterest.com directly
+- `pinterestSearch(query, limit)` — parse search page for 736x thumbnails + alt text
+- `pinterestDl(url)` — resolve pin.it short URLs via redirect chain, extract originals
+- No API key required, no Cloudflare blocks
+- Updated `src/commands/search/pinterest.ts` to use new scraper
+- Updated `src/commands/downloader/pindl.ts` to use new scraper
+
 ## Commands to Migrate
 
 | Command        | Target Website                         | Scraper File                       | Status |
@@ -87,8 +96,8 @@ Already in `package.json`:
 | `.igdl`        | `insaver.io`                           | `src/infra/scrapers/instagram.ts`  | ✅     |
 | `.soundcloud`  | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.scdl`        | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
-| `.pinterest`   | `pinterest.com` (internal API)         | `src/infra/scrapers/pinterest.ts`  | ⏳     |
-| `.pinterestdl` | `pinterestdownloader.com`              | `src/infra/scrapers/pinterest.ts`  | ⏳     |
+| `.pinterest`   | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
+| `.pinterestdl` | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
 | `.lirik`       | `genius.com` (public API)              | `src/infra/scrapers/genius.ts`     | ⏳     |
 | `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ⏳     |
 | `.threadsdl`   | `threadsvideo.romitkr5539.workers.dev` | `src/infra/scrapers/threads.ts`    | ✅     |
@@ -182,20 +191,24 @@ Client ID extracted from `window.__sc_hydration` → `apiClient.id` on `https://
 
 ### Pinterest (search)
 
-**Primary:** Pinterest Resource API (internal)
+**Primary:** Direct HTML scraping of `pinterest.com`
 
 ```
-GET https://www.pinterest.com/resource/BaseSearchResource/get/?source_url=/search/pins/?q={query}&data={"options":{"query":"{query}"},"context":{}}
+GET https://www.pinterest.com/search/pins/?q={query}
 ```
+
+Parse 736x thumbnail URLs → convert to originals. Extract alt text and pin IDs.
 
 ### Pinterest (download)
 
-**Primary:** `pinterestdownloader.com`
+**Primary:** Direct HTML scraping of `pinterest.com/pin/{id}/`
 
 ```
-POST https://pinterestdownloader.com/download
-Body: { url: pin_url }
+GET https://www.pinterest.com/pin/{pin_id}/
 ```
+
+Extract `i.pinimg.com/originals/...` URL from page source. Short URLs (`pin.it`)
+are resolved via redirect chain to extract pin ID first.
 
 ### Genius / Lyrics
 
@@ -262,7 +275,7 @@ src/infra/scrapers/
 ├── youtube.ts         # ytmp3, ytmp4
 ├── instagram.ts       # Instagram media download
 ├── soundcloud.ts      # soundcloud search + download
-├── pinterest.ts       # pinterest search + download (TODO)
+├── pinterest.ts       # pinterest search + download
 ├── genius.ts          # lyrics search (TODO)
 ├── mediafire.ts       # mediafire download (TODO)
 ├── threads.ts         # threadsdl
