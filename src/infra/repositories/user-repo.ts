@@ -1,4 +1,4 @@
-import db, { safeMigrate } from "@/infra/db/client";
+import db, { safeMigrate } from "@/infra/client";
 import { getRandomNumber } from "@/utils/helper";
 
 db.run(`

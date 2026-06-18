@@ -1,4 +1,4 @@
-import db, { safeMigrate } from "@/infra/db/client";
+import db, { safeMigrate } from "@/infra/client";
 
 db.run(`
   CREATE TABLE IF NOT EXISTS groups (

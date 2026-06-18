@@ -7,7 +7,7 @@ import {
   type WASocket,
 } from "baileys";
 import { config } from "@/core/config";
-import { getCachedGroupMetadata } from "@/infra/cache/group-metadata-cache";
+import { getCachedGroupMetadata } from "@/infra/group-metadata-cache";
 
 export interface MessageResolver {
   id: string | undefined;

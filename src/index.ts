@@ -5,8 +5,8 @@ import * as QRCode from "qrcode";
 import { logger } from "@/core/logger";
 import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
-import { invalidateGroupMetadata } from "@/infra/cache/group-metadata-cache";
 import { setGroup, updateMemberChat } from "@/infra/database";
+import { invalidateGroupMetadata } from "@/infra/group-metadata-cache";
 import { loadCommands } from "@/infra/loader";
 import { startSchedulers } from "@/infra/scheduler";
 

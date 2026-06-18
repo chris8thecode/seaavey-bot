@@ -1,4 +1,4 @@
-import db from "@/infra/db/client";
+import db from "@/infra/client";
 
 export { getAfk, removeAfk, setAfk } from "@/infra/repositories/afk-repo";
 export {

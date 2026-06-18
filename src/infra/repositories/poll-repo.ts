@@ -1,4 +1,4 @@
-import db from "@/infra/db/client";
+import db from "@/infra/client";
 
 db.run(`
   CREATE TABLE IF NOT EXISTS polls (
