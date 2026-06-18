@@ -5,6 +5,7 @@ export default defineCommand({
   name: "YT MP4",
   alias: ["ytmp4"],
   description: "Download video dari YouTube",
+  cooldown: 60,
   handler: async (_sock, msg) => {
     const url = msg.args[0];
     if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp4 https://youtu.be/...");

@@ -7,6 +7,7 @@ export default defineCommand({
   name: "YT MP3",
   alias: ["ytmp3"],
   description: "Download audio dari YouTube",
+  cooldown: 30,
   handler: async (_sock, msg) => {
     const url = msg.args[0];
     if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp3 https://youtu.be/...");
