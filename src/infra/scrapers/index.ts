@@ -16,6 +16,8 @@ export type { FbdlData } from "./fbdl";
 export { fsaver } from "./fbdl";
 export type { InstagramMedia } from "./instagram";
 export { instagramDl } from "./instagram";
+export type { PinterestPin } from "./pinterest";
+export { pinterestDl, pinterestSearch } from "./pinterest";
 export type { SoundCloudSearchResult, SoundCloudTrack } from "./soundcloud";
 export { soundcloudDl, soundcloudSearch } from "./soundcloud";
 export type { ThreadsMedia } from "./threads";
