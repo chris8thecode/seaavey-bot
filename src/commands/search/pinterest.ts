@@ -1,11 +1,5 @@
 import { defineCommand } from "@/core/types";
-import { api } from "@/infra/api";
-
-interface PinResult {
-  title: string;
-  url: string;
-  image: string;
-}
+import { pinterestSearch } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "Pinterest",
@@ -15,11 +9,10 @@ export default defineCommand({
     const query = msg.args.join(" ");
     if (!query) return msg.reply("Format: .pinterest <kata kunci>");
     await msg.reply("🔍 Mencari...");
-    const res = await api.get<PinResult[]>(
-      `/search/pinterest?query=${encodeURIComponent(query)}&limit=5`,
-    );
+    const res = await pinterestSearch(query, 5);
+    if (!res.status) return msg.reply(`❌ ${res.error}`);
     if (!res.data.length) return msg.reply("❌ Tidak ditemukan.");
-    for (const pin of res.data.slice(0, 5)) {
+    for (const pin of res.data) {
       await msg.send({ image: { url: pin.image }, caption: pin.title || "" });
     }
   },
