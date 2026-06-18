@@ -11,12 +11,13 @@ bun run start          # production mode
 
 ## Commands
 
-| Script           | What it does                                                     |
-| ---------------- | ---------------------------------------------------------------- |
-| `bun run dev`    | `NODE_ENV=development bun run src/index.ts` — hot-reload enabled |
-| `bun run start`  | `bun run src/index.ts`                                           |
-| `bun run lint`   | `biome check . && bun tsc` — **run this before committing**      |
-| `bun run format` | `biome check --write .` — 2-space, 100-width                     |
+| Script             | What it does                                                  |
+| ------------------ | ------------------------------------------------------------- |
+| `bun run dev`      | `NODE_ENV=development bun run src/index.ts` — hot-reload enabled |
+| `bun run start`    | `bun run src/index.ts`                                        |
+| `bun run lint`     | `eslint . && bun tsc` — **run this before committing**        |
+| `bun run format`   | `prettier --write .` — 2-space, 100-width                     |
+| `bun run format:check` | `prettier --check .` — verify formatting                 |
 
 CI runs `lint` + `bunx tsc --noEmit` on push/PR to `main`.
 
@@ -68,7 +69,8 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 | node-webpmux ^3.2.1    | WebP metadata for stickers          |
 | pino-pretty ^13.1.3    | Pretty-printed log output           |
 | qrcode ^1.5.4          | QR code generation                  |
-| @biomejs/biome ^2.4.16 | Linter + formatter                  |
+| eslint ^10.5.0         | Linter                              |
+| prettier ^3.8.4        | Formatter (TS, JSON, Markdown)      |
 
 ## TypeScript quirks
 
@@ -77,7 +79,7 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 - `exactOptionalPropertyTypes: true` — be careful with optional fields
 - `noUncheckedIndexedAccess: true` — array/dict access may return `undefined`
 - `noUnusedLocals` / `noUnusedParameters` are **off** (never errors)
-- `noExplicitAny` is **error** in Biome — use `unknown` instead
+- `noExplicitAny` is **error** in ESLint — use `unknown` instead
 
 ## Key conventions
 
@@ -86,12 +88,12 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 - Database access: re-exported through `src/infra/database.ts` facade
 - Group settings: accessed via `getGroup(jid)` from `src/infra/repositories/group-repo`
 - Game data JSON files live in `src/data/games/`
-- **No console.log** — Biome warns on `noConsole`. Use the logger instead.
-- **No `any`** — Biome errors on `noExplicitAny`. Use `unknown` and narrow.
+- **No console.log** — ESLint warns on `no-console`. Use the logger instead.
+- **No `any`** — ESLint errors on `no-explicit-any`. Use `unknown` and narrow.
 - Bot prefix defaults to `.` (configurable at runtime via `setprefix`)
 - Owner numbers are comma-separated in `OWNER_NUMBER` env var
 - Env vars: `OWNER_NUMBER`, `API_KEY`, `GEMINI_API_KEY`, `NODE_ENV`
-- Biome also errors on `noUnusedVariables` and `noUnusedImports`; warns on `noNonNullAssertion` and `noUnusedFunctionParameters`
+- ESLint also errors on `no-unused-vars` and `no-unused-imports`; warns on `no-non-null-assertion`
 - **Use command guard properties** — never manually check `msg.isGroup`, `msg.isAdmin`, `msg.isBotAdmin`, or `msg.isOwner` inside handlers. Set `groupOnly`, `adminOnly`, `botAdmin`, `ownerOnly`, or `privateOnly` in `defineCommand()` instead. The `checkGuards()` system handles all of these uniformly.
 
 ## Deployment

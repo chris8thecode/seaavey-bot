@@ -36,7 +36,6 @@
 - 🖼️ **Media Conversion** — Image/Video to sticker, sticker to image, video/audio to MP3
 - 📅 **Scheduler** — Reminders and scheduled messages with repeat support
 
-
 ## Requirements
 
 - [Bun](https://bun.sh) v1.0+

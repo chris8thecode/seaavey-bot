@@ -22,6 +22,8 @@ export default defineCommand({
   description: "Would You Rather — pilih salah satu!",
   handler: async (_sock, msg) => {
     const q = getRandomItem(questions) as (typeof questions)[number];
-    await msg.reply(`🤔 *Would You Rather?*\n\n🅰️ ${q.a}\n\natau\n\n🅱️ ${q.b}\n\n_Pilih A atau B!_`);
+    await msg.reply(
+      `🤔 *Would You Rather?*\n\n🅰️ ${q.a}\n\natau\n\n🅱️ ${q.b}\n\n_Pilih A atau B!_`,
+    );
   },
 });

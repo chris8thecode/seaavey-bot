@@ -16,7 +16,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
 
-
     // Path alias
     "paths": {
       "@/*": ["./src/*"]
@@ -35,8 +34,8 @@
     // Relaxed (biar ga ribet pas develop)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
+    "noPropertyAccessFromIndexSignature": false
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }

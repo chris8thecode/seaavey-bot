@@ -48,22 +48,22 @@ Already in `package.json`:
 
 ## Commands to Migrate
 
-| Command        | Target Website                 | Scraper File                       | Status |
-| -------------- | ------------------------------ | ---------------------------------- | ------ |
-| `.fbdl`        | `fsaver.net`                   | `src/infra/scrapers/fbdl.ts`       | ✅     |
-| `.spotify`     | `musicfab.io` + `spotify.xwolf.space` | `src/infra/scrapers/spotify.ts` | ✅     |
-| `.ytmp3`       | `y2mate.com`                   | `src/infra/scrapers/youtube.ts`    | ⏳     |
-| `.ytmp4`       | `y2mate.com`                   | `src/infra/scrapers/youtube.ts`    | ⏳     |
-| `.igdl`        | `saveig.app`                   | `src/infra/scrapers/instagram.ts`  | ⏳     |
-| `.soundcloud`  | `scdownloader.com`             | `src/infra/scrapers/soundcloud.ts` | ⏳     |
-| `.scdl`        | `scdownloader.com`             | `src/infra/scrapers/soundcloud.ts` | ⏳     |
-| `.pinterest`   | `pinterest.com` (internal API) | `src/infra/scrapers/pinterest.ts`  | ⏳     |
-| `.pinterestdl` | `pinterestdownloader.com`      | `src/infra/scrapers/pinterest.ts`  | ⏳     |
-| `.lirik`       | `genius.com` (public API)      | `src/infra/scrapers/genius.ts`     | ⏳     |
-| `.mediafire`   | `mediafire.com` (direct)       | `src/infra/scrapers/mediafire.ts`  | ⏳     |
-| `.threadsdl`   | `savefrom.net`                 | `src/infra/scrapers/threads.ts`    | ⏳     |
-| `.xdl`         | `savetwitter.net`              | `src/infra/scrapers/twitter.ts`    | ⏳     |
-| `.ssweb`       | `pageshot.site`                | `src/infra/scrapers/ssweb.ts`      | ⏳     |
+| Command        | Target Website                        | Scraper File                       | Status |
+| -------------- | ------------------------------------- | ---------------------------------- | ------ |
+| `.fbdl`        | `fsaver.net`                          | `src/infra/scrapers/fbdl.ts`       | ✅     |
+| `.spotify`     | `musicfab.io` + `spotify.xwolf.space` | `src/infra/scrapers/spotify.ts`    | ✅     |
+| `.ytmp3`       | `y2mate.com`                          | `src/infra/scrapers/youtube.ts`    | ⏳     |
+| `.ytmp4`       | `y2mate.com`                          | `src/infra/scrapers/youtube.ts`    | ⏳     |
+| `.igdl`        | `saveig.app`                          | `src/infra/scrapers/instagram.ts`  | ⏳     |
+| `.soundcloud`  | `scdownloader.com`                    | `src/infra/scrapers/soundcloud.ts` | ⏳     |
+| `.scdl`        | `scdownloader.com`                    | `src/infra/scrapers/soundcloud.ts` | ⏳     |
+| `.pinterest`   | `pinterest.com` (internal API)        | `src/infra/scrapers/pinterest.ts`  | ⏳     |
+| `.pinterestdl` | `pinterestdownloader.com`             | `src/infra/scrapers/pinterest.ts`  | ⏳     |
+| `.lirik`       | `genius.com` (public API)             | `src/infra/scrapers/genius.ts`     | ⏳     |
+| `.mediafire`   | `mediafire.com` (direct)              | `src/infra/scrapers/mediafire.ts`  | ⏳     |
+| `.threadsdl`   | `savefrom.net`                        | `src/infra/scrapers/threads.ts`    | ⏳     |
+| `.xdl`         | `savetwitter.net`                     | `src/infra/scrapers/twitter.ts`    | ⏳     |
+| `.ssweb`       | `pageshot.site`                       | `src/infra/scrapers/ssweb.ts`      | ⏳     |
 
 ## Downloader Websites per Service
 
@@ -279,15 +279,19 @@ export interface SpotifyData {
 
 export async function spotify(url: string): Promise<ScraperResult<SpotifyData>> {
   try {
-    const res = await axios.post("https://musicfab.io/api/spotify", { url }, {
-      headers: {
-        accept: "*/*",
-        "content-type": "application/json",
-        origin: "https://musicfab.io",
-        referer: "https://musicfab.io/",
-        "user-agent": UA,
+    const res = await axios.post(
+      "https://musicfab.io/api/spotify",
+      { url },
+      {
+        headers: {
+          accept: "*/*",
+          "content-type": "application/json",
+          origin: "https://musicfab.io",
+          referer: "https://musicfab.io/",
+          "user-agent": UA,
+        },
       },
-    });
+    );
 
     const meta = res.data?.data?.metadata;
     if (!meta?.name) throw new Error("Track tidak ditemukan");

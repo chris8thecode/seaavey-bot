@@ -6,8 +6,9 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "NODE_ENV=development bun run src/index.ts",
-    "lint": "biome check . && bun tsc",
-    "format": "biome check --write ."
+    "lint": "eslint . && bun tsc",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@google/genai": "^2.7.0",
@@ -20,9 +21,14 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.16",
+    "@eslint/js": "^10.0.1",
     "@types/bun": "latest",
-    "@types/qrcode": "^1.5.6"
+    "@types/qrcode": "^1.5.6",
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.4",
+    "typescript-eslint": "^8.61.1"
   },
   "peerDependencies": {
     "typescript": "^5.9.3"
