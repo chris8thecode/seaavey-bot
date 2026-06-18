@@ -11,7 +11,7 @@ describe("facebook downloader", () => {
     expect(result).toHaveProperty("data");
     expect(typeof result.status).toBe("boolean");
     expect(Array.isArray(result.data)).toBe(true);
-  });
+  }, 15000);
 
   it("should handle Facebook photo URL", async () => {
     const result = await fsaver(
@@ -22,5 +22,5 @@ describe("facebook downloader", () => {
     expect(result).toHaveProperty("data");
     expect(typeof result.status).toBe("boolean");
     expect(Array.isArray(result.data)).toBe(true);
-  });
+  }, 15000);
 });
