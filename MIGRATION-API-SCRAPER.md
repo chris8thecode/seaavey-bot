@@ -46,6 +46,12 @@ Already in `package.json`:
 - Updated `src/commands/downloader/spotify.ts` to use new scraper
 - Created tests in `src/infra/scrapers/__tests__/spotify.test.ts`
 
+### ✅ Instagram Downloader (2026-06-18)
+
+- Created `src/infra/scrapers/instagram.ts` — scrapes insaver.io
+- Updated `src/commands/downloader/igdl.ts` to use new scraper
+- Cookie forwarding for CSRF token validation
+
 ### ✅ Threads Downloader (2026-06-18)
 
 - Created `src/infra/scrapers/threads.ts` — scrapes threadsvideo.romitkr5539.workers.dev
@@ -78,7 +84,7 @@ Already in `package.json`:
 | `.spotify`     | `musicfab.io` + `spotify.xwolf.space`  | `src/infra/scrapers/spotify.ts`    | ✅     |
 | `.ytmp3`       | `loader.to`                            | `src/infra/scrapers/youtube.ts`    | ✅     |
 | `.ytmp4`       | `loader.to`                            | `src/infra/scrapers/youtube.ts`    | ✅     |
-| `.igdl`        | `saveig.app`                           | `src/infra/scrapers/instagram.ts`  | ⏳     |
+| `.igdl`        | `insaver.io`                           | `src/infra/scrapers/instagram.ts`  | ✅     |
 | `.soundcloud`  | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.scdl`        | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.pinterest`   | `pinterest.com` (internal API)         | `src/infra/scrapers/pinterest.ts`  | ⏳     |
@@ -254,7 +260,7 @@ src/infra/scrapers/
 ├── fbdl.ts            # Facebook video download
 ├── spotify.ts         # Spotify download + search
 ├── youtube.ts         # ytmp3, ytmp4
-├── instagram.ts       # igdl (TODO)
+├── instagram.ts       # Instagram media download
 ├── soundcloud.ts      # soundcloud search + download
 ├── pinterest.ts       # pinterest search + download (TODO)
 ├── genius.ts          # lyrics search (TODO)
