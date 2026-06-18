@@ -5,10 +5,9 @@ export default defineCommand({
   name: "Auto Reply",
   alias: ["ar", "autoreply"],
   description: "Kelola auto-reply grup. Sub: add, del, list",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
     const sub = msg.args[0]?.toLowerCase();
 
     if (sub === "add") {

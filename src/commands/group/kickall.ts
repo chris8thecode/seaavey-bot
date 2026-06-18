@@ -6,11 +6,10 @@ export default defineCommand({
   name: "Kick All",
   alias: ["ka", "kickall"],
   description: "Kick semua member kecuali admin (dengan konfirmasi)",
+  groupOnly: true,
+  adminOnly: true,
+  botAdmin: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
-    if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
-
     const key = `${msg.jid}:${msg.sender}`;
 
     if (!pending.has(key)) {

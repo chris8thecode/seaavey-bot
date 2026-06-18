@@ -4,10 +4,9 @@ export default defineCommand({
   name: "Leave",
   alias: ["leave"],
   description: "Bot leave from current group (owner only)",
+  ownerOnly: true,
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-
     await msg.reply("👋 Bye!");
     await sock.groupLeave(msg.jid);
   },

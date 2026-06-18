@@ -5,8 +5,8 @@ export default defineCommand({
   name: "Set PP",
   alias: ["setpp"],
   description: "Set bot profile picture (owner only)",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
     if (!sock.user?.id) return;
 
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;

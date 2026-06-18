@@ -5,9 +5,9 @@ export default defineCommand({
   name: "Unwarn",
   alias: ["uw", "unwarn"],
   description: "Hapus semua warn member",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
-    if (!msg.isAdmin) return msg.reply("❌ Khusus admin.");
     const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag atau reply user yang ingin diunwarn.");
     removeWarns(msg.jid, target);

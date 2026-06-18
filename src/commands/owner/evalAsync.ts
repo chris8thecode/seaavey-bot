@@ -5,8 +5,8 @@ export default defineCommand({
   name: "Eval Async",
   command: "=>",
   description: "Eval async JavaScript code",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
     const code = msg.body.slice(3).trim();
     if (!code) return msg.reply("Masukkan kode!");
     try {

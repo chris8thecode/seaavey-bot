@@ -4,9 +4,8 @@ export default defineCommand({
   name: "Join",
   alias: ["join"],
   description: "Join group via invite link (owner only)",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
-
     const link = msg.args[0];
     if (!link)
       return msg.reply("Masukkan link group.\nContoh: .join https://chat.whatsapp.com/xxx");

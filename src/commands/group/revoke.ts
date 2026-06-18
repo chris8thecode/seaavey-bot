@@ -4,10 +4,10 @@ export default defineCommand({
   name: "Revoke",
   alias: ["rev", "revoke"],
   description: "Reset link invite grup",
+  groupOnly: true,
+  adminOnly: true,
+  botAdmin: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
-    if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
     await sock.groupRevokeInvite(msg.jid);
     await msg.reply("Link invite grup telah direset!");
   },

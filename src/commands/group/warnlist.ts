@@ -5,8 +5,8 @@ export default defineCommand({
   name: "Warn List",
   alias: ["wl", "warns", "warnlist"],
   description: "Lihat daftar warn member",
+  groupOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     const target = msg.mentioned[0] || msg.quoted?.sender || msg.sender;
     const warns = getWarns(msg.jid, target);
     const max = getGroup(msg.jid).warnMax || 3;

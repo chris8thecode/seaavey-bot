@@ -4,8 +4,8 @@ export default defineCommand({
   name: "Broadcast",
   alias: ["bc", "broadcast"],
   description: "Broadcast message to all groups (owner only)",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
     if (!msg.args.length) return msg.reply("Contoh: .broadcast Halo semua!");
 
     const text = msg.args.join(" ");

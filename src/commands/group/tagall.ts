@@ -4,9 +4,9 @@ export default defineCommand({
   name: "Tag All",
   alias: ["tag", "tagall"],
   description: "Tag semua member grup",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
     const metadata = await sock.groupMetadata(msg.jid);
     const mentions = metadata.participants.map((p) => p.id);
     const text = mentions.map((id) => `@${id.split("@")[0]}`).join("\n");

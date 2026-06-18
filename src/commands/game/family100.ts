@@ -18,11 +18,8 @@ export default defineCommand({
   name: "Family 100",
   alias: ["f100", "family100"],
   description: "Main game family 100 bareng di grup",
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) {
-      return msg.reply("❌ Game ini hanya bisa dimainkan di grup!");
-    }
-
     if (sessions.has(msg.jid)) {
       return msg.reply("⏳ Masih ada sesi family 100 yang sedang berjalan di grup ini!");
     }

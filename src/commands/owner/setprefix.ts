@@ -5,8 +5,8 @@ export default defineCommand({
   name: "Set Prefix",
   alias: ["prefix", "setprefix"],
   description: "Change bot prefix (owner only)",
+  ownerOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isOwner) return;
     if (!msg.args[0]) return msg.reply("Contoh: .setprefix !");
 
     config.prefix = msg.args[0];

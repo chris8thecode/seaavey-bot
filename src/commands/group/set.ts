@@ -5,10 +5,9 @@ export default defineCommand({
   name: "Set",
   alias: ["set"],
   description: "Set group settings (welcomeMsg, goodbyeMsg, warnMax)",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
     const [key, ...rest] = msg.args;
     const value = rest.join(" ");
 

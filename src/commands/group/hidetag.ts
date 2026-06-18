@@ -4,9 +4,9 @@ export default defineCommand({
   name: "Hide Tag",
   alias: ["ht", "hidetag"],
   description: "Tag semua member tanpa mention visible",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
     const metadata = await sock.groupMetadata(msg.jid);
     const participants = metadata.participants.map((p) => p.id);
     const text = msg.args.join(" ") || "‎";

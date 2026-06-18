@@ -7,8 +7,8 @@ export default defineCommand({
   name: "Absen",
   alias: ["absen"],
   description: "Buat/tutup sesi absen. .absen buka <judul> / .absen hadir / .absen tutup",
+  groupOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     const sub = msg.args[0]?.toLowerCase();
 
     if (sub === "buka" || sub === "open") {

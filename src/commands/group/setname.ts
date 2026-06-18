@@ -4,10 +4,10 @@ export default defineCommand({
   name: "Set Name",
   command: "gsetname",
   description: "Ubah nama grup",
+  groupOnly: true,
+  adminOnly: true,
+  botAdmin: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
-    if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
     const name = msg.args.join(" ");
     if (!name) return msg.reply("Masukkan nama baru! Contoh: !setname Grup Keren");
     await sock.groupUpdateSubject(msg.jid, name);

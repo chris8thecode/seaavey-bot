@@ -4,8 +4,8 @@ export default defineCommand({
   name: "Group Info",
   alias: ["ginfo", "groupinfo"],
   description: "Lihat info grup",
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
     const metadata = await sock.groupMetadata(msg.jid);
     const admins = metadata.participants.filter((p) => p.admin);
     const text = [

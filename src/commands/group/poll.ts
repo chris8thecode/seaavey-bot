@@ -13,8 +13,8 @@ export default defineCommand({
   name: "Poll",
   alias: ["poll"],
   description: "Buat/vote/tutup polling. Format: .poll Pertanyaan? | Opsi1 | Opsi2",
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     const sub = msg.args[0];
 
     // Vote: .poll vote 1

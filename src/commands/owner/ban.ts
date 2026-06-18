@@ -5,9 +5,8 @@ export default defineCommand({
   name: "Ban",
   alias: ["ban"],
   description: "Ban/unban user (owner only)",
+  ownerOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isOwner) return;
-
     const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag atau reply user yang mau di-ban/unban.");
 

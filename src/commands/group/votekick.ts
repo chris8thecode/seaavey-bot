@@ -25,9 +25,9 @@ export default defineCommand({
   name: "Vote Kick",
   alias: ["vk", "votekick"],
   description: "Vote untuk kick member. Butuh 5 vote.",
+  groupOnly: true,
+  botAdmin: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
-    if (!msg.isBotAdmin) return msg.reply("❌ Bot harus jadi admin.");
     const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag user yang ingin di-votekick.\nContoh: .votekick @user");
     if (target === msg.sender) return msg.reply("❌ Gak bisa votekick diri sendiri.");

@@ -4,8 +4,8 @@ export default defineCommand({
   name: "Del PP",
   alias: ["delpp"],
   description: "Remove bot profile picture (owner only)",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
     if (!sock.user?.id) return;
 
     await sock.removeProfilePicture(sock.user.id);

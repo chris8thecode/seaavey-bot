@@ -5,10 +5,9 @@ export default defineCommand({
   name: "Sider",
   alias: ["sider"],
   description: "List member yang tidak chat selama 3+ hari",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
     const days = Number(msg.args[0]) || 3;
     const metadata = await sock.groupMetadata(msg.jid);
 

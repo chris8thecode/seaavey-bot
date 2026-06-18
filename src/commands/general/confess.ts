@@ -5,11 +5,8 @@ export default defineCommand({
   name: "Confess",
   alias: ["confess"],
   description: "Kirim pesan anonim ke seseorang. Gunakan di private chat.",
+  privateOnly: true,
   handler: async (sock, msg) => {
-    if (msg.isGroup)
-      return msg.reply(
-        "❌ Kirim perintah ini di private chat bot.\nFormat: .confess 628xxx Pesan kamu",
-      );
     const target = msg.args[0];
     const message = msg.args.slice(1).join(" ");
     if (!target || !message)

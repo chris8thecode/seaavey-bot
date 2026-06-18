@@ -5,10 +5,9 @@ export default defineCommand({
   name: "Anti Toxic",
   alias: ["at", "antitoxic"],
   description: "Kelola antitoxic & word filter. Sub: on/off, add, del, list",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
     const sub = msg.args[0]?.toLowerCase();
 
     if (!sub || sub === "on" || sub === "off") {

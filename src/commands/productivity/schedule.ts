@@ -14,10 +14,9 @@ export default defineCommand({
   name: "Schedule",
   alias: ["sched", "schedule"],
   description: "Jadwal pesan otomatis. Sub: add, list, del",
+  groupOnly: true,
+  adminOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-    if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
-
     const sub = msg.args[0]?.toLowerCase();
 
     if (sub === "add") {

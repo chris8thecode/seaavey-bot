@@ -4,9 +4,8 @@ export default defineCommand({
   name: "Anonymous",
   alias: ["anon", "anonymous"],
   description: "Kirim pesan anonim ke member grup. Format: .anonymous @tag pesan",
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-
     const mentioned = msg.mentioned[0];
     const text = msg.args.slice(1).join(" ");
 

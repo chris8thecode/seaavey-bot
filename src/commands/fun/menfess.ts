@@ -5,10 +5,8 @@ export default defineCommand({
   name: "Menfess",
   alias: ["menfess"],
   description: "Kirim pesan rahasia ke nomor WA via bot (anonim). Gunakan di private chat.",
+  privateOnly: true,
   handler: async (sock, msg) => {
-    if (msg.isGroup)
-      return msg.reply("❌ Kirim perintah ini di private chat bot.\nFormat: .menfess 628xxx Pesan");
-
     const target = msg.args[0];
     const message = msg.args.slice(1).join(" ");
 

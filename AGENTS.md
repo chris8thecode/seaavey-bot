@@ -92,6 +92,7 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 - Owner numbers are comma-separated in `OWNER_NUMBER` env var
 - Env vars: `OWNER_NUMBER`, `API_KEY`, `GEMINI_API_KEY`, `NODE_ENV`
 - Biome also errors on `noUnusedVariables` and `noUnusedImports`; warns on `noNonNullAssertion` and `noUnusedFunctionParameters`
+- **Use command guard properties** — never manually check `msg.isGroup`, `msg.isAdmin`, `msg.isBotAdmin`, or `msg.isOwner` inside handlers. Set `groupOnly`, `adminOnly`, `botAdmin`, `ownerOnly`, or `privateOnly` in `defineCommand()` instead. The `checkGuards()` system handles all of these uniformly.
 
 ## Deployment
 

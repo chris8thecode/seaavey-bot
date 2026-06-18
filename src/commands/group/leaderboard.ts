@@ -5,9 +5,8 @@ export default defineCommand({
   name: "Leaderboard",
   alias: ["lb", "top", "leaderboard"],
   description: "Top 10 member paling aktif di group",
+  groupOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-
     const top = db
       .query(
         "SELECT memberJid, chatCount FROM group_members WHERE groupJid = ? ORDER BY chatCount DESC LIMIT 10",

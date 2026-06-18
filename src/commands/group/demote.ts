@@ -4,10 +4,10 @@ export default defineCommand({
   name: "Demote",
   alias: ["dmt", "demote"],
   description: "Hapus admin dari member",
+  groupOnly: true,
+  adminOnly: true,
+  botAdmin: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("Hanya bisa di grup!");
-    if (!msg.isAdmin) return msg.reply("Kamu bukan admin!");
-    if (!msg.isBotAdmin) return msg.reply("Bot bukan admin!");
     const target = msg.mentioned[0] || msg.quoted?.sender;
     if (!target) return msg.reply("Tag atau reply user yang mau di demote!");
     await sock.groupParticipantsUpdate(msg.jid, [target], "demote");

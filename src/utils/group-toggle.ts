@@ -18,9 +18,9 @@ export function toggleCommand({ name, field, description, alias }: ToggleConfig)
     name,
     ...(alias ? { alias } : {}),
     description,
+    groupOnly: true,
+    adminOnly: true,
     handler: async (_sock: WASocket, msg: MessageResolver) => {
-      if (!msg.isGroup) return msg.reply("❌ Hanya bisa digunakan di group.");
-      if (!msg.isAdmin) return msg.reply("❌ Hanya admin yang bisa menggunakan command ini.");
       const group = getGroup(msg.jid);
       const newVal = group[field] ? 0 : 1;
       setGroup(msg.jid, field, newVal);

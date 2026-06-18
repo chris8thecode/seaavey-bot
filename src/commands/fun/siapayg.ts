@@ -4,8 +4,8 @@ export default defineCommand({
   name: "Siapa YG",
   alias: ["spy", "siapayg"],
   description: "Random pilih member grup. Contoh: .siapayg paling ganteng",
+  groupOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
     const question = msg.args.join(" ");
     if (!question)
       return msg.reply(

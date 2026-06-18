@@ -5,9 +5,8 @@ export default defineCommand({
   name: "Group Stats",
   alias: ["gstats", "groupstats"],
   description: "Statistik aktivitas group",
+  groupOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.isGroup) return msg.reply("❌ Hanya untuk group.");
-
     const totalMembers = db
       .query("SELECT COUNT(*) as c FROM group_members WHERE groupJid = ?")
       .get(msg.jid) as { c: number };

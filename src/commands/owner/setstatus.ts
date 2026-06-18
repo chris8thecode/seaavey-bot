@@ -4,8 +4,8 @@ export default defineCommand({
   name: "Set Status",
   alias: ["sst", "setstatus"],
   description: "Set bot bio/status (owner only)",
+  ownerOnly: true,
   handler: async (sock, msg) => {
-    if (!msg.isOwner) return;
     if (!msg.args.length) return msg.reply("Contoh: .setstatus Bot aktif 24 jam");
 
     await sock.updateProfileStatus(msg.args.join(" "));
