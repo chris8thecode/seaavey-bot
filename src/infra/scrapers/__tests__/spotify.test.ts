@@ -34,12 +34,12 @@ describe("spotifySearch", () => {
     expect(result.data.tracks[0]).toHaveProperty("title");
     expect(result.data.tracks[0]).toHaveProperty("artist");
     expect(result.data.tracks[0]).toHaveProperty("url");
-  });
+  }, 15000);
 
   it("should handle limit parameter", async () => {
     const result = await spotifySearch("Alan Walker", 2);
 
     expect(result.status).toBe(true);
     expect(result.data.tracks.length).toBeLessThanOrEqual(2);
-  });
+  }, 15000);
 });
