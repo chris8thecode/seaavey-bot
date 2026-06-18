@@ -1,11 +1,5 @@
 import { defineCommand } from "@/core/types";
-import { api } from "@/infra/api";
-
-interface SCResult {
-  title: string;
-  url: string;
-  duration: number;
-}
+import { soundcloudSearch } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "SoundCloud",
@@ -14,11 +8,28 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");
     if (!query) return msg.reply("Format: .soundcloud <kata kunci>");
-    const res = await api.get<SCResult[]>(
-      `/search/soundcloud?query=${encodeURIComponent(query)}&limit=5`,
+
+    await msg.reply("🔍 Mencari...");
+
+    const result = await soundcloudSearch(query, 5);
+
+    if (!result.status) {
+      return msg.reply(`❌ Gagal: ${result.error || "Tidak ditemukan"}`);
+    }
+
+    if (result.data.tracks.length === 0) {
+      return msg.reply("❌ Tidak ditemukan.");
+    }
+
+    const list = result.data.tracks
+      .map(
+        (s, i) =>
+          `${i + 1}. *${s.title}*\n   🎤 ${s.artist} • ⏱️ ${s.duration}\n   🔗 ${s.url}`,
+      )
+      .join("\n\n");
+
+    await msg.reply(
+      `🎶 *SoundCloud Search*\n\n${list}\n\nDownload: .scdl <url>`,
     );
-    if (!res.data.length) return msg.reply("❌ Tidak ditemukan.");
-    const list = res.data.map((s, i) => `${i + 1}. *${s.title}*\n   🔗 ${s.url}`).join("\n\n");
-    await msg.reply(`🎶 *SoundCloud Search*\n\n${list}\n\nDownload: .scdl <url>`);
   },
 });

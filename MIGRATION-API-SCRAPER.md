@@ -52,6 +52,16 @@ Already in `package.json`:
 - Updated `src/commands/downloader/threadsdl.ts` to use new scraper
 - Created tests in `src/infra/scrapers/__tests__/threads.test.ts`
 
+### ✅ SoundCloud Scraper (2026-06-18)
+
+- Created `src/infra/scrapers/soundcloud.ts` with:
+  - `soundcloudSearch(query, limit)` — search tracks from SoundCloud API v2
+  - `soundcloudDl(url)` — get track info + stream URL via resolve endpoint
+- Client ID extracted from `window.__sc_hydration` (apiClient.id)
+- Updated `src/commands/search/soundcloud.ts` to use new scraper
+- Updated `src/commands/downloader/scdl.ts` to use new scraper
+- Created tests in `src/infra/scrapers/__tests__/soundcloud.test.ts`
+
 ## Commands to Migrate
 
 | Command        | Target Website                         | Scraper File                       | Status |
@@ -61,8 +71,8 @@ Already in `package.json`:
 | `.ytmp3`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
 | `.ytmp4`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
 | `.igdl`        | `saveig.app`                           | `src/infra/scrapers/instagram.ts`  | ⏳     |
-| `.soundcloud`  | `scdownloader.com`                     | `src/infra/scrapers/soundcloud.ts` | ⏳     |
-| `.scdl`        | `scdownloader.com`                     | `src/infra/scrapers/soundcloud.ts` | ⏳     |
+| `.soundcloud`  | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
+| `.scdl`        | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.pinterest`   | `pinterest.com` (internal API)         | `src/infra/scrapers/pinterest.ts`  | ⏳     |
 | `.pinterestdl` | `pinterestdownloader.com`              | `src/infra/scrapers/pinterest.ts`  | ⏳     |
 | `.lirik`       | `genius.com` (public API)              | `src/infra/scrapers/genius.ts`     | ⏳     |
@@ -140,13 +150,25 @@ Body: { url: ig_url }
 
 ### SoundCloud (search + download)
 
-**Primary:** SoundCloud API v2 (public, no auth)
+**Search:** SoundCloud API v2
 
 ```
-GET https://api-v2.soundcloud.com/search/tracks?q={query}&client_id={client_id}
+GET https://api-v2.soundcloud.com/search/tracks?q={query}&client_id={client_id}&limit={limit}
 ```
 
-Client ID extracted from `https://soundcloud.com` JavaScript bundle.
+**Download:** SoundCloud API v2 resolve
+
+```
+GET https://api-v2.soundcloud.com/resolve?url={track_url}&client_id={client_id}
+```
+
+**Stream:** Progressive stream from track media transcodings
+
+```
+GET {transcoding_url}?client_id={client_id}
+```
+
+Client ID extracted from `window.__sc_hydration` → `apiClient.id` on `https://soundcloud.com`.
 
 ### Pinterest (search)
 
@@ -229,7 +251,7 @@ src/infra/scrapers/
 ├── spotify.ts         # Spotify download + search
 ├── youtube.ts         # ytmp3, ytmp4 (TODO)
 ├── instagram.ts       # igdl (TODO)
-├── soundcloud.ts      # soundcloud search + download (TODO)
+├── soundcloud.ts      # soundcloud search + download
 ├── pinterest.ts       # pinterest search + download (TODO)
 ├── genius.ts          # lyrics search (TODO)
 ├── mediafire.ts       # mediafire download (TODO)
@@ -238,6 +260,7 @@ src/infra/scrapers/
 ├── ssweb.ts           # screenshot web (TODO)
 └── __tests__/
     ├── fbdl.test.ts
+    ├── soundcloud.test.ts
     ├── spotify.test.ts
     └── threads.test.ts
 ```
