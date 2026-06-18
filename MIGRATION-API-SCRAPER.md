@@ -62,14 +62,22 @@ Already in `package.json`:
 - Updated `src/commands/downloader/scdl.ts` to use new scraper
 - Created tests in `src/infra/scrapers/__tests__/soundcloud.test.ts`
 
+### ✅ YouTube Downloader (2026-06-18)
+
+- Created `src/infra/scrapers/youtube.ts` with:
+  - `ytmp3(url)` — download audio (128kbps) from loader.to
+  - `ytmp4(url)` — download video (720p) from loader.to
+- Updated `src/commands/downloader/ytmp3.ts` to use new scraper
+- Updated `src/commands/downloader/ytmp4.ts` to use new scraper
+
 ## Commands to Migrate
 
 | Command        | Target Website                         | Scraper File                       | Status |
 | -------------- | -------------------------------------- | ---------------------------------- | ------ |
 | `.fbdl`        | `fsaver.net`                           | `src/infra/scrapers/fbdl.ts`       | ✅     |
 | `.spotify`     | `musicfab.io` + `spotify.xwolf.space`  | `src/infra/scrapers/spotify.ts`    | ✅     |
-| `.ytmp3`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
-| `.ytmp4`       | `y2mate.com`                           | `src/infra/scrapers/youtube.ts`    | ⏳     |
+| `.ytmp3`       | `loader.to`                            | `src/infra/scrapers/youtube.ts`    | ✅     |
+| `.ytmp4`       | `loader.to`                            | `src/infra/scrapers/youtube.ts`    | ✅     |
 | `.igdl`        | `saveig.app`                           | `src/infra/scrapers/instagram.ts`  | ⏳     |
 | `.soundcloud`  | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
 | `.scdl`        | `api-v2.soundcloud.com`                | `src/infra/scrapers/soundcloud.ts` | ✅     |
@@ -113,24 +121,20 @@ GET https://spotify.xwolf.space/api/search?q={query}&type=track&limit={limit}
 
 ### YouTube (ytmp3 / ytmp4)
 
-**Primary:** `y2mate.com`
+**Primary:** `loader.to`
 
 ```
-POST https://www.y2mate.com/mates/analyzeV2/ajax
-Body: k_query={url}&k_page=home&hl=en&q_auto=0
+GET https://loader.to/ajax/download.php?format={format}&url={video_url}
+Headers: X-Requested-With: XMLHttpRequest
+
+Response: { id, progress_url, title, info: { image } }
+
+GET {progress_url}
+
+Response: { progress: 1000, download_url, format }
 ```
 
-**Backup:** `ssyoutube.com`
-
-```
-GET https://ssyoutube.com/api/convert?url={url}
-```
-
-**Backup 2:** `10downloader.com`
-
-```
-GET https://10downloader.com/download?v={url}
-```
+Format codes: `128` (mp3), `360`, `480`, `720`, `1080` (mp4)
 
 ### Instagram
 
@@ -249,7 +253,7 @@ src/infra/scrapers/
 ├── index.ts           # Re-export all scrapers + ScraperResult<T>
 ├── fbdl.ts            # Facebook video download
 ├── spotify.ts         # Spotify download + search
-├── youtube.ts         # ytmp3, ytmp4 (TODO)
+├── youtube.ts         # ytmp3, ytmp4
 ├── instagram.ts       # igdl (TODO)
 ├── soundcloud.ts      # soundcloud search + download
 ├── pinterest.ts       # pinterest search + download (TODO)

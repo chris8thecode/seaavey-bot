@@ -1,12 +1,36 @@
-import { createDownloader } from "./createDownloader";
+import { defineCommand } from "@/core/types";
+import { ytmp3 } from "@/infra/scrapers";
 
-export default createDownloader({
+export default defineCommand({
   name: "YT MP3",
-  aliases: ["ytmp3"],
+  alias: ["ytmp3"],
   description: "Download audio dari YouTube",
-  platform: "YouTube",
-  helpExample: "https://youtu.be/...",
-  endpoint: "/downloader/youtube/audio",
-  mediaType: "audio",
-  progressText: "⏳ Downloading audio...",
+  handler: async (_sock, msg) => {
+    const url = msg.args[0];
+    if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp3 https://youtu.be/...");
+
+    await msg.reply("⏳ Downloading audio...");
+
+    const result = await ytmp3(url);
+
+    if (!result.status) {
+      return msg.reply(`❌ Gagal: ${result.error || "Tidak ada media ditemukan"}`);
+    }
+
+    const { title, thumbnail, downloadUrl, format } = result.data;
+
+    const caption = [`🎵 *${title}*`, format ? `📦 ${format}` : null]
+      .filter(Boolean)
+      .join("\n");
+
+    if (thumbnail) {
+      await msg.send({ image: { url: thumbnail }, caption });
+    } else {
+      await msg.reply(caption);
+    }
+
+    if (downloadUrl) {
+      await msg.send({ audio: { url: downloadUrl }, mimetype: "audio/mpeg" });
+    }
+  },
 });

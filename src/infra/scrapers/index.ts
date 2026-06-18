@@ -20,3 +20,5 @@ export type { ThreadsMedia } from "./threads";
 export { threadsDl } from "./threads";
 export type { SpotifyData, SpotifySearchResult, SpotifyTrack } from "./spotify";
 export { spotify, spotifySearch } from "./spotify";
+export type { YouTubeData } from "./youtube";
+export { ytmp3, ytmp4 } from "./youtube";
