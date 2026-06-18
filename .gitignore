@@ -50,6 +50,7 @@ dev/
 .agents
 .claude
 .opencode
+graphify-out
 
 # venv
 .venv/
