@@ -31,7 +31,9 @@ export default defineCommand({
   name: "MyCommand",
   alias: ["trigger"],
   description: "What it does",
-  // ownerOnly, groupOnly, adminOnly, botAdmin, cooldown (seconds), enabled
+  usage: "{prefix}mycommand <arg>",
+  tags: ["fun"],
+  // ownerOnly, groupOnly, privateOnly, adminOnly, botAdmin, cooldown (seconds), enabled
   handler: async (_sock, msg) => {
     await msg.reply("Hello!");
   },
@@ -41,12 +43,13 @@ export default defineCommand({
 Triggers are auto-collected from: `triggers[]`, `command`, `alias[]`, and the filename (without
 `.ts`). Use the `args` property to get message arguments (already split by `" "`).
 
-The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`). Key fields: `jid`,
-`sender`, `body`, `isGroup`, `isAdmin`, `isOwner`, `args`, `quoted`, `reply()`, `send()`.
+The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`). Key fields: `id`,
+`jid`, `sender`, `body`, `isGroup`, `isAdmin`, `isBotAdmin`, `fromMe`, `isOwner`, `mentioned`,
+`mtype`, `message`, `key`, `pushName`, `raw`, `args`, `quoted`, `reply()`, `send()`.
 
 ## Architecture
 
-- **Entry**: `src/index.ts` — connects WhatsApp, loads commands
+- **Entry**: `src/index.ts` — connects WhatsApp, loads commands, starts schedulers, anti-call, group sync
 - **Message flow**: `resolveMessage()` → 7 middlewares (anti-viewonce → anti-link → anti-spam →
   anti-toxic → afk → game-answer → auto-reply) → `dispatchCommand()`
 - **Database**: `bun:sqlite` WAL mode, single `data.db` file. Tables created lazily via
@@ -57,10 +60,15 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 
 | Package                | Purpose                             |
 | ---------------------- | ----------------------------------- |
-| baileys ^7.0.0-rc11    | WhatsApp Web protocol               |
+| baileys ^7.0.0-rc13    | WhatsApp Web protocol               |
 | sharp ^0.34.5          | Rank card / welcome image rendering |
-| @google/genai ^2.3.0   | Gemini AI                           |
-| @biomejs/biome ^2.4.15 | Linter + formatter                  |
+| @google/genai ^2.7.0   | Gemini AI                           |
+| axios ^1.16.1          | HTTP client                         |
+| cheerio ^1.2.0         | HTML parsing (web scraping)         |
+| node-webpmux ^3.2.1    | WebP metadata for stickers          |
+| pino-pretty ^13.1.3    | Pretty-printed log output           |
+| qrcode ^1.5.4          | QR code generation                  |
+| @biomejs/biome ^2.4.16 | Linter + formatter                  |
 
 ## TypeScript quirks
 
@@ -82,10 +90,12 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 - **No `any`** — Biome errors on `noExplicitAny`. Use `unknown` and narrow.
 - Bot prefix defaults to `.` (configurable at runtime via `setprefix`)
 - Owner numbers are comma-separated in `OWNER_NUMBER` env var
+- Env vars: `OWNER_NUMBER`, `API_KEY`, `GEMINI_API_KEY`, `NODE_ENV`
+- Biome also errors on `noUnusedVariables` and `noUnusedImports`; warns on `noNonNullAssertion` and `noUnusedFunctionParameters`
 
 ## Deployment
 
-- PM2 config at `ecosystem.config.cjs`
+- PM2 config at `ecosystem.config.cjs` — uses `bun` interpreter, autorestart with max 10 restarts
 - Docker: `docker build -t seaaveybot .` then mount `auth/` and `data/` volumes
 - Must mount `./auth` (WhatsApp session) and `./data` (database) volumes in Docker
 - FFmpeg required on host (for media conversion)
