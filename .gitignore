@@ -49,3 +49,7 @@ dev/
 .commandcode
 .agents
 .claude
+.opencode
+
+# venv
+.venv/
