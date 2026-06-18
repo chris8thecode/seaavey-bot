@@ -1,11 +1,5 @@
 import { defineCommand } from "@/core/types";
-import { api } from "@/infra/api";
-
-interface GeniusResult {
-  title: string;
-  artist: string;
-  url: string;
-}
+import { geniusSearch } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "Lirik",
@@ -13,12 +7,17 @@ export default defineCommand({
   description: "Cari lirik lagu. Contoh: .lirik Bohemian Rhapsody",
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");
-    if (!query) return msg.reply("Format: .lirik <judul lagu>\nContoh: .lirik Bohemian Rhapsody");
-    const res = await api.get<GeniusResult[]>(`/search/genius?query=${encodeURIComponent(query)}`);
-    if (!res.data.length) return msg.reply("❌ Lagu tidak ditemukan.");
+    if (!query)
+      return msg.reply(
+        "Format: .lirik <judul lagu>\nContoh: .lirik Bohemian Rhapsody",
+      );
+    const res = await geniusSearch(query, 5);
+    if (!res.status) return msg.reply(`❌ ${res.error}`);
     const list = res.data
-      .slice(0, 5)
-      .map((s, i) => `${i + 1}. *${s.title}* — ${s.artist}`)
+      .map(
+        (s, i) =>
+          `${i + 1}. *${s.title}* — ${s.artist}${s.album ? ` (${s.album}${s.year ? `, ${s.year}` : ""})` : ""}`,
+      )
       .join("\n");
     await msg.reply(`🎵 *Hasil Pencarian*\n\n${list}`);
   },
