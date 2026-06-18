@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { promisify } from "node:util";
@@ -134,8 +134,6 @@ async function downloadAndConvertMp3(url: string): Promise<string | null> {
     return null;
   } catch {
     return null;
-  } finally {
-    rmSync(tmpDir, { recursive: true, force: true });
   }
 }
 
