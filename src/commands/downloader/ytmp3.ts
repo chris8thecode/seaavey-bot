@@ -1,4 +1,5 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
+import { dirname } from "node:path";
 import { defineCommand } from "@/core/types";
 import { ytmp3 } from "@/infra/scrapers";
 
@@ -39,6 +40,8 @@ export default defineCommand({
           mimetype: "audio/mpeg",
           ptt: false,
         });
+        // Cleanup temp files
+        try { rmSync(dirname(result.data.localFile), { recursive: true, force: true }); } catch {}
       } else {
         await msg.send({ audio: { url: downloadUrl }, mimetype: "audio/mpeg" });
       }
