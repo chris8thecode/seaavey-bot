@@ -93,6 +93,13 @@ Already in `package.json`:
 - Genius.com blocked by Cloudflare (403), lrclib.net used as backend (free, no auth)
 - Updated `src/commands/search/lirik.ts` to use new scraper
 
+### ✅ MediaFire Scraper (2026-06-19)
+
+- Created `src/infra/scrapers/mediafire.ts` — direct HTML parsing with cheerio
+- Parses download link from MediaFire page (multiple fallback methods)
+- Updated `src/commands/downloader/mediafire.ts` to use new scraper
+
+
 | Command        | Target Website                         | Scraper File                       | Status |
 | -------------- | -------------------------------------- | ---------------------------------- | ------ |
 | `.fbdl`        | `fsaver.net`                           | `src/infra/scrapers/fbdl.ts`       | ✅     |
@@ -105,7 +112,7 @@ Already in `package.json`:
 | `.pinterest`   | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
 | `.pinterestdl` | `pinterest.com` (HTML scraping)        | `src/infra/scrapers/pinterest.ts`  | ✅     |
 || `.lirik`       | `lrclib.net`                           | `src/infra/scrapers/genius.ts`     | ✅     |
-| `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ⏳     |
+| `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ✅     |
 | `.threadsdl`   | `threadsvideo.romitkr5539.workers.dev` | `src/infra/scrapers/threads.ts`    | ✅     |
 | `.xdl`         | `savetwitter.net`                      | `src/infra/scrapers/twitter.ts`    | ⏳     |
 | `.ssweb`       | `pageshot.site`                        | `src/infra/scrapers/ssweb.ts`      | ⏳     |
