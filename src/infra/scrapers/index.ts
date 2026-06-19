@@ -29,3 +29,7 @@ export { ytmp3, ytmp4 } from "./youtube";
 export { geniusSearch, geniusLyrics } from "./genius";
 export type { MediaFireData } from "./mediafire";
 export { mediafireDl } from "./mediafire";
+export type { TwitterData } from "./twitter";
+export { twitterDl } from "./twitter";
+export type { SswebData } from "./ssweb";
+export { sswebDl } from "./ssweb";
