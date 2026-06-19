@@ -18,29 +18,34 @@ import { checkTebakWaifu } from "../commands/game/tebakwaifu";
 import { checkTekaTeki } from "../commands/game/tekateki";
 import { checkTrivia } from "../commands/game/trivia";
 
+const checkers: ((jid: string, text: string, sender: string) => string | null)[] = [
+  checkMathAnswer,
+  checkTebakKata,
+  checkTrivia,
+  checkTebakBendera,
+  checkTebakGambar,
+  checkTebakAnime,
+  checkTebakWaifu,
+  checkTebakMemberJKT48,
+  checkFamily100,
+  checkAsahOtak,
+  checkSiapakahAku,
+  checkSusunKata,
+  checkTebakKabupaten,
+  checkTebakKalimat,
+  checkTebakKimia,
+  checkTebakTebakan,
+  checkTebakLirik,
+  checkTekaTeki,
+  checkCakLontong,
+];
+
 export function checkGameAnswer(jid: string, text: string, sender: string): string | null {
   const input = text.trim();
   if (!input) return null;
-
-  return (
-    checkMathAnswer(jid, input, sender) ||
-    checkTebakKata(jid, input, sender) ||
-    checkTrivia(jid, input, sender) ||
-    checkTebakBendera(jid, input, sender) ||
-    checkTebakGambar(jid, input, sender) ||
-    checkTebakAnime(jid, input, sender) ||
-    checkTebakWaifu(jid, input, sender) ||
-    checkTebakMemberJKT48(jid, input, sender) ||
-    checkFamily100(jid, input, sender) ||
-    checkAsahOtak(jid, input, sender) ||
-    checkSiapakahAku(jid, input, sender) ||
-    checkSusunKata(jid, input, sender) ||
-    checkTebakKabupaten(jid, input, sender) ||
-    checkTebakKalimat(jid, input, sender) ||
-    checkTebakKimia(jid, input, sender) ||
-    checkTebakTebakan(jid, input, sender) ||
-    checkTebakLirik(jid, input, sender) ||
-    checkTekaTeki(jid, input, sender) ||
-    checkCakLontong(jid, input, sender)
-  );
+  for (const fn of checkers) {
+    const result = fn(jid, input, sender);
+    if (result) return result;
+  }
+  return null;
 }

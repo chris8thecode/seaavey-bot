@@ -237,68 +237,37 @@ async function ytDlpDownload(
 
 // ─── Public API ─────────────────────────────────────────────────────
 
-export async function ytmp3(url: string): Promise<ScraperResult<YouTubeData>> {
-  // 1) Try yt-dlp (reliable, needs cookies)
-  const ytResult = await ytDlpDownload(url, "mp3");
-  if (ytResult.status) {
-    // Verify the URL actually returns media
-    if (await isMediaUrl(ytResult.data.downloadUrl)) {
-      // Download + convert to MP3 for WhatsApp compatibility
-      const mp3Path = await downloadAndConvertMp3(ytResult.data.downloadUrl);
-      if (mp3Path) {
-        return scraperSuccess({
-          ...ytResult.data,
-          localFile: mp3Path,
-        });
-      }
-      return ytResult;
+const ERROR_MSG =
+  "Gagal download YouTube. " +
+  "Buat bot, letakkan cookies.txt dari browser (sudah login YouTube) di root project. " +
+  'Cara export: install扩展 "Get cookies.txt LOCALLY" → buka youtube.com → export → simpan sebagai cookies.txt';
+
+async function runWithFallback(
+  url: string,
+  format: "mp3" | "mp4",
+): Promise<ScraperResult<YouTubeData>> {
+  const loaders = [
+    () => ytDlpDownload(url, format),
+    () => loaderToDownload(url, format === "mp3" ? "mp3" : "720"),
+  ];
+
+  for (const load of loaders) {
+    const result = await load();
+    if (!result.status) continue;
+    if (!(await isMediaUrl(result.data.downloadUrl))) continue;
+
+    if (format === "mp3") {
+      const mp3Path = await downloadAndConvertMp3(result.data.downloadUrl);
+      if (mp3Path) return scraperSuccess({ ...result.data, localFile: mp3Path });
     }
+    return result;
   }
 
-  // 2) Try loader.to as fallback
-  const loaderResult = await loaderToDownload(url, "mp3");
-  if (loaderResult.status) {
-    if (await isMediaUrl(loaderResult.data.downloadUrl)) {
-      const mp3Path = await downloadAndConvertMp3(loaderResult.data.downloadUrl);
-      if (mp3Path) {
-        return scraperSuccess({
-          ...loaderResult.data,
-          localFile: mp3Path,
-        });
-      }
-      return loaderResult;
-    }
-  }
-
-  // 3) Both failed — give helpful error
-  return scraperError(
-    "Gagal download YouTube. " +
-      "Buat bot, letakkan cookies.txt dari browser (sudah login YouTube) di root project. " +
-      "Cara export: install扩展 \"Get cookies.txt LOCALLY\" → buka youtube.com → export → simpan sebagai cookies.txt",
-  );
+  return scraperError(ERROR_MSG);
 }
 
-export async function ytmp4(url: string): Promise<ScraperResult<YouTubeData>> {
-  const ytResult = await ytDlpDownload(url, "mp4");
-  if (ytResult.status) {
-    if (await isMediaUrl(ytResult.data.downloadUrl)) {
-      return ytResult;
-    }
-  }
-
-  const loaderResult = await loaderToDownload(url, "720");
-  if (loaderResult.status) {
-    if (await isMediaUrl(loaderResult.data.downloadUrl)) {
-      return loaderResult;
-    }
-  }
-
-  return scraperError(
-    "Gagal download YouTube. " +
-      "Buat bot, letakkan cookies.txt dari browser (sudah login YouTube) di root project. " +
-      "Cara export: install扩展 \"Get cookies.txt LOCALLY\" → buka youtube.com → export → simpan sebagai cookies.txt",
-  );
-}
+export const ytmp3 = (url: string) => runWithFallback(url, "mp3");
+export const ytmp4 = (url: string) => runWithFallback(url, "mp4");
 
 // ─── loader.to fallback ─────────────────────────────────────────────
 

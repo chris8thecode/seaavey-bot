@@ -50,17 +50,28 @@ export interface GroupUpdateData {
 }
 
 export function updateGroupSettings(jid: string, data: GroupUpdateData) {
-  if (data.name !== undefined) setGroup(jid, "name", data.name);
-  if (data.status !== undefined) setGroup(jid, "mute", data.status === "muted" ? 1 : 0);
-  if (data.welcome !== undefined) setGroup(jid, "welcome", data.welcome ? 1 : 0);
-  if (data.goodbye !== undefined) setGroup(jid, "goodbye", data.goodbye ? 1 : 0);
-  if (data.antiSpam !== undefined) setGroup(jid, "antispam", data.antiSpam ? 1 : 0);
-  if (data.antilink !== undefined) setGroup(jid, "antilink", data.antilink ? 1 : 0);
-  if (data.antidelete !== undefined) setGroup(jid, "antidelete", data.antidelete ? 1 : 0);
-  if (data.antitoxic !== undefined) setGroup(jid, "antitoxic", data.antitoxic ? 1 : 0);
-  if (data.antiviewonce !== undefined) setGroup(jid, "antiviewonce", data.antiviewonce ? 1 : 0);
-  if (data.autosticker !== undefined) setGroup(jid, "autosticker", data.autosticker ? 1 : 0);
-  if (data.onlyAdmin !== undefined) setGroup(jid, "onlyAdmin", data.onlyAdmin ? 1 : 0);
+  const fieldMap: Record<string, keyof Omit<Group, "jid">> = {
+    name: "name",
+    status: "mute",
+    welcome: "welcome",
+    goodbye: "goodbye",
+    antiSpam: "antispam",
+    antilink: "antilink",
+    antidelete: "antidelete",
+    antitoxic: "antitoxic",
+    antiviewonce: "antiviewonce",
+    autosticker: "autosticker",
+    onlyAdmin: "onlyAdmin",
+  };
+
+  for (const [key, value] of Object.entries(data)) {
+    if (value === undefined) continue;
+    const field = fieldMap[key];
+    if (!field) continue;
+    const dbValue = key === "status" ? (value === "muted" ? 1 : 0) : +!!value;
+    setGroup(jid, field, dbValue);
+  }
+
   return getGroupByJid(jid);
 }
 
