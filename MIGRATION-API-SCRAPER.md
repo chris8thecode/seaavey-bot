@@ -99,6 +99,19 @@ Already in `package.json`:
 - Parses download link from MediaFire page (multiple fallback methods)
 - Updated `src/commands/downloader/mediafire.ts` to use new scraper
 
+### ✅ Twitter/X Scraper (2026-06-19)
+
+- Created `src/infra/scrapers/twitter.ts` — scrapes savetwitter.net API
+- Supports both x.com and twitter.com URLs
+- Updated `src/commands/downloader/xdl.ts` to use new scraper
+
+### ✅ Screenshot Web Scraper (2026-06-19)
+
+- Created `src/infra/scrapers/ssweb.ts` — pageshot.site + webshot.site
+- Supports desktop and mobile viewport modes
+- Updated `src/commands/media/ssweb.ts` to use new scraper
+
+
 
 | Command        | Target Website                         | Scraper File                       | Status |
 | -------------- | -------------------------------------- | ---------------------------------- | ------ |
@@ -114,8 +127,8 @@ Already in `package.json`:
 || `.lirik`       | `lrclib.net`                           | `src/infra/scrapers/genius.ts`     | ✅     |
 | `.mediafire`   | `mediafire.com` (direct)               | `src/infra/scrapers/mediafire.ts`  | ✅     |
 | `.threadsdl`   | `threadsvideo.romitkr5539.workers.dev` | `src/infra/scrapers/threads.ts`    | ✅     |
-| `.xdl`         | `savetwitter.net`                      | `src/infra/scrapers/twitter.ts`    | ⏳     |
-| `.ssweb`       | `pageshot.site`                        | `src/infra/scrapers/ssweb.ts`      | ⏳     |
+| `.xdl`         | `savetwitter.net`                      | `src/infra/scrapers/twitter.ts`    | ✅     |
+| `.ssweb`       | `pageshot.site` + `webshot.site`       | `src/infra/scrapers/ssweb.ts`       | ✅     |
 
 ## Downloader Websites per Service
 
@@ -293,10 +306,10 @@ src/infra/scrapers/
 ├── soundcloud.ts      # soundcloud search + download
 ├── pinterest.ts       # pinterest search + download
 ├── genius.ts          # lyrics search + get
-├── mediafire.ts       # mediafire download (TODO)
+├── mediafire.ts       # mediafire download
 ├── threads.ts         # threadsdl
-├── twitter.ts         # xdl (TODO)
-├── ssweb.ts           # screenshot web (TODO)
+├── twitter.ts         # xdl
+├── ssweb.ts           # screenshot web
 └── __tests__/
     ├── fbdl.test.ts
     ├── soundcloud.test.ts
