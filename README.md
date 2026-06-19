@@ -17,6 +17,12 @@
 
 ---
 
+<p align="center">
+  <strong>English</strong> | <a href="README-ID.md">Bahasa Indonesia</a>
+</p>
+
+---
+
 ## Features
 
 - 🔄 **Auto-reconnect** — Automatically reconnects on disconnect
@@ -24,12 +30,11 @@
 - ⚡ **Hot-reload** — Instant command reload in development mode
 - 🧩 **Extensible** — Easy to add commands with auto-loading from filesystem
 - 🛡️ **Middleware Pipeline** — Anti-link, anti-spam, anti-toxic, anti-viewonce, AFK, auto-reply, and game answer interception
-- 📂 **13 Command Categories** — 150+ commands organized by category
+- 📂 **13 Command Categories** — 155+ commands organized by category
 - 🎮 **19 Games** — Trivia, TicTacToe, Hangman, Word Chain, and 16 word-guessing games with JSON data
 - 💰 **Economy System** — Wallet, bank, daily rewards, shop, secure transfers
 - 📊 **Leveling & XP** — Earn XP per command, level up with rank card images (Sharp canvas)
 - 🤖 **AI Integration** — Google Gemini 2.5 Flash for image generation/editing
-- 🌐 **HTTP API Server** — Elysia server (port 8080) with stats, users, groups, commands, logs, settings, schedules, and broadcast endpoints
 - 🗳️ **Group Voting** — Polls and Votekick sessions with anti-double-vote
 - ⚠️ **Warning System** — Per-group configurable max warns
 - 📢 **AFK Status** — Auto-respond and clear status on activity
@@ -123,17 +128,6 @@ src/
 │   ├── convert.ts           # Sticker/img/mp3 conversion via ffmpeg
 │   ├── ai.ts                # Google GenAI wrapper (gemini-2.5-flash)
 │   └── group-toggle.ts      # Generic on/off toggle command factory
-├── server/
-│   ├── index.ts             # Elysia HTTP server (port 8080)
-│   └── routes/              # 8 route modules
-│       ├── stats.ts         # /api/stats
-│       ├── users.ts         # /api/users
-│       ├── groups.ts        # /api/groups
-│       ├── commands.ts      # /api/commands
-│       ├── logs.ts          # /api/logs
-│       ├── settings.ts      # /api/settings
-│       ├── schedules.ts     # /api/schedules
-│       └── broadcast.ts     # /api/broadcast
 └── infra/
     ├── loader.ts            # Auto-loads commands, hot-reload in dev
     ├── database.ts          # Database facade
@@ -164,21 +158,6 @@ Each middleware can intercept, modify, or delete messages. The pipeline runs bef
 ### Database
 
 Built-in SQLite via `bun:sqlite` with WAL mode. 11 tables covering users, economy, groups, AFK, auto-replies, polls, warns, toxic words, reminders, and schedules. No external database setup required.
-
-### HTTP API
-
-An Elysia server runs on port `API_PORT` (default: 8080) providing:
-
-| Endpoint         | Description                                         |
-| ---------------- | --------------------------------------------------- |
-| `/api/stats`     | Server stats, 7-day activity chart, recent activity |
-| `/api/users`     | CRUD, ban/unban users                               |
-| `/api/groups`    | List, update settings, mute/unmute                  |
-| `/api/commands`  | List, enable/disable commands                       |
-| `/api/logs`      | Tail recent log lines with level filter             |
-| `/api/settings`  | Get/update bot settings                             |
-| `/api/schedules` | CRUD for scheduled messages                         |
-| `/api/broadcast` | Broadcast endpoint                                  |
 
 ### Game System
 
@@ -220,10 +199,10 @@ All games feature 60s timeouts, hint systems, and XP rewards.
 ### Development
 
 ```bash
-bun run dev    # Runs with NODE_ENV=development (hot-reload enabled)
-bun run start  # Production mode
-bun run lint   # Biome check + TypeScript check
-bun run format # Auto-format with Biome
+bun run dev       # Runs with NODE_ENV=development (hot-reload enabled)
+bun run start     # Production mode
+bun run lint      # ESLint + TypeScript check
+bun run format    # Auto-format with Prettier
 ```
 
 ## Adding Commands
@@ -260,7 +239,6 @@ docker run -v ./auth:/app/auth -v ./data:/app/data seaaveybot
 | `OWNER_NUMBER`   | `62123456789` | Owner WhatsApp number(s), comma-separated |
 | `API_KEY`        | —             | API key for api.seaavey.com               |
 | `GEMINI_API_KEY` | —             | Google AI Studio API key (AI features)    |
-| `API_PORT`       | `8080`        | HTTP API server port                      |
 
 Bot prefix default: `.` (configurable at runtime via `setprefix` command)
 
