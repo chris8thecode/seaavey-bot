@@ -16,9 +16,16 @@ export default defineCommand({
     if (!res.status) return msg.reply(`❌ ${res.error}`);
 
     const pin = res.data;
-    await msg.send({
-      image: { url: pin.image },
-      caption: pin.title || "",
-    });
+    if (pin.video) {
+      await msg.send({
+        video: { url: pin.video },
+        caption: pin.title || "",
+      });
+    } else {
+      await msg.send({
+        image: { url: pin.image },
+        caption: pin.title || "",
+      });
+    }
   },
 });
