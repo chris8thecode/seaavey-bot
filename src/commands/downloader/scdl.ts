@@ -19,9 +19,7 @@ export default defineCommand({
 
     const { title, artist, duration, artwork, streamUrl } = result.data;
 
-    const caption = [`🎵 *${title}*`, `🎤 ${artist}`, `⏱️ ${duration}`]
-      .filter(Boolean)
-      .join("\n");
+    const caption = [`🎵 *${title}*`, `🎤 ${artist}`, `⏱️ ${duration}`].filter(Boolean).join("\n");
 
     if (artwork) {
       await msg.send({ image: { url: artwork }, caption });
