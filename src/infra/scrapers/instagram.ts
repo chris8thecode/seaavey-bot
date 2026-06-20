@@ -22,7 +22,9 @@ function extractCookie(headers: Record<string, unknown>): string {
 }
 
 function clean(url: string) {
-  return String(url || "").replaceAll("&amp;", "&").trim();
+  return String(url || "")
+    .replaceAll("&amp;", "&")
+    .trim();
 }
 
 function uniq(arr: string[]) {
@@ -58,9 +60,7 @@ function parseResult(html: string): InstagramMedia[] {
     );
 
     const download =
-      links.find((u) => u.includes(".mp4") || u.includes("cdninstagram")) ||
-      videos[0] ||
-      links[0];
+      links.find((u) => u.includes(".mp4") || u.includes("cdninstagram")) || videos[0] || links[0];
 
     if (download) {
       results.push({
@@ -77,9 +77,7 @@ function parseResult(html: string): InstagramMedia[] {
         .map((_, el) => clean($(el).attr("href") || $(el).attr("src") || ""))
         .get()
         .filter(
-          (u) =>
-            /^https?:\/\//i.test(u) &&
-            (u.includes("cdninstagram") || u.includes(".mp4")),
+          (u) => /^https?:\/\//i.test(u) && (u.includes("cdninstagram") || u.includes(".mp4")),
         ),
     );
     for (const url of fallback) {
@@ -94,16 +92,13 @@ function parseResult(html: string): InstagramMedia[] {
   return results;
 }
 
-export async function instagramDl(
-  url: string,
-): Promise<ScraperResult<InstagramMedia[]>> {
+export async function instagramDl(url: string): Promise<ScraperResult<InstagramMedia[]>> {
   try {
     const page = await axios.get(`${API}/`, {
       headers: {
         "user-agent": UA,
         "accept-language": "id-ID,id;q=0.9",
-        accept:
-          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "upgrade-insecure-requests": "1",
       },
     });
