@@ -22,14 +22,9 @@ export default defineCommand({
     }
 
     const list = result.data.tracks
-      .map(
-        (s, i) =>
-          `${i + 1}. *${s.title}*\n   🎤 ${s.artist} • ⏱️ ${s.duration}\n   🔗 ${s.url}`,
-      )
+      .map((s, i) => `${i + 1}. *${s.title}*\n   🎤 ${s.artist} • ⏱️ ${s.duration}\n   🔗 ${s.url}`)
       .join("\n\n");
 
-    await msg.reply(
-      `🎶 *SoundCloud Search*\n\n${list}\n\nDownload: .scdl <url>`,
-    );
+    await msg.reply(`🎶 *SoundCloud Search*\n\n${list}\n\nDownload: .scdl <url>`);
   },
 });
