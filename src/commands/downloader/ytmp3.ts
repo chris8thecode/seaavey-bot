@@ -22,9 +22,7 @@ export default defineCommand({
 
     const { title, thumbnail, downloadUrl, format } = result.data;
 
-    const caption = [`🎵 *${title}*`, format ? `📦 ${format}` : null]
-      .filter(Boolean)
-      .join("\n");
+    const caption = [`🎵 *${title}*`, format ? `📦 ${format}` : null].filter(Boolean).join("\n");
 
     if (thumbnail) {
       await msg.send({ image: { url: thumbnail }, caption });
@@ -42,7 +40,9 @@ export default defineCommand({
           ptt: false,
         });
         // Cleanup temp files
-        try { rmSync(dirname(result.data.localFile), { recursive: true, force: true }); } catch {}
+        try {
+          rmSync(dirname(result.data.localFile), { recursive: true, force: true });
+        } catch {}
       } else {
         await msg.send({ audio: { url: downloadUrl }, mimetype: "audio/mpeg" });
       }
