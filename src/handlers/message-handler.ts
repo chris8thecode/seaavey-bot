@@ -14,10 +14,6 @@ import { TtlMap } from "@/utils/ttl-map";
 
 const messageStore = new TtlMap<string, WAMessage>(10 * 60 * 1000);
 
-export function getStoredMessage(id: string) {
-  return messageStore.get(id);
-}
-
 export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]) {
   for (const msg of messages) {
     if (msg.key.fromMe) continue;
