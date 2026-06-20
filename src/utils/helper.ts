@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { WASocket } from "baileys";
 import { logger } from "@/core/logger";
 
 export function getRandomItem<T>(arr: T[]): T {
@@ -32,14 +31,6 @@ export function formatTime(ms: number): string {
 }
 
 const GAMES_DATA_DIR = join(process.cwd(), "src", "data", "games");
-
-export async function getProfilePictureUrl(sock: WASocket, jid: string): Promise<string | null> {
-  try {
-    return (await sock.profilePictureUrl(jid, "image")) ?? null;
-  } catch {
-    return null;
-  }
-}
 
 export function loadGameData<T>(filename: string): T[] {
   try {
