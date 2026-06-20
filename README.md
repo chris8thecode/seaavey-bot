@@ -246,6 +246,12 @@ Bot prefix default: `.` (configurable at runtime via `setprefix` command)
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
 
+## Disclaimer
+
+> **Educational & Learning Purpose Only**
+>
+> This project, including all scrapers and media downloaders in `src/infra/scrapers/`, is built **solely for educational and learning purposes** — to study web scraping techniques, API integration patterns, and software architecture concepts. It is **not** intended for commercial use, distribution, or any activity that violates the Terms of Service of third-party platforms. Users are solely responsible for ensuring their use of this code complies with all applicable laws and platform policies. The developer assumes no liability for any misuse.
+
 ## License
 
 [MIT](LICENSE) © Muhammad Adriansyah (Seaavey)

@@ -246,6 +246,12 @@ Prefix default bot: `.` (dapat dikonfigurasi saat runtime via perintah `setprefi
 
 Kontribusi diterima! Jangan ragu untuk membuka issue atau mengirim pull request.
 
+## Disclaimer
+
+> **Hanya untuk Tujuan Edukasi & Pembelajaran**
+>
+> Proyek ini, termasuk semua scraper dan pengunduh media di `src/infra/scrapers/`, dibuat **hanya untuk tujuan edukasi dan pembelajaran** — untuk mempelajari teknik web scraping, pola integrasi API, dan konsep arsitektur perangkat lunak. **Bukan** untuk penggunaan komersial, distribusi, atau aktivitas apa pun yang melanggar Ketentuan Layanan pihak ketiga. Pengguna bertanggung jawab penuh untuk memastikan penggunaan kode ini mematuhi semua hukum dan kebijakan platform yang berlaku. Pengembang tidak bertanggung jawab atas penyalahgunaan apa pun.
+
 ## Lisensi
 
 [MIT](LICENSE) © Muhammad Adriansyah (Seaavey)
