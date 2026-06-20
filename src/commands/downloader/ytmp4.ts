@@ -20,9 +20,7 @@ export default defineCommand({
 
     const { title, thumbnail, downloadUrl, format } = result.data;
 
-    const caption = [`🎬 *${title}*`, format ? `📦 ${format}` : null]
-      .filter(Boolean)
-      .join("\n");
+    const caption = [`🎬 *${title}*`, format ? `📦 ${format}` : null].filter(Boolean).join("\n");
 
     if (thumbnail) {
       await msg.send({ image: { url: thumbnail }, caption });
