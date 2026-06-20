@@ -3,9 +3,7 @@ import { spotify, spotifySearch } from "../spotify";
 
 describe("spotify", () => {
   it("should return track info from URL", async () => {
-    const result = await spotify(
-      "https://open.spotify.com/track/1fDFHXcykq4iw8Gg7s5hG9",
-    );
+    const result = await spotify("https://open.spotify.com/track/1fDFHXcykq4iw8Gg7s5hG9");
 
     expect(result.status).toBe(true);
     expect(result.data).toHaveProperty("title");
