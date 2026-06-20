@@ -35,3 +35,5 @@ export type { SswebData } from "./ssweb";
 export { sswebDl } from "./ssweb";
 export type { WinkData } from "./wink";
 export { winkEnhance } from "./wink";
+export type { UpscaleData } from "./upscale";
+export { upscaleImage } from "./upscale";
