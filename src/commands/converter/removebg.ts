@@ -6,7 +6,7 @@ export default defineCommand({
   name: "Remove Background",
   alias: ["removebg", "rbg"],
   description: "Remove image background",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
 
@@ -15,7 +15,7 @@ export default defineCommand({
     }
 
     const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
 
     const result = await removeBackground(buffer);
 
