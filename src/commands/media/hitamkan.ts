@@ -20,7 +20,7 @@ export default defineCommand({
             key: msg.message?.extendedTextMessage?.contextInfo?.stanzaId,
           }
         : msg.raw;
-      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {});
+      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
 
       const result = await img2img(
         Buffer.from(buffer),
