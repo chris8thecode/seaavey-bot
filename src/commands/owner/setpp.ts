@@ -15,7 +15,7 @@ export default defineCommand({
     if (!imageMsg) return msg.reply("Kirim/reply gambar dengan caption .setpp");
 
     const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
 
     await sock.updateProfilePicture(sock.user.id, buffer);
     await msg.reply("✅ Profile picture bot berhasil diubah!");
