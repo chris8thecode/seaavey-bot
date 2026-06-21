@@ -119,7 +119,7 @@ interface PixivRankingResponse {
 
 function extractId(urlOrId: string): string {
   const match = urlOrId.match(/(?:artworks|illust_id=)(\d+)/);
-  if (match) return match[1];
+  if (match?.[1]) return match[1];
   if (/^\d+$/.test(urlOrId)) return urlOrId;
   throw new Error("URL atau ID tidak valid");
 }
