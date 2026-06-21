@@ -1,7 +1,6 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
 import { defineCommand } from "@/core/types";
 import { stickerToVideo } from "@/utils/convert";
-import type { proto } from "@whiskeysockets/baileys";
 
 export default defineCommand({
   name: "To MP4",
@@ -10,9 +9,9 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
     const quotedMsg = contextInfo?.quotedMessage;
-    const sticker: proto.Message.IStickerMessage | undefined =
-      quotedMsg?.stickerMessage ||
-      quotedMsg?.viewOnceMessageV2?.message?.stickerMessage ||
+    const sticker =
+      quotedMsg?.stickerMessage ??
+      quotedMsg?.viewOnceMessageV2?.message?.stickerMessage ??
       quotedMsg?.ephemeralMessage?.message?.stickerMessage;
 
     if (!sticker) {
