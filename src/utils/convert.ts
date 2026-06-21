@@ -116,3 +116,42 @@ export function stickerToImage(buffer: Buffer): Buffer {
     rmSync(tmp, { recursive: true, force: true });
   }
 }
+
+/**
+ * Convert animated WebP sticker to MP4 video
+ */
+export function stickerToVideo(buffer: Buffer): Buffer {
+  const tmp = mkdtempSync(join(tmpdir(), "tomp4-"));
+  const input = join(tmp, "input.webp");
+  const output = join(tmp, "output.mp4");
+
+  try {
+    writeFileSync(input, buffer);
+    execSync(
+      `ffmpeg -i ${input} -vf "fps=15" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ${output}`,
+      { stdio: "ignore" },
+    );
+    return readFileSync(output);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Convert video/audio buffer to OGG Opus (WhatsApp voice note)
+ */
+export function toOpus(buffer: Buffer): Buffer {
+  const tmp = mkdtempSync(join(tmpdir(), "tovn-"));
+  const input = join(tmp, "input");
+  const output = join(tmp, "output.ogg");
+
+  try {
+    writeFileSync(input, buffer);
+    execSync(`ffmpeg -i ${input} -vn -ar 48000 -ac 1 -b:a 128k -c:a libopus ${output}`, {
+      stdio: "ignore",
+    });
+    return readFileSync(output);
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
