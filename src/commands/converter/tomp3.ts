@@ -4,7 +4,7 @@ import { toMp3 } from "@/utils/convert";
 
 export default defineCommand({
   name: "To MP3",
-  alias: ["mp3", "tomp3"],
+  alias: ["mp3", "toaudio"],
   description: "Convert video/audio to MP3",
   handler: async (_sock, msg) => {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
