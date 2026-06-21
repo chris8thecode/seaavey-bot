@@ -23,11 +23,21 @@ export interface RemoveBgData {
   buffer: Buffer;
 }
 
+interface PollJobResult {
+  status: number;
+  error?: string;
+  image_url?: string;
+  result_url?: string;
+  output?: { preview?: string[]; url?: string };
+  preview_url?: string;
+  [key: string]: unknown;
+}
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function pollJob(url: string, extraHeaders: Record<string, string> = {}): Promise<any> {
+async function pollJob(url: string, extraHeaders: Record<string, string> = {}): Promise<PollJobResult> {
   const start = Date.now();
   const timeout = 90_000;
   const interval = 2000;
