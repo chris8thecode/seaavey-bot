@@ -6,7 +6,7 @@ export default defineCommand({
   name: "To MP4",
   alias: ["tomp4"],
   description: "Convert animated sticker to MP4",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
     const quotedMsg = contextInfo?.quotedMessage;
     const sticker =
@@ -39,7 +39,7 @@ export default defineCommand({
       message: { stickerMessage: sticker },
     } as WAMessage;
 
-    const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
     const video = stickerToVideo(buffer);
 
     await msg.send({
