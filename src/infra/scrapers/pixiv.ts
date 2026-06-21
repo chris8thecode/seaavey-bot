@@ -69,6 +69,52 @@ export type PixivRankingMode =
   | "female_r18"
   | "r18g";
 
+interface PixivTag {
+  tag: string;
+  tagName: string;
+}
+
+interface PixivIllustResponse {
+  id: number | string;
+  title: string;
+  description: string;
+  userName: string;
+  userId: number | string;
+  tags: { tags: PixivTag[] };
+  pageCount: number;
+  likeCount: number;
+  viewCount: number;
+  urls: {
+    mini: string;
+    thumb: string;
+    small: string;
+    regular: string;
+    original: string;
+  };
+}
+
+interface PixivPageResponse {
+  urls: {
+    thumb_mini: string;
+    small: string;
+    regular: string;
+    original: string;
+  };
+}
+
+interface PixivRankingResponse {
+  rank: number;
+  illust_id: number;
+  title: string;
+  user_name: string;
+  tags: string[];
+  view_count: number;
+  rating_count: number;
+  url: string;
+  width: number;
+  height: number;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────
 
 function extractId(urlOrId: string): string {
@@ -78,14 +124,14 @@ function extractId(urlOrId: string): string {
   throw new Error("URL atau ID tidak valid");
 }
 
-function mapIllust(data: Record<string, any>): PixivIllust {
+function mapIllust(data: PixivIllustResponse): PixivIllust {
   return {
     id: String(data.id),
     title: data.title || "",
     description: data.description || "",
     author: data.userName || "",
     authorId: String(data.userId || ""),
-    tags: data.tags?.tags?.map((t: any) => t.tag) || [],
+    tags: data.tags?.tags?.map((t) => t.tag) || [],
     pageCount: data.pageCount || 1,
     likeCount: data.likeCount || 0,
     viewCount: data.viewCount || 0,
@@ -184,7 +230,7 @@ export async function pixivPages(
       throw new Error(data.message || "Gagal mengambil halaman");
     }
 
-    const pages: PixivPage[] = (data.body || []).map((p: any) => ({
+    const pages: PixivPage[] = (data.body || []).map((p: PixivPageResponse) => ({
       thumbMini: p.urls?.thumb_mini || "",
       small: p.urls?.small || "",
       regular: p.urls?.regular || "",
@@ -225,7 +271,7 @@ export async function pixivRanking(
       throw new Error("Gagal mengambil ranking");
     }
 
-    const items: PixivRankingItem[] = data.contents.map((c: any) => ({
+    const items: PixivRankingItem[] = data.contents.map((c: PixivRankingResponse) => ({
       rank: c.rank,
       id: String(c.illust_id),
       title: c.title,
