@@ -28,9 +28,12 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
       await writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2));
 
       // Store group participant data to a JSON file for easier debugging of group-related features.
-      await sock.groupFetchAllParticipating().then((groups) => {
-        writeFile("dev/group-participants.json", JSON.stringify(groups, null, 2));
-      });
+      try {
+        const groups = await sock.groupFetchAllParticipating();
+        await writeFile("dev/group-participants.json", JSON.stringify(groups, null, 2));
+      } catch {
+        // Silently skip on rate limit or other errors to avoid crashing
+      }
 
       // Append the raw message data to a history file for later analysis. This can help track message patterns and debug issues that may arise.
       await appendFile(
