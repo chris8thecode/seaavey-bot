@@ -23,7 +23,7 @@ export default defineCommand({
       const mediaMsg = quoted
         ? { message: quoted, key: msg.message?.extendedTextMessage?.contextInfo?.stanzaId }
         : msg.raw;
-      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {});
+      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
 
       const result = await upscaleImage(Buffer.from(buffer), scale);
       if (!result.status) return msg.reply(`❌ ${result.error}`);
