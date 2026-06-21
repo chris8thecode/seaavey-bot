@@ -37,3 +37,5 @@ export type { WinkData } from "./wink";
 export { winkEnhance } from "./wink";
 export type { UpscaleData } from "./upscale";
 export { upscaleImage } from "./upscale";
+export type { RemoveBgData } from "./removebg";
+export { removeBackground } from "./removebg";
