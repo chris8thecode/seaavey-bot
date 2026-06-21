@@ -39,3 +39,17 @@ export type { UpscaleData } from "./upscale";
 export { upscaleImage } from "./upscale";
 export type { RemoveBgData } from "./removebg";
 export { removeBackground } from "./removebg";
+export type {
+  PixivIllust,
+  PixivPage,
+  PixivRankingItem,
+  PixivRankingMode,
+  PixivSearchResult,
+} from "./pixiv";
+export {
+  pixivDetail,
+  pixivDownloadImage,
+  pixivPages,
+  pixivRanking,
+  pixivSearch,
+} from "./pixiv";
