@@ -5,17 +5,15 @@ export default defineCommand({
   name: "OCR",
   alias: ["ocr"],
   description: "Extract teks dari gambar. Reply gambar dengan .ocr",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     const imgMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
     if (!imgMsg) return msg.reply("❌ Reply gambar dengan .ocr");
     await msg.reply("🔍 Membaca teks...");
     const buffer = await downloadMediaMessage(
-      { message: { imageMessage: imgMsg }, key: msg.key } as Parameters<
-        typeof downloadMediaMessage
-      >[0],
+      { message: { imageMessage: imgMsg }, key: msg.key },
       "buffer",
-      {},
+      { host: "mmg.whatsapp.net" },
     );
     const form = new FormData();
     form.append("file", new Blob([buffer], { type: "image/png" }), "image.png");
