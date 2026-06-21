@@ -6,7 +6,7 @@ export default defineCommand({
   name: "Sticker",
   alias: ["stiker", "sticker", "s"],
   description: "Convert image/video to sticker",
-  handler: async (_sock, msg) => {
+  handler: async (sock, msg) => {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
     const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
@@ -16,7 +16,7 @@ export default defineCommand({
     }
 
     const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", {})) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
 
     const pack = msg.args[0] || "SeaaveyBot";
     const author = msg.args[1] || "Seaavey";
