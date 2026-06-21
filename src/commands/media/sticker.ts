@@ -4,7 +4,7 @@ import { imageToSticker, videoToSticker } from "@/utils/convert";
 
 export default defineCommand({
   name: "Sticker",
-  alias: ["stiker", "sticker"],
+  alias: ["stiker", "sticker", "s"],
   description: "Convert image/video to sticker",
   handler: async (_sock, msg) => {
     const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
