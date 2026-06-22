@@ -7,7 +7,7 @@ export default defineCommand({
   alias: ["stiker", "sticker", "s"],
   description: "Convert image/video to sticker",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const quotedMsg = msg.quotedMsg;
     const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
     const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
 
