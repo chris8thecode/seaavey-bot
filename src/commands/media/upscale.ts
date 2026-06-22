@@ -9,7 +9,7 @@ export default defineCommand({
   usage: "{prefix}upscale [2|4]",
   tags: ["media"],
   handler: async (sock, msg) => {
-    const quoted = msg.quotedMsg;
+    const quoted = msg.quoted?.msg;
     const isImage = msg.message?.imageMessage || quoted?.imageMessage;
 
     if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .upscale [2|4]");
