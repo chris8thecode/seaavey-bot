@@ -30,7 +30,6 @@ export interface MessageResolver {
         msg: proto.IMessage | null | undefined;
       }
     | undefined;
-  quotedMsg: proto.IMessage | null | undefined;
   args: string[];
   text: string;
   message: proto.IMessage | null | undefined;
@@ -116,7 +115,6 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
     isOwner: config.owner.includes(sender.replace(/@.+/, "")),
     mentioned,
     quoted,
-    quotedMsg: qm,
     mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
     text: args.join(" "),
