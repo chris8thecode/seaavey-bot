@@ -82,12 +82,11 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
 
   if (isGroup) {
     const metadata = await getCachedGroupMetadata(sock, jid);
-    const normalizedSender = jidNormalizedUser(sender);
-    const participant = metadata.participants.find((p) => jidNormalizedUser(p.id) === normalizedSender);
+    const participant = metadata.participants.find((p) => p.phoneNumber === sender);
 
     isAdmin = !!participant?.admin;
     const botId = jidNormalizedUser(sock.user?.id);
-    isBotAdmin = metadata.participants.some((p) => p.admin && jidNormalizedUser(p.id) === botId);
+    isBotAdmin = metadata.participants.some((p) => p.admin && p.phoneNumber === botId);
   }
 
   const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
