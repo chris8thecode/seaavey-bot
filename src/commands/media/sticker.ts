@@ -8,8 +8,8 @@ export default defineCommand({
   description: "Convert image/video to sticker",
   handler: async (sock, msg) => {
     const quotedMsg = msg.quoted?.msg;
-    const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
-    const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
+    const imageMsg = msg.message?.imageMessage || msg.quoted?.imageMessage;
+    const videoMsg = msg.message?.videoMessage || msg.quoted?.videoMessage;
 
     if (!imageMsg && !videoMsg) {
       return msg.reply("Kirim/reply gambar atau video (max 10s) dengan caption .sticker");

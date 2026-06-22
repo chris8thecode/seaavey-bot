@@ -8,7 +8,7 @@ export default defineCommand({
   description: "Remove image background",
   handler: async (sock, msg) => {
     const quotedMsg = msg.quoted?.msg;
-    const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
+    const imageMsg = msg.message?.imageMessage || msg.quoted?.imageMessage;
 
     if (!imageMsg) {
       return msg.reply("Kirim/reply gambar dengan caption .removebg");

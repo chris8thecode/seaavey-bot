@@ -9,8 +9,7 @@ export default defineCommand({
   usage: "{prefix}upscale [2|4]",
   tags: ["media"],
   handler: async (sock, msg) => {
-    const quoted = msg.quoted?.msg;
-    const isImage = msg.message?.imageMessage || quoted?.imageMessage;
+    const isImage = msg.message?.imageMessage || msg.quoted?.imageMessage;
 
     if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .upscale [2|4]");
 
@@ -20,8 +19,8 @@ export default defineCommand({
     await msg.reply(`⏳ Sedang upscale ${scale}x...`);
 
     try {
-      const mediaMsg = quoted
-        ? { message: quoted, key: msg.quoted?.id }
+      const mediaMsg = msg.quoted?.msg
+        ? { message: msg.quoted.msg, key: msg.quoted?.id }
         : msg.raw;
       const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
 
