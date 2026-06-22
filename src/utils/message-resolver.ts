@@ -27,6 +27,7 @@ export interface MessageResolver {
         sender: string;
         mtype: keyof proto.Message | undefined;
         body: string;
+        msg: proto.IMessage | null | undefined;
       }
     | undefined;
   quotedMsg: proto.IMessage | null | undefined;
@@ -104,6 +105,7 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
         sender: (await LIDToJid(contextInfo.participant || "")) || "",
         mtype: qKey,
         body: extractBody(qm),
+        msg: qm,
       }
     : undefined;
 
