@@ -9,7 +9,7 @@ export default defineCommand({
   usage: "{prefix}upscale [2|4]",
   tags: ["media"],
   handler: async (sock, msg) => {
-    const quoted = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const quoted = msg.quotedMsg;
     const isImage = msg.message?.imageMessage || quoted?.imageMessage;
 
     if (!isImage) return msg.reply("❌ Balas atau kirim gambar dengan caption .upscale [2|4]");
@@ -21,7 +21,7 @@ export default defineCommand({
 
     try {
       const mediaMsg = quoted
-        ? { message: quoted, key: msg.message?.extendedTextMessage?.contextInfo?.stanzaId }
+        ? { message: quoted, key: msg.quoted?.id }
         : msg.raw;
       const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
 
