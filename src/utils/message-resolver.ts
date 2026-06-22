@@ -28,6 +28,10 @@ export interface MessageResolver {
         mtype: keyof proto.Message | undefined;
         body: string;
         msg: proto.IMessage | null | undefined;
+        imageMessage: proto.Message.IImageMessage | null | undefined;
+        videoMessage: proto.Message.IVideoMessage | null | undefined;
+        audioMessage: proto.Message.IAudioMessage | null | undefined;
+        stickerMessage: proto.Message.IStickerMessage | null | undefined;
       }
     | undefined;
   args: string[];
@@ -100,6 +104,10 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
         mtype: qKey,
         body: extractBody(qm),
         msg: qm,
+        imageMessage: qm?.imageMessage,
+        videoMessage: qm?.videoMessage,
+        audioMessage: qm?.audioMessage,
+        stickerMessage: qm?.stickerMessage,
       }
     : undefined;
 
