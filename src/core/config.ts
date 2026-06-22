@@ -7,6 +7,7 @@ interface Config {
   name: string;
   prefix: string;
   owner: string[];
+  accessMode: "public" | "private" | "self";
   apiKey: string;
   googleAiKey: string;
   toxicRegex: RegExp;
@@ -22,6 +23,7 @@ export const config: Config = {
   name: "SeaaveyBot",
   prefix: ".",
   owner: (process.env.OWNER_NUMBER ?? "62123456789").split(","),
+  accessMode: (process.env.ACCESS_MODE ?? "public") as Config["accessMode"],
   apiKey: process.env.API_KEY ?? "",
   googleAiKey: process.env.GEMINI_API_KEY ?? "",
   toxicRegex: new RegExp(`\\b(?:${toxicWords})\\b`, "i"),
