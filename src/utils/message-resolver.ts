@@ -27,7 +27,6 @@ export interface MessageResolver {
         sender: string;
         mtype: keyof proto.Message | undefined;
         body: string;
-        msg: proto.IMessage | null | undefined;
         imageMessage: proto.Message.IImageMessage | null | undefined;
         videoMessage: proto.Message.IVideoMessage | null | undefined;
         audioMessage: proto.Message.IAudioMessage | null | undefined;
@@ -103,7 +102,6 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
         sender: (await LIDToJid(contextInfo.participant || "")) || "",
         mtype: qKey,
         body: extractBody(qm),
-        msg: qm,
         imageMessage: qm?.imageMessage,
         videoMessage: qm?.videoMessage,
         audioMessage: qm?.audioMessage,
