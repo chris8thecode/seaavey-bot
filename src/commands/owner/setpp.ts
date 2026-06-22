@@ -9,7 +9,7 @@ export default defineCommand({
   handler: async (sock, msg) => {
     if (!sock.user?.id) return;
 
-    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const quotedMsg = msg.quotedMsg;
     const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
 
     if (!imageMsg) return msg.reply("Kirim/reply gambar dengan caption .setpp");

@@ -7,12 +7,11 @@ export default defineCommand({
   alias: ["toimage"],
   description: "Convert sticker to image",
   handler: async (sock, msg) => {
-    const contextInfo = msg.message?.extendedTextMessage?.contextInfo;
-    const quotedMsg = contextInfo?.quotedMessage;
+    const qm = msg.quoted?.msg;
     const sticker =
-      quotedMsg?.stickerMessage ??
-      quotedMsg?.viewOnceMessageV2?.message?.stickerMessage ??
-      quotedMsg?.ephemeralMessage?.message?.stickerMessage;
+      qm?.stickerMessage ??
+      qm?.viewOnceMessageV2?.message?.stickerMessage ??
+      qm?.ephemeralMessage?.message?.stickerMessage;
 
     if (!sticker) {
       return msg.reply("Reply sticker dengan caption .toimg");
@@ -35,7 +34,7 @@ export default defineCommand({
     }
 
     const message = {
-      key: { ...msg.key, id: contextInfo?.stanzaId, participant: contextInfo?.participant },
+      key: { ...msg.key, id: msg.quoted?.id, participant: msg.quoted?.sender },
       message: { stickerMessage: sticker },
     } as WAMessage;
 

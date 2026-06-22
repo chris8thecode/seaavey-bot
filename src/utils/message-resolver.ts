@@ -27,10 +27,12 @@ export interface MessageResolver {
         sender: string;
         mtype: keyof proto.Message | undefined;
         body: string;
-        msg: proto.IMessage[keyof proto.IMessage] | undefined;
+        msg: proto.IMessage | null | undefined;
       }
     | undefined;
+  quotedMsg: proto.IMessage | null | undefined;
   args: string[];
+  text: string;
   message: proto.IMessage | null | undefined;
   key: WAMessage["key"];
   pushName: string | null | undefined;
@@ -90,17 +92,15 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
 
   const body = extractBody(msg.message);
   const args = body.split(" ").slice(1);
-  const quotedMsg = contextInfo?.quotedMessage;
-  const quotedData = quotedMsg
-    ? quotedMsg[Object.keys(quotedMsg)[0] as keyof proto.IMessage]
-    : null;
+  const qm = contextInfo?.quotedMessage;
+  const qKey = qm ? (Object.keys(qm)[0] as keyof proto.Message) : undefined;
   const quoted = contextInfo?.stanzaId
     ? {
         id: contextInfo.stanzaId ?? undefined,
-        sender: (await LIDToJid(contextInfo?.participant || "")) || "",
-        mtype: quotedMsg ? (Object.keys(quotedMsg)[0] as keyof proto.Message) : undefined,
-        body: extractBody(quotedMsg),
-        msg: quotedData ?? undefined,
+        sender: (await LIDToJid(contextInfo.participant || "")) || "",
+        mtype: qKey,
+        body: extractBody(qm),
+        msg: qm,
       }
     : undefined;
 
@@ -116,8 +116,10 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
     isOwner: config.owner.includes(sender.replace(/@.+/, "")),
     mentioned,
     quoted,
+    quotedMsg: qm,
     mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
+    text: args.join(" "),
     message: msg.message,
     key: msg.key,
     pushName: msg.pushName,
