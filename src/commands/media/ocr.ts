@@ -6,7 +6,7 @@ export default defineCommand({
   alias: ["ocr"],
   description: "Extract teks dari gambar. Reply gambar dengan .ocr",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const quotedMsg = msg.quotedMsg;
     const imgMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
     if (!imgMsg) return msg.reply("❌ Reply gambar dengan .ocr");
     await msg.reply("🔍 Membaca teks...");
