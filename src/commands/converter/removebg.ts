@@ -7,7 +7,7 @@ export default defineCommand({
   alias: ["removebg", "rbg"],
   description: "Remove image background",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.quotedMsg;
+    const quotedMsg = msg.quoted?.msg;
     const imageMsg = msg.message?.imageMessage || quotedMsg?.imageMessage;
 
     if (!imageMsg) {

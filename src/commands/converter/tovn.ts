@@ -7,7 +7,7 @@ export default defineCommand({
   alias: ["tovn"],
   description: "Convert video/audio to voice note",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.quotedMsg;
+    const quotedMsg = msg.quoted?.msg;
     const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
     const audioMsg = msg.message?.audioMessage || quotedMsg?.audioMessage;
 
