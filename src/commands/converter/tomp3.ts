@@ -7,7 +7,7 @@ export default defineCommand({
   alias: ["mp3", "toaudio"],
   description: "Convert video/audio to MP3",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const quotedMsg = msg.quotedMsg;
     const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
     const audioMsg = msg.message?.audioMessage || quotedMsg?.audioMessage;
 
