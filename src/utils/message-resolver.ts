@@ -30,7 +30,10 @@ export interface MessageResolver {
         msg: proto.IMessage[keyof proto.IMessage] | undefined;
       }
     | undefined;
+  quotedMsg: proto.IMessage | null | undefined;
+  quotedSticker: proto.Message.IStickerMessage | null | undefined;
   args: string[];
+  text: string;
   message: proto.IMessage | null | undefined;
   key: WAMessage["key"];
   pushName: string | null | undefined;
@@ -90,17 +93,15 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
 
   const body = extractBody(msg.message);
   const args = body.split(" ").slice(1);
-  const quotedMsg = contextInfo?.quotedMessage;
-  const quotedData = quotedMsg
-    ? quotedMsg[Object.keys(quotedMsg)[0] as keyof proto.IMessage]
-    : null;
+  const qm = contextInfo?.quotedMessage;
+  const qKey = qm ? (Object.keys(qm)[0] as keyof proto.Message) : undefined;
   const quoted = contextInfo?.stanzaId
     ? {
         id: contextInfo.stanzaId ?? undefined,
-        sender: (await LIDToJid(contextInfo?.participant || "")) || "",
-        mtype: quotedMsg ? (Object.keys(quotedMsg)[0] as keyof proto.Message) : undefined,
-        body: extractBody(quotedMsg),
-        msg: quotedData ?? undefined,
+        sender: (await LIDToJid(contextInfo.participant || "")) || "",
+        mtype: qKey,
+        body: extractBody(qm),
+        msg: qKey ? qm?.[qKey as keyof proto.IMessage] : undefined,
       }
     : undefined;
 
@@ -116,8 +117,11 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
     isOwner: config.owner.includes(sender.replace(/@.+/, "")),
     mentioned,
     quoted,
+    quotedMsg: qm,
+    quotedSticker: qm?.stickerMessage ?? qm?.viewOnceMessageV2?.message?.stickerMessage ?? qm?.ephemeralMessage?.message?.stickerMessage,
     mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
+    text: args.join(" "),
     message: msg.message,
     key: msg.key,
     pushName: msg.pushName,
