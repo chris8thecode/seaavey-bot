@@ -46,6 +46,9 @@ qr.png
 # debug
 dev/
 
+# skills
+skills-lock.json
+
 # Agent folder
 .commandcode
 .agents
