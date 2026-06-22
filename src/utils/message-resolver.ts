@@ -59,6 +59,10 @@ function extractBody(m: proto.IMessage | null | undefined): string {
   );
 }
 
+function unwrapSticker(m?: proto.IMessage | null) {
+  return m?.stickerMessage ?? m?.viewOnceMessageV2?.message?.stickerMessage ?? m?.ephemeralMessage?.message?.stickerMessage;
+}
+
 export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<MessageResolver> {
   // Helper function to convert LID to JID
   const LIDToJid = async (lid: string): Promise<string | null> => {
@@ -118,7 +122,7 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
     mentioned,
     quoted,
     quotedMsg: qm,
-    quotedSticker: qm?.stickerMessage ?? qm?.viewOnceMessageV2?.message?.stickerMessage ?? qm?.ephemeralMessage?.message?.stickerMessage,
+    quotedSticker: unwrapSticker(qm),
     mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
     text: args.join(" "),
