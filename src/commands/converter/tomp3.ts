@@ -8,8 +8,8 @@ export default defineCommand({
   description: "Convert video/audio to MP3",
   handler: async (sock, msg) => {
     const quotedMsg = msg.quoted?.msg;
-    const videoMsg = msg.message?.videoMessage || quotedMsg?.videoMessage;
-    const audioMsg = msg.message?.audioMessage || quotedMsg?.audioMessage;
+    const videoMsg = msg.message?.videoMessage || msg.quoted?.videoMessage;
+    const audioMsg = msg.message?.audioMessage || msg.quoted?.audioMessage;
 
     if (!videoMsg && !audioMsg) {
       return msg.reply("Kirim/reply video atau audio dengan caption .tomp3");
