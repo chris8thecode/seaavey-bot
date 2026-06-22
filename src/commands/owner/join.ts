@@ -21,12 +21,11 @@ export default defineCommand({
     const code = match ? (match[1] ?? input) : input;
 
     try {
-      const groupId: string = await sock.groupAcceptInvite(code) ?? "";
+      const groupId: string = (await sock.groupAcceptInvite(code)) ?? "";
       if (!groupId) throw new Error("No group ID returned");
       const metadata = await sock.groupMetadata(groupId);
       await msg.reply(
-        `✅ Berhasil join *${metadata.subject}*.\n` +
-          `👥 ${metadata.participants.length} anggota`,
+        `✅ Berhasil join *${metadata.subject}*.\n` + `👥 ${metadata.participants.length} anggota`,
       );
     } catch {
       await msg.reply("❌ Gagal join group. Link tidak valid atau sudah expired.");

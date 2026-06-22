@@ -34,7 +34,9 @@ export default defineCommand({
       message: { stickerMessage: sticker },
     } as WAMessage;
 
-    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", {
+      host: "mmg.whatsapp.net",
+    })) as Buffer;
     const image = stickerToImage(buffer);
 
     await msg.send({ image });

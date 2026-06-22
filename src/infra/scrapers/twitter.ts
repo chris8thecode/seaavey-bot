@@ -17,9 +17,7 @@ export interface TwitterData {
  * Download media from X/Twitter via savetwitter.net.
  * Supports both x.com and twitter.com URLs.
  */
-export async function twitterDl(
-  url: string,
-): Promise<ScraperResult<TwitterData>> {
+export async function twitterDl(url: string): Promise<ScraperResult<TwitterData>> {
   try {
     const { data } = await axios.post(
       "https://savetwitter.net/api/ajaxSearch",
@@ -44,14 +42,8 @@ export async function twitterDl(
     }
 
     const result = data.data;
-    const video =
-      result.video?.[0]?.url ||
-      result.video_url ||
-      null;
-    const photo =
-      result.image ||
-      result.photo ||
-      null;
+    const video = result.video?.[0]?.url || result.video_url || null;
+    const photo = result.image || result.photo || null;
 
     return scraperSuccess({
       title: result.title || result.text || "",

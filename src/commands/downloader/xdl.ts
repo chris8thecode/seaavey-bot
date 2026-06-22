@@ -7,10 +7,7 @@ export default defineCommand({
   description: "Download media dari X/Twitter",
   handler: async (_sock, msg) => {
     const url = msg.args[0];
-    if (!url)
-      return msg.reply(
-        "Kirim URL Twitter/X.\nContoh: .xdl https://x.com/user/status/...",
-      );
+    if (!url) return msg.reply("Kirim URL Twitter/X.\nContoh: .xdl https://x.com/user/status/...");
     if (!url.includes("x.com") && !url.includes("twitter.com"))
       return msg.reply("❌ URL harus dari X/Twitter");
     await msg.reply("⏳ Downloading...");

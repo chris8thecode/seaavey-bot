@@ -37,7 +37,10 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function pollJob(url: string, extraHeaders: Record<string, string> = {}): Promise<PollJobResult> {
+async function pollJob(
+  url: string,
+  extraHeaders: Record<string, string> = {},
+): Promise<PollJobResult> {
   const start = Date.now();
   const timeout = 90_000;
   const interval = 2000;
@@ -93,9 +96,13 @@ export async function removeBackground(
     bgForm.append("mode", "general_v2");
     bgForm.append("task_mode", "free");
 
-    const bgCreate = await axios.post(`${BASE_URL}/ez-remove/v3/background-remove/create-job`, bgForm, {
-      headers: { ...HEADERS, "product-serial": SERIAL, ...bgForm.getHeaders() },
-    });
+    const bgCreate = await axios.post(
+      `${BASE_URL}/ez-remove/v3/background-remove/create-job`,
+      bgForm,
+      {
+        headers: { ...HEADERS, "product-serial": SERIAL, ...bgForm.getHeaders() },
+      },
+    );
 
     if (bgCreate.data.code !== 100000) {
       throw new Error(`BG create-job gagal: ${JSON.stringify(bgCreate.data)}`);

@@ -15,9 +15,16 @@ export default defineCommand({
     }
 
     const message = msg.quoted
-      ? ({ key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender }, message: msg.quoted.imageMessage ? { imageMessage: msg.quoted.imageMessage } : { videoMessage: msg.quoted.videoMessage } } as WAMessage)
+      ? ({
+          key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },
+          message: msg.quoted.imageMessage
+            ? { imageMessage: msg.quoted.imageMessage }
+            : { videoMessage: msg.quoted.videoMessage },
+        } as WAMessage)
       : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", {
+      host: "mmg.whatsapp.net",
+    })) as Buffer;
 
     const pack = msg.args[0] || "SeaaveyBot";
     const author = msg.args[1] || "Seaavey";

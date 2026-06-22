@@ -8,9 +8,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const url = msg.args[0];
     if (!url)
-      return msg.reply(
-        "Kirim URL Mediafire.\nContoh: .mediafire https://mediafire.com/file/...",
-      );
+      return msg.reply("Kirim URL Mediafire.\nContoh: .mediafire https://mediafire.com/file/...");
     await msg.reply("⏳ Downloading...");
     const res = await mediafireDl(url);
     if (!res.status) return msg.reply(`❌ ${res.error}`);

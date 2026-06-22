@@ -20,16 +20,24 @@ export default defineCommand({
 
     try {
       const mediaMsg = msg.quoted
-        ? { message: { imageMessage: msg.quoted.imageMessage }, key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender } }
+        ? {
+            message: { imageMessage: msg.quoted.imageMessage },
+            key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },
+          }
         : msg.raw;
-      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
+      const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {
+        host: "mmg.whatsapp.net",
+      });
 
       const result = await upscaleImage(Buffer.from(buffer), scale);
       if (!result.status) return msg.reply(`❌ ${result.error}`);
 
       await sock.sendMessage(
         msg.jid,
-        { image: result.data.buffer, caption: `✅ Upscaled ${result.data.scale}x (${result.data.server})` },
+        {
+          image: result.data.buffer,
+          caption: `✅ Upscaled ${result.data.scale}x (${result.data.server})`,
+        },
         { quoted: msg.raw },
       );
     } catch (e: unknown) {

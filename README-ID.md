@@ -172,29 +172,29 @@ Semua game memiliki batas waktu 60 detik, sistem petunjuk, dan hadiah XP.
 
 ## Kategori Perintah
 
-| Kategori       | Deskripsi                                                                         |
-| -------------- | --------------------------------------------------------------------------------- |
-| `general`      | Menu, ping, runtime, profile, level, confess, dll.                                |
-| `tools`        | Kalkulator, translate, shortlink, pelacakan                                       |
-| `converter`    | Encode, decode, gambar-ke-gambar, video-ke-mp3                                    |
-| `media`        | Pembuat stiker, kode QR, TTS, OCR, Carbon, tangkapan layar                       |
+| Kategori       | Deskripsi                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------ |
+| `general`      | Menu, ping, runtime, profile, level, confess, dll.                                         |
+| `tools`        | Kalkulator, translate, shortlink, pelacakan                                                |
+| `converter`    | Encode, decode, gambar-ke-gambar, video-ke-mp3                                             |
+| `media`        | Pembuat stiker, kode QR, TTS, OCR, Carbon, tangkapan layar                                 |
 | `downloader`   | YouTube, TikTok, Instagram, Facebook, Twitter/X, Spotify, SoundCloud, Pinterest, MediaFire |
-| `fun`          | Meme, quotes, ship, zodiak, waifu, emojimix, fakta, dll.                         |
-| `game`         | Trivia, TicTacToe, Hangman, Word Chain, Duel, Slot, dan 13+ game tebak kata      |
-| `economy`      | Dompet, daily, toko, transfer                                                     |
-| `productivity` | Catatan, todo, pengingat, jadwal, AFK                                             |
-| `group`        | Alat admin (kick, promote, demote), antilink, welcome, poll, votekick, warn, sider |
-| `info`         | Cuaca, gempa, GitHub, paket npm, jadwal sholat                                   |
-| `search`       | Pinterest, SoundCloud, lirik                                                      |
-| `owner`        | Manajemen bot (eval, broadcast, block, setprefix, dll.)                           |
+| `fun`          | Meme, quotes, ship, zodiak, waifu, emojimix, fakta, dll.                                   |
+| `game`         | Trivia, TicTacToe, Hangman, Word Chain, Duel, Slot, dan 13+ game tebak kata                |
+| `economy`      | Dompet, daily, toko, transfer                                                              |
+| `productivity` | Catatan, todo, pengingat, jadwal, AFK                                                      |
+| `group`        | Alat admin (kick, promote, demote), antilink, welcome, poll, votekick, warn, sider         |
+| `info`         | Cuaca, gempa, GitHub, paket npm, jadwal sholat                                             |
+| `search`       | Pinterest, SoundCloud, lirik                                                               |
+| `owner`        | Manajemen bot (eval, broadcast, block, setprefix, dll.)                                    |
 
 ## Skrip
 
-| Skrip                 | Deskripsi                                                 |
-| --------------------- | -------------------------------------------------------- |
-| `setup_vps.sh`        | Installer Ubuntu/Debian — Bun, FFmpeg, PM2, dependensi   |
-| `setup_termux.sh`     | Installer Termux/Android — Bun, dependensi               |
-| `ecosystem.config.cjs`| Konfigurasi proses PM2                                   |
+| Skrip                  | Deskripsi                                              |
+| ---------------------- | ------------------------------------------------------ |
+| `setup_vps.sh`         | Installer Ubuntu/Debian — Bun, FFmpeg, PM2, dependensi |
+| `setup_termux.sh`      | Installer Termux/Android — Bun, dependensi             |
+| `ecosystem.config.cjs` | Konfigurasi proses PM2                                 |
 
 ### Development
 
@@ -233,12 +233,12 @@ docker run -v ./auth:/app/auth -v ./data:/app/data seaaveybot
 
 ## Konfigurasi
 
-| Variabel         | Default       | Deskripsi                                    |
-| ---------------- | ------------- | -------------------------------------------- |
-| `NODE_ENV`       | `production`  | `development` atau `production`              |
-| `OWNER_NUMBER`   | `62123456789` | Nomor WhatsApp owner, dipisah koma           |
-| `API_KEY`        | —             | API key untuk api.seaavey.com                |
-| `GEMINI_API_KEY` | —             | API key Google AI Studio (fitur AI)          |
+| Variabel         | Default       | Deskripsi                           |
+| ---------------- | ------------- | ----------------------------------- |
+| `NODE_ENV`       | `production`  | `development` atau `production`     |
+| `OWNER_NUMBER`   | `62123456789` | Nomor WhatsApp owner, dipisah koma  |
+| `API_KEY`        | —             | API key untuk api.seaavey.com       |
+| `GEMINI_API_KEY` | —             | API key Google AI Studio (fitur AI) |
 
 Prefix default bot: `.` (dapat dikonfigurasi saat runtime via perintah `setprefix`)
 

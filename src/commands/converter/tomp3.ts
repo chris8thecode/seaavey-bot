@@ -15,9 +15,16 @@ export default defineCommand({
     }
 
     const message = msg.quoted
-      ? ({ key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender }, message: msg.quoted.videoMessage ? { videoMessage: msg.quoted.videoMessage } : { audioMessage: msg.quoted.audioMessage } } as WAMessage)
+      ? ({
+          key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },
+          message: msg.quoted.videoMessage
+            ? { videoMessage: msg.quoted.videoMessage }
+            : { audioMessage: msg.quoted.audioMessage },
+        } as WAMessage)
       : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", {
+      host: "mmg.whatsapp.net",
+    })) as Buffer;
     const mp3 = toMp3(buffer);
 
     await msg.send({

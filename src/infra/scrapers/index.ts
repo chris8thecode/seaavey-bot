@@ -46,10 +46,4 @@ export type {
   PixivRankingMode,
   PixivSearchResult,
 } from "./pixiv";
-export {
-  pixivDetail,
-  pixivDownloadImage,
-  pixivPages,
-  pixivRanking,
-  pixivSearch,
-} from "./pixiv";
+export { pixivDetail, pixivDownloadImage, pixivPages, pixivRanking, pixivSearch } from "./pixiv";

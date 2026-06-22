@@ -127,9 +127,13 @@ async function downloadAndConvertMp3(url: string): Promise<string | null> {
     // If already mp3, return as-is
     if (input.endsWith(".mp3")) return input;
     // Convert to MP3 with FFmpeg
-    await execFileAsync("ffmpeg", ["-i", input, "-codec:a", "libmp3lame", "-q:a", "2", outputFile, "-y"], {
-      timeout: 60_000,
-    });
+    await execFileAsync(
+      "ffmpeg",
+      ["-i", input, "-codec:a", "libmp3lame", "-q:a", "2", outputFile, "-y"],
+      {
+        timeout: 60_000,
+      },
+    );
     if (existsSync(outputFile)) return outputFile;
     return null;
   } catch {
@@ -162,10 +166,7 @@ async function ytDlpDownload(
     if (format === "mp3") {
       args.push("-f", "bestaudio[ext=m4a]/bestaudio/best");
     } else {
-      args.push(
-        "-f",
-        "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]/best",
-      );
+      args.push("-f", "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]/best");
     }
 
     args.push(normalized);
@@ -194,8 +195,7 @@ async function ytDlpDownload(
     let downloadUrl = info.url || "";
     let formatLabel = "";
     const thumbnail =
-      info.thumbnail ||
-      `https://i.ytimg.com/vi/${extractVideoId(normalized)}/hqdefault.jpg`;
+      info.thumbnail || `https://i.ytimg.com/vi/${extractVideoId(normalized)}/hqdefault.jpg`;
 
     if (!downloadUrl && info.formats) {
       if (format === "mp3") {
@@ -229,9 +229,7 @@ async function ytDlpDownload(
       ...(info.duration != null ? { duration: info.duration } : {}),
     });
   } catch {
-    return scraperError(
-      "yt-dlp gagal. Pastikan cookies.txt ada di root project.",
-    );
+    return scraperError("yt-dlp gagal. Pastikan cookies.txt ada di root project.");
   }
 }
 
@@ -271,10 +269,7 @@ export const ytmp4 = (url: string) => runWithFallback(url, "mp4");
 
 // ─── loader.to fallback ─────────────────────────────────────────────
 
-async function loaderToDownload(
-  url: string,
-  format: string,
-): Promise<ScraperResult<YouTubeData>> {
+async function loaderToDownload(url: string, format: string): Promise<ScraperResult<YouTubeData>> {
   try {
     const startRes = await axios.get("https://loader.to/ajax/download.php", {
       params: { format, url },

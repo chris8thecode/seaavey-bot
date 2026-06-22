@@ -7,10 +7,7 @@ export default defineCommand({
   description: "Cari lirik lagu. Contoh: .lirik Bohemian Rhapsody",
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");
-    if (!query)
-      return msg.reply(
-        "Format: .lirik <judul lagu>\nContoh: .lirik Bohemian Rhapsody",
-      );
+    if (!query) return msg.reply("Format: .lirik <judul lagu>\nContoh: .lirik Bohemian Rhapsody");
     const res = await geniusSearch(query, 5);
     if (!res.status) return msg.reply(`❌ ${res.error}`);
     const list = res.data

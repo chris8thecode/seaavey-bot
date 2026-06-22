@@ -191,16 +191,14 @@ export async function pixivSearch(
 
 // ─── Detail ──────────────────────────────────────────────────────────────
 
-export async function pixivDetail(
-  urlOrId: string,
-): Promise<ScraperResult<PixivIllust>> {
+export async function pixivDetail(urlOrId: string): Promise<ScraperResult<PixivIllust>> {
   try {
     const id = extractId(urlOrId);
 
-    const { data } = await axios.get(
-      `https://www.pixiv.net/ajax/illust/${id}?lang=en`,
-      { headers: HEADERS, timeout: 15_000 },
-    );
+    const { data } = await axios.get(`https://www.pixiv.net/ajax/illust/${id}?lang=en`, {
+      headers: HEADERS,
+      timeout: 15_000,
+    });
 
     if (data.error) {
       throw new Error(data.message || "Illustration tidak ditemukan");
@@ -215,16 +213,14 @@ export async function pixivDetail(
 
 // ─── Pages (multi-page) ─────────────────────────────────────────────────
 
-export async function pixivPages(
-  urlOrId: string,
-): Promise<ScraperResult<PixivPage[]>> {
+export async function pixivPages(urlOrId: string): Promise<ScraperResult<PixivPage[]>> {
   try {
     const id = extractId(urlOrId);
 
-    const { data } = await axios.get(
-      `https://www.pixiv.net/ajax/illust/${id}/pages?lang=en`,
-      { headers: HEADERS, timeout: 15_000 },
-    );
+    const { data } = await axios.get(`https://www.pixiv.net/ajax/illust/${id}/pages?lang=en`, {
+      headers: HEADERS,
+      timeout: 15_000,
+    });
 
     if (data.error) {
       throw new Error(data.message || "Gagal mengambil halaman");
@@ -262,10 +258,10 @@ export async function pixivRanking(
       lang: "en",
     });
 
-    const { data } = await axios.get(
-      `https://www.pixiv.net/ranking.php?${params}`,
-      { headers: HEADERS, timeout: 15_000 },
-    );
+    const { data } = await axios.get(`https://www.pixiv.net/ranking.php?${params}`, {
+      headers: HEADERS,
+      timeout: 15_000,
+    });
 
     if (!data.contents) {
       throw new Error("Gagal mengambil ranking");
@@ -293,9 +289,7 @@ export async function pixivRanking(
 
 // ─── Download helper ─────────────────────────────────────────────────────
 
-export async function pixivDownloadImage(
-  url: string,
-): Promise<ScraperResult<Buffer>> {
+export async function pixivDownloadImage(url: string): Promise<ScraperResult<Buffer>> {
   try {
     const { data } = await axios.get(url, {
       headers: { ...HEADERS, referer: "https://www.pixiv.net/" },

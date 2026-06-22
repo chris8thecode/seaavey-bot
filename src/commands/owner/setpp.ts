@@ -14,9 +14,14 @@ export default defineCommand({
     if (!imageMsg) return msg.reply("Kirim/reply gambar dengan caption .setpp");
 
     const message = msg.quoted
-      ? ({ key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender }, message: { imageMessage: msg.quoted.imageMessage } } as WAMessage)
+      ? ({
+          key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },
+          message: { imageMessage: msg.quoted.imageMessage },
+        } as WAMessage)
       : msg.raw;
-    const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
+    const buffer = (await downloadMediaMessage(message, "buffer", {
+      host: "mmg.whatsapp.net",
+    })) as Buffer;
 
     await sock.updateProfilePicture(sock.user.id, buffer);
     await msg.reply("✅ Profile picture bot berhasil diubah!");

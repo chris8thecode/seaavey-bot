@@ -15,12 +15,30 @@ export interface UpscaleData {
 }
 
 const SERVERS = [
-  "api1g","api2g","api3g","api8g","api9g","api10g","api11g",
-  "api12g","api13g","api14g","api15g","api16g","api17g",
-  "api18g","api19g","api20g","api21g","api22g","api24g","api25g",
+  "api1g",
+  "api2g",
+  "api3g",
+  "api8g",
+  "api9g",
+  "api10g",
+  "api11g",
+  "api12g",
+  "api13g",
+  "api14g",
+  "api15g",
+  "api16g",
+  "api17g",
+  "api18g",
+  "api19g",
+  "api20g",
+  "api21g",
+  "api22g",
+  "api24g",
+  "api25g",
 ];
 
-const TASK = "r68zl88mq72xq94j2d5p66bn2z9lrbx20njsbw2qsAvgmzr11lvfhAx9kl87pp6yqgx7c8vg7sfbqnrr42qb16v0gj8jl5s0kq1kgp26mdyjjspd8c5A2wk8b4Adbm6vf5tpwbqlqdr8A9tfn7vbqvy28ylphlxdl379psxpd8r70nzs3sk1";
+const TASK =
+  "r68zl88mq72xq94j2d5p66bn2z9lrbx20njsbw2qsAvgmzr11lvfhAx9kl87pp6yqgx7c8vg7sfbqnrr42qb16v0gj8jl5s0kq1kgp26mdyjjspd8c5A2wk8b4Adbm6vf5tpwbqlqdr8A9tfn7vbqvy28ylphlxdl379psxpd8r70nzs3sk1";
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36";
 
 async function getToken() {
