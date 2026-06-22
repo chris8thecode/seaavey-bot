@@ -12,7 +12,7 @@ function ffmpeg(args: string): void {
   } catch (e: unknown) {
     const err = e as { stderr?: Buffer };
     const msg = err.stderr?.toString().split("\n").filter(Boolean).pop() || "ffmpeg failed";
-    throw new Error(msg);
+    throw new Error(msg, { cause: e });
   }
 }
 import { tmpdir } from "node:os";
