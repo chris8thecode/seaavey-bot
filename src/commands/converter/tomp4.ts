@@ -7,11 +7,7 @@ export default defineCommand({
   alias: ["tomp4"],
   description: "Convert animated sticker to MP4",
   handler: async (sock, msg) => {
-    const qm = msg.quoted?.msg;
-    const sticker =
-      qm?.stickerMessage ??
-      qm?.viewOnceMessageV2?.message?.stickerMessage ??
-      qm?.ephemeralMessage?.message?.stickerMessage;
+    const sticker = msg.quoted?.stickerMessage;
 
     if (!sticker) {
       return msg.reply("Reply sticker dengan caption .tomp4");

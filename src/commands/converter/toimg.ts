@@ -7,11 +7,7 @@ export default defineCommand({
   alias: ["toimage"],
   description: "Convert sticker to image",
   handler: async (sock, msg) => {
-    const qm = msg.quoted?.msg;
-    const sticker =
-      qm?.stickerMessage ??
-      qm?.viewOnceMessageV2?.message?.stickerMessage ??
-      qm?.ephemeralMessage?.message?.stickerMessage;
+    const sticker = msg.quoted?.stickerMessage;
 
     if (!sticker) {
       return msg.reply("Reply sticker dengan caption .toimg");
