@@ -17,6 +17,7 @@ export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
 
   if (!cmdName) return;
   if (isBanned(parse.sender)) return;
+  if (!parse.fromMe && !config.owner.includes(parse.sender.replace("@s.whatsapp.net", ""))) return;
   if (parse.isGroup && getGroup(parse.jid)?.mute && !parse.isAdmin) return;
 
   const cmd = commands.get(cmdName.toLowerCase());
