@@ -7,14 +7,15 @@ export default defineCommand({
   alias: ["removebg", "rbg"],
   description: "Remove image background",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.quoted?.msg;
     const imageMsg = msg.message?.imageMessage || msg.quoted?.imageMessage;
 
     if (!imageMsg) {
       return msg.reply("Kirim/reply gambar dengan caption .removebg");
     }
 
-    const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
+    const message = msg.quoted
+      ? ({ key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender }, message: { imageMessage: msg.quoted.imageMessage } } as WAMessage)
+      : msg.raw;
     const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
 
     const result = await removeBackground(buffer);

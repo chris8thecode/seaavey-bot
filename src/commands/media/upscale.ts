@@ -19,8 +19,8 @@ export default defineCommand({
     await msg.reply(`⏳ Sedang upscale ${scale}x...`);
 
     try {
-      const mediaMsg = msg.quoted?.msg
-        ? { message: msg.quoted.msg, key: msg.quoted?.id }
+      const mediaMsg = msg.quoted
+        ? { message: { imageMessage: msg.quoted.imageMessage }, key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender } }
         : msg.raw;
       const buffer = await downloadMediaMessage(mediaMsg as WAMessage, "buffer", { host: "mmg.whatsapp.net" });
 

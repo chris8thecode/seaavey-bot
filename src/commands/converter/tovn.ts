@@ -7,7 +7,6 @@ export default defineCommand({
   alias: ["tovn"],
   description: "Convert video/audio to voice note",
   handler: async (sock, msg) => {
-    const quotedMsg = msg.quoted?.msg;
     const videoMsg = msg.message?.videoMessage || msg.quoted?.videoMessage;
     const audioMsg = msg.message?.audioMessage || msg.quoted?.audioMessage;
 
@@ -15,7 +14,9 @@ export default defineCommand({
       return msg.reply("Kirim/reply video atau audio dengan caption .tovn");
     }
 
-    const message = quotedMsg ? ({ key: msg.key, message: quotedMsg } as WAMessage) : msg.raw;
+    const message = msg.quoted
+      ? ({ key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender }, message: msg.quoted.videoMessage ? { videoMessage: msg.quoted.videoMessage } : { audioMessage: msg.quoted.audioMessage } } as WAMessage)
+      : msg.raw;
     const buffer = (await downloadMediaMessage(message, "buffer", { host: "mmg.whatsapp.net" })) as Buffer;
     const opus = toOpus(buffer);
 
