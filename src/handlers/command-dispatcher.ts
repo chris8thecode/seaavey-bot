@@ -17,7 +17,7 @@ export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
 
   if (!cmdName) return;
   if (isBanned(parse.sender)) return;
-  if (parse.isGroup && getGroup(parse.jid).mute && !parse.isAdmin) return;
+  if (parse.isGroup && getGroup(parse.jid)?.mute && !parse.isAdmin) return;
 
   const cmd = commands.get(cmdName.toLowerCase());
   if (!cmd) return;
@@ -28,7 +28,11 @@ export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
   addHit(parse.sender);
   const user = getUser(parse.sender);
   const prevLevel = user?.level ?? 0;
-  await cmd.handler(sock, parse).catch((e) => logger.error(e));
+  try {
+    await cmd.handler(sock, parse);
+  } catch (e) {
+    logger.error(e);
+  }
   const after = getUser(parse.sender);
   if (after && after.level > prevLevel) {
     await sock.sendMessage(parse.jid, {
