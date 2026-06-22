@@ -5,6 +5,16 @@
 
 import { execSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+
+function ffmpeg(args: string): void {
+  try {
+    execSync(`ffmpeg -y ${args}`, { stdio: ["ignore", "ignore", "pipe"] });
+  } catch (e: unknown) {
+    const err = e as { stderr?: Buffer };
+    const msg = err.stderr?.toString().split("\n").filter(Boolean).pop() || "ffmpeg failed";
+    throw new Error(msg);
+  }
+}
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Image } from "node-webpmux";
@@ -49,10 +59,7 @@ export async function imageToSticker(buffer: Buffer, opts: StickerOptions = {}):
 
   try {
     writeFileSync(input, buffer);
-    execSync(
-      `ffmpeg -i ${input} -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000" -vcodec libwebp -lossless 0 -quality 80 -compression_level 6 ${output}`,
-      { stdio: "ignore" },
-    );
+    ffmpeg(`-i ${input} -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000" -vcodec libwebp -lossless 0 -quality 80 -compression_level 6 ${output}`);
     const webp = readFileSync(output);
     return addExif(webp, opts.pack || "SeaaveyBot", opts.author || "Seaavey");
   } finally {
@@ -70,10 +77,7 @@ export async function videoToSticker(buffer: Buffer, opts: StickerOptions = {}):
 
   try {
     writeFileSync(input, buffer);
-    execSync(
-      `ffmpeg -i ${input} -t 10 -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,fps=15" -vcodec libwebp -loop 0 -preset default -an -vsync 0 -quality 50 ${output}`,
-      { stdio: "ignore" },
-    );
+    ffmpeg(`-i ${input} -t 10 -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,fps=15" -vcodec libwebp -loop 0 -preset default -an -vsync 0 -quality 50 ${output}`);
     const webp = readFileSync(output);
     return addExif(webp, opts.pack || "SeaaveyBot", opts.author || "Seaavey");
   } finally {
@@ -91,9 +95,7 @@ export function toMp3(buffer: Buffer): Buffer {
 
   try {
     writeFileSync(input, buffer);
-    execSync(`ffmpeg -i ${input} -vn -ar 44100 -ac 2 -b:a 128k ${output}`, {
-      stdio: "ignore",
-    });
+    ffmpeg(`-i ${input} -vn -ar 44100 -ac 2 -b:a 128k ${output}`);
     return readFileSync(output);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
@@ -110,7 +112,7 @@ export function stickerToImage(buffer: Buffer): Buffer {
 
   try {
     writeFileSync(input, buffer);
-    execSync(`ffmpeg -i ${input} -frames:v 1 ${output}`, { stdio: "ignore" });
+    ffmpeg(`-i ${input} -frames:v 1 ${output}`);
     return readFileSync(output);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
@@ -127,10 +129,7 @@ export function stickerToVideo(buffer: Buffer): Buffer {
 
   try {
     writeFileSync(input, buffer);
-    execSync(
-      `ffmpeg -i ${input} -vf "fps=15" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ${output}`,
-      { stdio: "ignore" },
-    );
+    ffmpeg(`-i ${input} -vf "fps=15" -c:v libx264 -pix_fmt yuv420p -movflags +faststart ${output}`);
     return readFileSync(output);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
@@ -147,9 +146,7 @@ export function toOpus(buffer: Buffer): Buffer {
 
   try {
     writeFileSync(input, buffer);
-    execSync(`ffmpeg -i ${input} -vn -ar 48000 -ac 1 -b:a 128k -c:a libopus ${output}`, {
-      stdio: "ignore",
-    });
+    ffmpeg(`-i ${input} -vn -ar 48000 -ac 1 -b:a 128k -c:a libopus ${output}`);
     return readFileSync(output);
   } finally {
     rmSync(tmp, { recursive: true, force: true });
