@@ -31,7 +31,6 @@ export interface MessageResolver {
       }
     | undefined;
   quotedMsg: proto.IMessage | null | undefined;
-  quotedSticker: proto.Message.IStickerMessage | null | undefined;
   args: string[];
   text: string;
   message: proto.IMessage | null | undefined;
@@ -57,10 +56,6 @@ function extractBody(m: proto.IMessage | null | undefined): string {
     m?.templateButtonReplyMessage?.selectedId ||
     ""
   );
-}
-
-function unwrapSticker(m?: proto.IMessage | null) {
-  return m?.stickerMessage ?? m?.viewOnceMessageV2?.message?.stickerMessage ?? m?.ephemeralMessage?.message?.stickerMessage;
 }
 
 export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<MessageResolver> {
@@ -122,7 +117,6 @@ export async function resolveMessage(sock: WASocket, msg: WAMessage): Promise<Me
     mentioned,
     quoted,
     quotedMsg: qm,
-    quotedSticker: unwrapSticker(qm),
     mtype: msg.message ? (Object.keys(msg.message)[0] as keyof proto.Message) : undefined,
     args,
     text: args.join(" "),
