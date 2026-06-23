@@ -59,7 +59,9 @@ export async function imageToSticker(buffer: Buffer, opts: StickerOptions = {}):
 
   try {
     writeFileSync(input, buffer);
-    ffmpeg(`-i ${input} -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000" -vcodec libwebp -lossless 0 -quality 80 -compression_level 6 ${output}`);
+    ffmpeg(
+      `-i ${input} -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000" -vcodec libwebp -lossless 0 -quality 80 -compression_level 6 ${output}`,
+    );
     const webp = readFileSync(output);
     return addExif(webp, opts.pack || "SeaaveyBot", opts.author || "Seaavey");
   } finally {
@@ -77,7 +79,9 @@ export async function videoToSticker(buffer: Buffer, opts: StickerOptions = {}):
 
   try {
     writeFileSync(input, buffer);
-    ffmpeg(`-i ${input} -t 10 -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,fps=15" -vcodec libwebp -loop 0 -preset default -an -vsync 0 -quality 50 ${output}`);
+    ffmpeg(
+      `-i ${input} -t 10 -vf "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=0x00000000,fps=15" -vcodec libwebp -loop 0 -preset default -an -vsync 0 -quality 50 ${output}`,
+    );
     const webp = readFileSync(output);
     return addExif(webp, opts.pack || "SeaaveyBot", opts.author || "Seaavey");
   } finally {
