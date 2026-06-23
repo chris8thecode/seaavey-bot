@@ -1,5 +1,4 @@
 import type { WASocket } from "baileys";
-import { config } from "@/core/config";
 import type { Command } from "@/core/types";
 import type { MessageResolver } from "@/utils/message-resolver";
 import { TtlMap } from "@/utils/ttl-map";
@@ -16,7 +15,7 @@ export async function checkGuards(
     return false;
   }
 
-  if (cmd.ownerOnly && !config.owner.includes(parse.sender.replace("@s.whatsapp.net", ""))) {
+  if (cmd.ownerOnly && !parse.isOwner) {
     await sock.sendMessage(parse.jid, { text: "⚠️ Command ini hanya untuk owner." });
     return false;
   }
