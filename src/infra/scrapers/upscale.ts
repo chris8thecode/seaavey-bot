@@ -1,9 +1,5 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import FormData from "form-data";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
 
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
@@ -67,31 +63,24 @@ async function uploadImage(
   buffer: Buffer,
   task: string,
 ) {
-  const tmp = mkdtempSync(join(tmpdir(), "upscale-"));
-  const tmpFile = join(tmp, "image.jpg");
-  try {
-    writeFileSync(tmpFile, buffer);
+  const form = new FormData();
+  form.append("name", "image.jpg");
+  form.append("chunk", "0");
+  form.append("chunks", "1");
+  form.append("task", task);
+  form.append("preview", "1");
+  const blob = new Blob([buffer], { type: "image/jpeg" });
+  form.append("file", blob, "image.jpg");
 
-    const form = new FormData();
-    form.append("name", "image.jpg");
-    form.append("chunk", "0");
-    form.append("chunks", "1");
-    form.append("task", task);
-    form.append("preview", "1");
-    form.append("file", readFileSync(tmpFile), { filename: "image.jpg" });
+  const res = await axios.post(`https://${server}.iloveimg.com/v1/upload`, form, {
+    headers,
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+  });
 
-    const res = await axios.post(`https://${server}.iloveimg.com/v1/upload`, form, {
-      headers: { ...headers, ...form.getHeaders() },
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity,
-    });
-
-    const serverFilename: string | undefined = res.data?.server_filename;
-    if (!serverFilename) throw new Error("Gagal upload gambar");
-    return { server_filename: serverFilename };
-  } finally {
-    rmSync(tmp, { recursive: true, force: true });
-  }
+  const serverFilename: string | undefined = res.data?.server_filename;
+  if (!serverFilename) throw new Error("Gagal upload gambar");
+  return { server_filename: serverFilename };
 }
 
 export async function upscaleImage(
@@ -119,7 +108,7 @@ export async function upscaleImage(
     form.append("scale", String(scale));
 
     const res = await axios.post(`https://${server}.iloveimg.com/v1/upscale`, form, {
-      headers: { ...headers, ...form.getHeaders() },
+      headers,
       responseType: "arraybuffer",
       maxContentLength: Infinity,
       maxBodyLength: Infinity,

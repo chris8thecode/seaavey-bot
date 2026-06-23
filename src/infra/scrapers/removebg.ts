@@ -1,5 +1,4 @@
 import axios from "axios";
-import FormData from "form-data";
 
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
@@ -79,10 +78,11 @@ export async function removeBackground(
 
     // Step 2: NSFW detect
     const nsfwForm = new FormData();
-    nsfwForm.append("images", imageBuffer, { filename, contentType: "image/jpeg" });
+    const nsfwBlob = new Blob([imageBuffer], { type: "image/jpeg" });
+    nsfwForm.append("images", nsfwBlob, filename);
 
     const nsfwCreate = await axios.post(`${BASE_URL}/common/utils/nsfw-detect-create`, nsfwForm, {
-      headers: { ...HEADERS, ...nsfwForm.getHeaders() },
+      headers: HEADERS,
     });
 
     const nsfwJobId = nsfwCreate.data?.result?.job_id || nsfwCreate.data?.job_id;
@@ -92,7 +92,8 @@ export async function removeBackground(
 
     // Step 3: BG remove
     const bgForm = new FormData();
-    bgForm.append("image_file", imageBuffer, { filename, contentType: "image/jpeg" });
+    const bgBlob = new Blob([imageBuffer], { type: "image/jpeg" });
+    bgForm.append("image_file", bgBlob, filename);
     bgForm.append("mode", "general_v2");
     bgForm.append("task_mode", "free");
 
@@ -100,7 +101,7 @@ export async function removeBackground(
       `${BASE_URL}/ez-remove/v3/background-remove/create-job`,
       bgForm,
       {
-        headers: { ...HEADERS, "product-serial": SERIAL, ...bgForm.getHeaders() },
+        headers: { ...HEADERS, "product-serial": SERIAL },
       },
     );
 

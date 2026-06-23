@@ -1,8 +1,6 @@
 import axios from "axios";
 import * as crypto from "node:crypto";
 import * as fs from "node:fs";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const FormData = require("form-data");
 
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
@@ -64,14 +62,6 @@ function baseParams(extra: Record<string, string> = {}) {
   });
 }
 
-function extToMime(file: string) {
-  const ext = file.split(".").pop()?.toLowerCase();
-  if (ext === "mp4") return "video/mp4";
-  if (ext === "mov") return "video/quicktime";
-  if (ext === "webm") return "video/webm";
-  return "application/octet-stream";
-}
-
 // ─── API Steps ──────────────────────────────────────────────────────
 
 async function getMaatSign() {
@@ -110,21 +100,19 @@ async function getUploadPolicy(sign: Record<string, string>) {
 }
 
 async function uploadToQiniu(policy: Record<string, string>, filePath: string) {
-  const form = new FormData.default();
-  form.append("file", fs.createReadStream(filePath), {
-    filename: filePath.split("/").pop() || "video.mp4",
-    contentType: extToMime(filePath),
-  });
-  form.append("token", policy.token);
-  form.append("key", policy.key);
-  form.append("fname", filePath.split("/").pop() || "video.mp4");
+  const form = new FormData();
+  const fileName = filePath.split("/").pop() || "video.mp4";
+  form.append("file", Bun.file(filePath), fileName);
+  form.append("token", policy.token || "");
+  form.append("key", policy.key || "");
+  form.append("fname", fileName);
 
   const res = await axios.post(policy.url || "", form, {
-    headers: form.getHeaders({
+    headers: {
       origin: BASE_URL,
       referer: `${BASE_URL}/`,
       "user-agent": UA,
-    }),
+    },
     maxBodyLength: Infinity,
     maxContentLength: Infinity,
     validateStatus: () => true,
