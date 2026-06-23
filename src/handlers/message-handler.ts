@@ -14,6 +14,10 @@ import { TtlMap } from "@/utils/ttl-map";
 
 const messageStore = new TtlMap<string, WAMessage>(10 * 60 * 1000);
 
+if (isDev) {
+  mkdir("dev", { recursive: true }).catch(() => {});
+}
+
 export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]) {
   for (const msg of messages) {
     if (msg.key.fromMe) continue;
@@ -24,7 +28,6 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
 
     // For development purposes, store the raw message data and group participantship in the "dev" folder. This can be helpful for debugging and testing.
     if (isDev) {
-      await mkdir("dev", { recursive: true });
       // Store the parsed message data to a JSON file for easier debugging and analysis of the message structure and content.
       await writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2));
 
