@@ -1,4 +1,4 @@
-import { appendFile, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { proto, type WAMessage, type WASocket } from "baileys";
 
 import { isDev } from "@/core/config";
@@ -24,6 +24,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
 
     // For development purposes, store the raw message data and group participantship in the "dev" folder. This can be helpful for debugging and testing.
     if (isDev) {
+      await mkdir("dev", { recursive: true });
       // Store the parsed message data to a JSON file for easier debugging and analysis of the message structure and content.
       await writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2));
 

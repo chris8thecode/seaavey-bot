@@ -41,7 +41,7 @@ async function loadFile(path: string) {
     commands.set(trigger, cmd);
   }
 
-  logger.info(`Loaded command: ${cmd.name} [${category}]`);
+  // log removed — summary printed after scanAll
 }
 
 async function scanAll() {
@@ -55,6 +55,8 @@ async function scanAll() {
       await loadFile(join(COMMANDS_DIR, cat.name, file));
     }
   }
+  const unique = new Set(commands.values()).size;
+  logger.info(`Load: ${unique}`);
 }
 
 function watchCommands() {
