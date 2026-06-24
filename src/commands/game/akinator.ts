@@ -1,0 +1,283 @@
+import type { WASocket } from "baileys";
+import axios from "axios";
+import { defineCommand } from "@/core/types";
+import * as userRepo from "@/infra/repositories/user-repo";
+import { logger } from "@/core/logger";
+import {
+  akinatorStart,
+  akinatorAnswer,
+  akinatorExclude,
+  type AkinatorSession,
+  type AkinatorGuess,
+} from "@/infra/scrapers/akinator";
+
+export interface AkinatorSessionState {
+  session: AkinatorSession;
+  lastActive: number;
+  timeout: ReturnType<typeof setTimeout>;
+  stage: "question" | "guess_confirmation";
+  currentGuess?: AkinatorGuess;
+  isProcessing?: boolean;
+  sock: WASocket;
+}
+
+const sessions = new Map<string, AkinatorSessionState>();
+
+let lastKnownSetTimeout = global.setTimeout;
+
+function checkAndClearStaleSessions() {
+  if (global.setTimeout !== lastKnownSetTimeout) {
+    for (const state of sessions.values()) {
+      try {
+        clearTimeout(state.timeout);
+      } catch {}
+    }
+    sessions.clear();
+    lastKnownSetTimeout = global.setTimeout;
+  }
+}
+
+async function translateToId(text: string): Promise<string> {
+  if (!text) return text;
+  try {
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q=${encodeURIComponent(text)}`;
+    const { data } = await axios.get(url);
+    if (data && data[0] && data[0][0] && data[0][0][0]) {
+      return (data[0] as unknown[]).map((x: unknown) => (x as string[])[0]).join("").trim();
+    }
+    return text;
+  } catch {
+    return text;
+  }
+}
+
+export default defineCommand({
+  name: "Akinator",
+  alias: ["aki"],
+  description: "Bermain game Akinator (Bahasa Indonesia)",
+  handler: async (sock, msg) => {
+    checkAndClearStaleSessions();
+    const key = `${msg.jid}:${msg.sender}`;
+    if (sessions.has(key)) {
+      return msg.reply(
+        "❌ Sesi Akinator sudah aktif! Kamu harus menyelesaikan atau menghentikannya terlebih dahulu dengan mengetik *stop* atau *nyerah*.",
+      );
+    }
+
+    const startRes = await akinatorStart();
+    if (!startRes.status) {
+      return msg.reply(`❌ Gagal memulai game Akinator: ${startRes.error || "Error tidak dikenal"}`);
+    }
+
+    const session = startRes.data;
+    const guess = (session as { guess?: AkinatorGuess }).guess;
+
+    const state: AkinatorSessionState = {
+      session,
+      lastActive: Date.now(),
+      stage: guess ? "guess_confirmation" : "question",
+      sock,
+      timeout: setTimeout(() => {}, 0),
+    };
+    if (guess) {
+      state.currentGuess = guess;
+    }
+
+    state.timeout = setTimeout(() => {
+      sessions.delete(key);
+      sock.sendMessage(msg.jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+    }, 120_000);
+
+    sessions.set(key, state);
+
+    if (guess) {
+      const translatedName = await translateToId(guess.name);
+      const translatedDesc = await translateToId(guess.description);
+      const photoText = guess.photo ? `\n\n🖼️ Foto: ${guess.photo}` : "";
+      await msg.reply(`💡 Saya menebak...
+👤 *${translatedName}* (${translatedDesc || "Tanpa deskripsi"})${photoText}
+
+Apakah ini benar? (ya/tidak)`);
+    } else {
+      const translatedQuestion = await translateToId(session.question);
+      await msg.reply(`💡 *Akinator* - Langkah ${session.step + 1}
+📈 Progres: ${session.progression}%
+
+❓ *${translatedQuestion}*
+
+0. Ya
+1. Tidak
+2. Tidak tahu
+3. Mungkin
+4. Mungkin tidak`);
+    }
+  },
+});
+
+export async function checkAkinator(
+  jid: string,
+  text: string,
+  sender: string,
+): Promise<string | null> {
+  checkAndClearStaleSessions();
+  const key = `${jid}:${sender}`;
+  const state = sessions.get(key);
+  if (!state) return null;
+
+  const inputLower = text.toLowerCase().trim();
+
+  if (["exit", "stop", "batal", "cancel", "nyerah", "keluar"].includes(inputLower)) {
+    clearTimeout(state.timeout);
+    sessions.delete(key);
+    return `❌ Game dihentikan. Sesi Akinator telah diakhiri.`;
+  }
+
+  if (state.isProcessing) return null;
+
+  if (state.stage === "question") {
+    let option: number | null = null;
+    if (["0", "yes", "ya", "y"].includes(inputLower)) {
+      option = 0;
+    } else if (["1", "no", "tidak", "n", "t", "tdk"].includes(inputLower)) {
+      option = 1;
+    } else if (["2", "i don't know", "tidak tahu", "dont know", "gatau", "ga tau", "tahu"].includes(inputLower)) {
+      option = 2;
+    } else if (["3", "probably", "mungkin", "mngkin"].includes(inputLower)) {
+      option = 3;
+    } else if (["4", "probably not", "mungkin tidak", "mngkin tdk", "kayaknya gak"].includes(inputLower)) {
+      option = 4;
+    }
+
+    if (option === null) {
+      return `❌ Pilihan tidak valid! Silakan jawab dengan 0 (Ya), 1 (Tidak), 2 (Tidak tahu), 3 (Mungkin), atau 4 (Mungkin tidak).`;
+    }
+
+    state.isProcessing = true;
+    try {
+      // Reset inactivity timer
+      clearTimeout(state.timeout);
+      state.timeout = setTimeout(() => {
+        sessions.delete(key);
+        state.sock.sendMessage(jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+      }, 120_000);
+      state.lastActive = Date.now();
+
+      const res = await akinatorAnswer(state.session, option);
+      if (!res.status) {
+        return `❌ Gagal memproses game: ${res.error || "Error tidak dikenal"}`;
+      }
+
+      if (res.data.guess) {
+        const guess = res.data.guess;
+        state.stage = "guess_confirmation";
+        state.currentGuess = guess;
+        const translatedName = await translateToId(guess.name);
+        const translatedDesc = await translateToId(guess.description);
+        const photoText = guess.photo ? `\n\n🖼️ Foto: ${guess.photo}` : "";
+        return `💡 Saya menebak...
+👤 *${translatedName}* (${translatedDesc || "Tanpa deskripsi"})${photoText}
+
+Apakah ini benar? (ya/tidak)`;
+      } else if (res.data.session) {
+        const nextSession = res.data.session;
+        state.session = nextSession;
+        const translatedQuestion = await translateToId(nextSession.question);
+        return `💡 *Akinator* - Langkah ${nextSession.step + 1}
+📈 Progres: ${nextSession.progression}%
+
+❓ *${translatedQuestion}*
+
+0. Ya
+1. Tidak
+2. Tidak tahu
+3. Mungkin
+4. Mungkin tidak`;
+      } else {
+        return `❌ Gagal memproses game: Respon API tidak valid`;
+      }
+    } catch (err: unknown) {
+      const errStr = String(err);
+      if (errStr.includes("No more questions")) {
+        clearTimeout(state.timeout);
+        sessions.delete(key);
+        return `❌ Game berakhir: Tidak ada pertanyaan lagi.`;
+      }
+      logger.error(err, "Akinator answer error");
+      return `❌ Gagal memproses game: Koneksi ke server terputus, coba lagi nanti`;
+    } finally {
+      state.isProcessing = false;
+    }
+  } else if (state.stage === "guess_confirmation") {
+    let confirmed: boolean | null = null;
+    if (["yes", "ya", "y", "benar", "betul"].includes(inputLower)) {
+      confirmed = true;
+    } else if (["no", "tidak", "n", "t", "salah", "tdk"].includes(inputLower)) {
+      confirmed = false;
+    }
+
+    if (confirmed === null) {
+      return `❌ Konfirmasi tidak valid! Apakah karakter tersebut adalah *${state.currentGuess?.name || "yang saya tebak"}*? Silakan balas dengan Ya atau Tidak.`;
+    }
+
+    if (confirmed) {
+      clearTimeout(state.timeout);
+      sessions.delete(key);
+      try {
+        userRepo.addXp(sender, 105);
+      } catch (err) {
+        logger.error(err, "Failed to add XP to user in Akinator");
+      }
+      return `🎉 *Hore!* Tebakan saya benar! Terima kasih telah bermain! (+105 XP)`;
+    } else {
+      state.isProcessing = true;
+      try {
+        const res = await akinatorExclude(state.session);
+        if (!res.status) {
+          if (res.error && res.error.includes("No more questions")) {
+            clearTimeout(state.timeout);
+            sessions.delete(key);
+            return `❌ Game berakhir: Tidak ada pertanyaan lagi.`;
+          }
+          return `❌ Gagal mengecualikan karakter: ${res.error || "Error tidak dikenal"} (Tebakan saat ini: ${state.currentGuess?.name || ""})`;
+        }
+
+        const nextSession = res.data;
+        state.stage = "question";
+        state.session = nextSession;
+
+        // Reset inactivity timer
+        clearTimeout(state.timeout);
+        state.timeout = setTimeout(() => {
+          sessions.delete(key);
+          state.sock.sendMessage(jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+        }, 120_000);
+        state.lastActive = Date.now();
+
+        const translatedQuestion = await translateToId(nextSession.question);
+        return `💡 *Akinator* - Langkah ${nextSession.step + 1}
+📈 Progres: ${nextSession.progression}%
+
+❓ *${translatedQuestion}*
+
+0. Ya
+1. Tidak
+2. Tidak tahu
+3. Mungkin
+4. Mungkin tidak`;
+      } catch (err: unknown) {
+        const errStr = String(err);
+        if (errStr.includes("No more questions")) {
+          clearTimeout(state.timeout);
+          sessions.delete(key);
+          return `❌ Game berakhir: Tidak ada pertanyaan lagi.`;
+        }
+        logger.error(err, "Akinator exclude error");
+        return `❌ Gagal mengecualikan karakter: Koneksi ke server terputus (Tebakan saat ini: ${state.currentGuess?.name || ""})`;
+      } finally {
+        state.isProcessing = false;
+      }
+    }
+  }
+
+  return null;
+}

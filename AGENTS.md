@@ -738,3 +738,15 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+## Ponytail Mode
+
+We are in **ponytail full mode**. Before writing any code, apply the default ladder:
+
+1. **YAGNI**: Does it need to exist at all?
+2. **Standard Library**: Does the standard library do it?
+3. **Native Platform**: Is there a native platform feature?
+4. **One Line**: Can it be done in one line?
+5. **Minimum**: Build the minimum that works.
+
+No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark intentional simplifications with a `// ponytail:` (or appropriate language syntax) comment.

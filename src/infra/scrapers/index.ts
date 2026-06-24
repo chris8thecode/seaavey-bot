@@ -39,7 +39,12 @@ export type { UpscaleData } from "./upscale";
 export { upscaleImage } from "./upscale";
 export type { RemoveBgData } from "./removebg";
 export { removeBackground } from "./removebg";
-export type { AkinatorSession, AkinatorAnswer, AkinatorGuess, AkinatorAnswerResult } from "./akinator";
+export type {
+  AkinatorSession,
+  AkinatorAnswer,
+  AkinatorGuess,
+  AkinatorAnswerResult,
+} from "./akinator";
 export { akinatorStart, akinatorAnswer, akinatorExclude } from "./akinator";
 export type {
   PixivIllust,

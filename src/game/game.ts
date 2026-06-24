@@ -1,3 +1,5 @@
+import { logger } from "@/core/logger";
+import { checkAkinator } from "../commands/game/akinator";
 import { checkAsahOtak } from "../commands/game/asahotak";
 import { checkCakLontong } from "../commands/game/caklontong";
 import { checkFamily100 } from "../commands/game/family100";
@@ -18,7 +20,14 @@ import { checkTebakWaifu } from "../commands/game/tebakwaifu";
 import { checkTekaTeki } from "../commands/game/tekateki";
 import { checkTrivia } from "../commands/game/trivia";
 
-const checkers: ((jid: string, text: string, sender: string) => string | null)[] = [
+export type GameChecker = (
+  jid: string,
+  text: string,
+  sender: string,
+) => Promise<string | null> | string | null;
+
+const checkers: GameChecker[] = [
+  checkAkinator,
   checkMathAnswer,
   checkTebakKata,
   checkTrivia,
@@ -40,12 +49,20 @@ const checkers: ((jid: string, text: string, sender: string) => string | null)[]
   checkCakLontong,
 ];
 
-export function checkGameAnswer(jid: string, text: string, sender: string): string | null {
+export async function checkGameAnswer(
+  jid: string,
+  text: string,
+  sender: string,
+): Promise<string | null> {
   const input = text.trim();
   if (!input) return null;
   for (const fn of checkers) {
-    const result = fn(jid, input, sender);
-    if (result) return result;
+    try {
+      const result = await fn(jid, input, sender);
+      if (result) return result;
+    } catch (error) {
+      logger.error({ error, checker: fn.name }, `Error executing game checker`);
+    }
   }
   return null;
 }

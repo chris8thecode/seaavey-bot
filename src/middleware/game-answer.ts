@@ -7,7 +7,7 @@ export const gameAnswerMiddleware: MessageMiddleware = async (ctx) => {
 
   if (!parse.body || parse.body.startsWith(config.prefix)) return "next";
 
-  const gameResult = checkGameAnswer(parse.jid, parse.body, parse.sender);
+  const gameResult = await checkGameAnswer(parse.jid, parse.body, parse.sender);
   if (gameResult) {
     await sock.sendMessage(parse.jid, { text: gameResult }, { quoted: raw });
     return "stop";

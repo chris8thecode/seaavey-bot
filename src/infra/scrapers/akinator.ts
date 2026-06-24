@@ -9,6 +9,38 @@ const HOST = "en.akinator.com";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
+function isNetworkError(err: unknown): boolean {
+  const msg = String(err).toLowerCase();
+  return (
+    msg.includes("socket connection was closed") ||
+    msg.includes("econnreset") ||
+    msg.includes("econnrefused") ||
+    msg.includes("etimedout") ||
+    msg.includes("socket hang up") ||
+    msg.includes("network") ||
+    msg.includes("fetch failed")
+  );
+}
+
+function friendlyError(err: unknown): string {
+  if (isNetworkError(err)) return "Koneksi ke server Akinator terputus, coba lagi nanti";
+  const msg = err instanceof Error ? err.message : String(err);
+  return msg || "Gagal menghubungi server";
+}
+
+async function withRetry<T>(fn: () => Promise<T>, retries = 2): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i <= retries; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (i < retries) await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+  throw lastErr;
+}
+
 export interface AkinatorAnswer {
   index: number;
   label: string;
@@ -41,10 +73,8 @@ const ANSWERS_LABELS = ["Yes", "No", "I don't know", "Probably", "Probably not"]
 function parseGameHtml(html: string): AkinatorSession {
   const $ = cheerio.load(html);
 
-  const session =
-    $('input[name="session"][value]').last().attr("value")?.trim() || "";
-  const signature =
-    $('input[name="signature"][value]').last().attr("value")?.trim() || "";
+  const session = $('input[name="session"][value]').last().attr("value")?.trim() || "";
+  const signature = $('input[name="signature"][value]').last().attr("value")?.trim() || "";
   const question = $("#question-label").text().trim();
 
   if (!session || !signature || !question) {
@@ -66,24 +96,25 @@ export async function akinatorStart(
   childMode = false,
 ): Promise<ScraperResult<AkinatorSession>> {
   try {
-    const { data } = await axios.post(
-      `${SERVER}/game`,
-      new URLSearchParams({ sid: String(sid), cm: String(childMode) }),
-      {
-        headers: {
-          "user-agent": UA,
-          "content-type": "application/x-www-form-urlencoded",
-          host: HOST,
+    const { data } = await withRetry(() =>
+      axios.post(
+        `${SERVER}/game`,
+        new URLSearchParams({ sid: String(sid), cm: String(childMode) }),
+        {
+          headers: {
+            "user-agent": UA,
+            "content-type": "application/x-www-form-urlencoded",
+            host: HOST,
+          },
+          timeout: 15000,
         },
-        timeout: 15000,
-      },
+      ),
     );
 
     const session = parseGameHtml(data);
     return scraperSuccess(session);
   } catch (e: unknown) {
-    const err = e as { message?: string };
-    return scraperError(err.message || "Gagal memulai Akinator");
+    return scraperError(friendlyError(e));
   }
 }
 
@@ -92,27 +123,29 @@ export async function akinatorAnswer(
   answer: number,
 ): Promise<ScraperResult<AkinatorAnswerResult>> {
   try {
-    const { data } = await axios.post(
-      `${SERVER}/answer`,
-      new URLSearchParams({
-        step: String(session.step),
-        progression: String(session.progression),
-        sid: "1",
-        cm: "false",
-        answer: String(answer),
-        step_last_proposition: "",
-        session: session.session,
-        signature: session.signature,
-      }),
-      {
-        headers: {
-          "user-agent": UA,
-          "content-type": "application/x-www-form-urlencoded",
-          "x-requested-with": "XMLHttpRequest",
-          host: HOST,
+    const { data } = await withRetry(() =>
+      axios.post(
+        `${SERVER}/answer`,
+        new URLSearchParams({
+          step: String(session.step),
+          progression: String(session.progression),
+          sid: "1",
+          cm: "false",
+          answer: String(answer),
+          step_last_proposition: "",
+          session: session.session,
+          signature: session.signature,
+        }),
+        {
+          headers: {
+            "user-agent": UA,
+            "content-type": "application/x-www-form-urlencoded",
+            "x-requested-with": "XMLHttpRequest",
+            host: HOST,
+          },
+          timeout: 15000,
         },
-        timeout: 15000,
-      },
+      ),
     );
 
     if (data.completion === "KO") {
@@ -142,8 +175,7 @@ export async function akinatorAnswer(
       },
     });
   } catch (e: unknown) {
-    const err = e as { message?: string };
-    return scraperError(err.message || "Gagal menjawab pertanyaan");
+    return scraperError(friendlyError(e));
   }
 }
 
@@ -151,26 +183,28 @@ export async function akinatorExclude(
   session: AkinatorSession,
 ): Promise<ScraperResult<AkinatorSession>> {
   try {
-    const { data } = await axios.post(
-      `${SERVER}/exclude`,
-      new URLSearchParams({
-        step: String(session.step),
-        sid: "1",
-        cm: "false",
-        progression: String(session.progression),
-        session: session.session,
-        signature: session.signature,
-        sens: "1",
-      }),
-      {
-        headers: {
-          "user-agent": UA,
-          "content-type": "application/x-www-form-urlencoded",
-          "x-requested-with": "XMLHttpRequest",
-          host: HOST,
+    const { data } = await withRetry(() =>
+      axios.post(
+        `${SERVER}/exclude`,
+        new URLSearchParams({
+          step: String(session.step),
+          sid: "1",
+          cm: "false",
+          progression: String(session.progression),
+          session: session.session,
+          signature: session.signature,
+          sens: "1",
+        }),
+        {
+          headers: {
+            "user-agent": UA,
+            "content-type": "application/x-www-form-urlencoded",
+            "x-requested-with": "XMLHttpRequest",
+            host: HOST,
+          },
+          timeout: 15000,
         },
-        timeout: 15000,
-      },
+      ),
     );
 
     return scraperSuccess({
@@ -182,7 +216,6 @@ export async function akinatorExclude(
       answers: ANSWERS_LABELS.map((label, index) => ({ index, label })),
     });
   } catch (e: unknown) {
-    const err = e as { message?: string };
-    return scraperError(err.message || "Gagal exclude tebakan");
+    return scraperError(friendlyError(e));
   }
 }
