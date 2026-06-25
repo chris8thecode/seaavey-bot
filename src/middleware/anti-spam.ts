@@ -1,7 +1,8 @@
 import type { MessageMiddleware } from "@/handlers/message-context";
 import { getNumber } from "@/utils/helper";
+import { TtlMap } from "@/utils/ttl-map";
 
-const spamTracker = new Map<string, number[]>();
+const spamTracker = new TtlMap<string, number[]>(15_000);
 
 export const antiSpam: MessageMiddleware = async (ctx) => {
   const { sock, raw, parse, group } = ctx;

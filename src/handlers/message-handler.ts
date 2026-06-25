@@ -30,27 +30,12 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
 
     const parse = await resolveMessage(sock, msg);
 
-    // For development purposes, store the raw message data and group participantship in the "dev" folder. This can be helpful for debugging and testing.
     if (isDev) {
-      // Store the parsed message data to a JSON file for easier debugging and analysis of the message structure and content.
-      await writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2));
-
-      // Store group participant data to a JSON file for easier debugging of group-related features.
-      try {
-        const groups = await sock.groupFetchAllParticipating();
-        await writeFile("dev/group-participants.json", JSON.stringify(groups, null, 2));
-      } catch {
-        // Silently skip on rate limit or other errors to avoid crashing
-      }
-
-      // Append the raw message data to a history file for later analysis. This can help track message patterns and debug issues that may arise.
-      await appendFile(
+      writeFile("dev/parsed-message.json", JSON.stringify(parse, null, 2)).catch(() => {});
+      appendFile(
         "dev/history-message.txt",
-        `${JSON.stringify(msg, null, 2)}\n\n${"-".repeat(50)}\n\n`,
-      );
-
-      // Store the raw message data to a separate file for quick access and debugging of individual messages.
-      await writeFile("dev/message.txt", JSON.stringify(msg, null, 2));
+        `${JSON.stringify(msg, null, 2)}\n\n${"─".repeat(50)}\n\n`,
+      ).catch(() => {});
     }
 
     if (parse.isGroup) {

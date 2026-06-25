@@ -7,22 +7,16 @@ import {
   markScheduleDone,
 } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
-let reminderInterval: ReturnType<typeof setInterval> | null = null;
-let scheduleInterval: ReturnType<typeof setInterval> | null = null;
+
+let pollInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startSchedulers(sock: WASocket) {
-  // Clear any existing intervals to prevent memory leaks and duplicate timers on reconnect
-  if (reminderInterval) {
-    clearInterval(reminderInterval);
-    reminderInterval = null;
-  }
-  if (scheduleInterval) {
-    clearInterval(scheduleInterval);
-    scheduleInterval = null;
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
   }
 
-  // Reminder checker
-  reminderInterval = setInterval(async () => {
+  pollInterval = setInterval(async () => {
     try {
       const reminders = getPendingReminders();
       for (const r of reminders) {
@@ -33,12 +27,9 @@ export function startSchedulers(sock: WASocket) {
         });
       }
     } catch (e) {
-      logger.error(`Scheduler Error (Reminder): ${e}`);
+      logger.error(`Scheduler error (reminder): ${e}`);
     }
-  }, 30_000);
 
-  // Schedule checker
-  scheduleInterval = setInterval(async () => {
     try {
       const schedules = getPendingSchedules();
       for (const s of schedules) {
@@ -48,7 +39,7 @@ export function startSchedulers(sock: WASocket) {
         });
       }
     } catch (e) {
-      logger.error(`Scheduler Error (Schedule): ${e}`);
+      logger.error(`Scheduler error (schedule): ${e}`);
     }
   }, 30_000);
 }
