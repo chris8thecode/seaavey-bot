@@ -23,7 +23,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
     if (msg.key.fromMe) continue;
 
     const jid = msg.key.remoteJid || "";
-    // Abaikan pesan dari channel/newsletter dan status broadcast agar tidak diproses oleh bot
+    // Ignore messages from channels/newsletters and status broadcasts to prevent the bot from processing them
     if (isJidNewsletter(jid) || isJidBroadcast(jid)) continue;
 
     if (msg.key.id) messageStore.set(msg.key.id, msg);
