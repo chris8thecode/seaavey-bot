@@ -12,8 +12,12 @@ export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
   let cmdName: string | undefined;
   if (parse.body.startsWith("=> ") || parse.body === "=>") cmdName = "=>";
   else if (parse.body.startsWith("> ") || parse.body === ">") cmdName = ">";
-  else if (parse.body.startsWith(config.prefix))
-    [cmdName] = parse.body.slice(config.prefix.length).split(" ");
+  else {
+    const matchedPrefix = config.prefix.find((p) => parse.body.startsWith(p));
+    if (matchedPrefix) {
+      [cmdName] = parse.body.slice(matchedPrefix.length).split(" ");
+    }
+  }
 
   if (!cmdName) return;
   if (isBanned(parse.sender)) return;

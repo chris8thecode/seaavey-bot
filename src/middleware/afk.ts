@@ -15,7 +15,8 @@ export const afkMiddleware: MessageMiddleware = async (ctx) => {
     });
   }
 
-  if (parse.body && !parse.body.startsWith(config.prefix)) {
+  const hasPrefix = config.prefix.some((p) => parse.body.startsWith(p));
+  if (parse.body && !hasPrefix) {
     for (const m of parse.mentioned) {
       const afk = getAfk(m);
       if (afk) {

@@ -5,7 +5,8 @@ import { findAutoReply } from "@/infra/repositories/autoreply-repo";
 export const autoReplyMiddleware: MessageMiddleware = async (ctx) => {
   const { sock, raw, parse } = ctx;
 
-  if (!parse.body || parse.body.startsWith(config.prefix)) return "next";
+  const hasPrefix = config.prefix.some((p) => parse.body.startsWith(p));
+  if (!parse.body || hasPrefix) return "next";
   if (!parse.isGroup) return "next";
 
   const autoReply = findAutoReply(parse.jid, parse.body);
