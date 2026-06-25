@@ -22,6 +22,10 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
   for (const msg of messages) {
     if (msg.key.fromMe) continue;
 
+    const jid = msg.key.remoteJid || "";
+    if (jid.endsWith("@newsletter")) continue;
+    if (jid === "status@broadcast") continue;
+
     if (msg.key.id) messageStore.set(msg.key.id, msg);
 
     const parse = await resolveMessage(sock, msg);
