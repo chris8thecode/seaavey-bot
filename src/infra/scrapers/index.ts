@@ -54,3 +54,4 @@ export type {
   PixivSearchResult,
 } from "./pixiv";
 export { pixivDetail, pixivDownloadImage, pixivPages, pixivRanking, pixivSearch } from "./pixiv";
+export { webpToMp4 } from "./ezgif";
