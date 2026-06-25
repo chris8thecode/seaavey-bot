@@ -8,69 +8,62 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/seaavey/seaavey-bot/stargazers"><img src="https://img.shields.io/github/stars/seaavey/seaavey-bot?style=flat&color=yellow" alt="Stars" /></a>
-  <a href="https://github.com/seaavey/seaavey-bot/network/members"><img src="https://img.shields.io/github/forks/seaavey/seaavey-bot?style=flat&color=blue" alt="Forks" /></a>
-  <a href="https://github.com/seaavey/seaavey-bot/issues"><img src="https://img.shields.io/github/issues/seaavey/seaavey-bot?style=flat&color=red" alt="Issues" /></a>
-  <a href="https://github.com/seaavey/seaavey-bot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>
+  <a href="https://github.com/seaavey/seaavey-bot/stargazers"><img src="https://img.shields.io/github/stars/seaavey/seaavey-bot?style=flat&color=yellow" alt="Stars" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/network/members"><img src="https://img.shields.io/github/forks/seaavey/seaavey-bot?style=flat&color=blue" alt="Forks" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/issues"><img src="https://img.shields.io/github/issues/seaavey/seaavey-bot?style=flat&color=red" alt="Issues" /></a>&nbsp;
+  <a href="https://github.com/seaavey/seaavey-bot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License" /></a>&nbsp;
+  <a href="https://bun.sh"><img src="https://img.shields.io/badge/runtime-Bun-f9f1e1?logo=bun" alt="Bun" /></a>
 </p>
 
 ---
 
-**English** | [Bahasa Indonesia](README-ID.md)
+<p align="center">
+  <strong>English</strong> | <a href="README-ID.md">Bahasa Indonesia</a>
+</p>
 
 ---
 
 ## Features
 
-- **155+ commands** across 13 categories — downloaders, games, economy, group management, media tools, and more
-- **19 games** — trivia, TicTacToe, Hangman, Word Chain, and 15+ word-guessing games
-- **Economy system** — wallet, bank, daily rewards, shop, transfers
-- **Leveling & XP** — earn XP per command, level up with rank cards (Sharp canvas)
-- **Middleware pipeline** — anti-link, anti-spam, anti-toxic, anti-viewonce, AFK, auto-reply, game answer interception
-- **Auto-reconnect** — handles disconnects seamlessly
-- **Hot-reload** — instant command reload in development mode
+- **159 commands** across 13 categories (downloaders, group management, media tools, economy, productivity, and more).
+- **30 games** including Tic-Tac-Toe, Hangman, Word Chain, and 17 JSON-based word-guessing games.
+- **Economy system** with virtual wallet, bank, daily rewards, shop, and peer-to-peer transfers.
+- **Leveling & XP** tracking per command with dynamic rank card generation via Sharp.
+- **Middleware pipeline** featuring anti-link, anti-spam, anti-viewonce, AFK, and keyword auto-replies.
+- **Database integration** using a persistent SQLite database via `bun:sqlite` in WAL mode.
+- **Robust connectivity** with seamless automatic reconnection and dual QR or pairing code authentication.
 
-## Quick Start
-
-```bash
-git clone https://github.com/seaavey/seaavey-bot.git
-cd seaavey-bot
-cp .env.example .env   # edit OWNER_NUMBER
-bun install
-bun run start          # scan QR or enter pairing code
-```
+> [!NOTE]
+> For the complete command catalog, database schema, project architecture, and advanced configuration details, please refer to the [Developer & Command Guide (AGENTS.md)](AGENTS.md).
 
 ## Requirements
 
 - [Bun](https://bun.sh) v1.0+
-- [FFmpeg](https://ffmpeg.org/)
+- [FFmpeg](https://ffmpeg.org/) (for media conversion)
+- [libvips](https://libvips.org/) (required by Sharp)
 
-## Scripts
+## Installation
 
-| Command              | Description                            |
-| -------------------- | -------------------------------------- |
-| `bun run dev`        | Development mode with hot-reload       |
-| `bun run start`      | Production mode                        |
-| `bun run lint`       | ESLint + TypeScript check              |
-| `bun run format`     | Prettier auto-format                   |
+### Automated Script (Linux / Termux)
 
-## Project Structure
-
-```
-src/
-├── index.ts           # Entry point
-├── commands/          # 155+ commands (13 categories)
-├── handlers/          # Message processing & command dispatch
-├── middleware/        # Anti-link, anti-spam, etc.
-├── game/              # Game engine (19 games)
-├── core/              # Config, types, logger
-├── canvas/            # Rank cards, welcome images
-├── services/          # API service layer
-├── infra/             # Database, scrapers, scheduler
-└── utils/             # Helpers, converters, AI wrapper
+```bash
+curl -fsSL https://raw.githubusercontent.com/seaavey/seaavey-bot/main/install.sh | bash
 ```
 
-See [AGENTS.md](AGENTS.md) for full command catalog and architecture details.
+### Manual Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/seaavey/seaavey-bot.git
+cd seaavey-bot
+
+# Install dependencies and configure environment
+cp .env.example .env
+bun install
+
+# Start the bot
+bun run start
+```
 
 ## Docker
 
@@ -79,10 +72,29 @@ docker build -t seaaveybot .
 docker run -v ./auth:/app/auth -v ./data:/app/data seaaveybot
 ```
 
+## Development
+
+| Command          | Description                                       |
+| ---------------- | ------------------------------------------------- |
+| `bun run dev`    | Start the bot in development mode with hot-reload |
+| `bun run start`  | Start the bot in production mode                  |
+| `bun run lint`   | Run ESLint and TypeScript compilation checks      |
+| `bun run format` | Format code using Prettier                        |
+
 ## Contributing
 
-Open an issue or submit a pull request.
+Contributions are welcome. Please open an issue or submit a pull request for any suggestions or improvements.
 
 ## License
 
-[MIT](LICENSE) © Muhammad Adriansyah (Seaavey)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Star History
+
+<a href="https://www.star-history.com/#seaavey/seaavey-bot&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=seaavey/seaavey-bot&type=Date" />
+ </picture>
+</a>

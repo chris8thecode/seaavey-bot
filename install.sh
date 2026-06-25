@@ -32,13 +32,15 @@ else
   sudo apt install -y git curl build-essential pkg-config libvips-dev fontconfig
 fi
 
-echo "Installing Bun..."
-curl -fsSL https://bun.sh/install | bash
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-if ! grep -q "BUN_INSTALL" ~/.bashrc 2>/dev/null; then
-  echo 'export BUN_INSTALL="$HOME/.bun"' >> ~/.bashrc
-  echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> ~/.bashrc
+if [ "$platform" != "termux" ]; then
+  echo "Installing Bun..."
+  curl -fsSL https://bun.sh/install | bash
+  export BUN_INSTALL="$HOME/.bun"
+  export PATH="$BUN_INSTALL/bin:$PATH"
+  if ! grep -q "BUN_INSTALL" ~/.bashrc 2>/dev/null; then
+    echo 'export BUN_INSTALL="$HOME/.bun"' >> ~/.bashrc
+    echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> ~/.bashrc
+  fi
 fi
 
 echo "Cloning repository..."
@@ -51,8 +53,10 @@ cd "$TARGET_DIR" || exit
 echo "Installing project dependencies..."
 if [ "$platform" = "termux" ]; then
   export SHARP_IGNORE_GLOBAL_LIBVIPS=0
+  npm install
+else
+  "$HOME/.bun/bin/bun" install
 fi
-"$HOME/.bun/bin/bun" install
 
 if [ "$platform" != "termux" ]; then
   echo "Installing PM2..."
@@ -68,7 +72,7 @@ echo "Setup Selesai!"
 echo "Gunakan: source ~/.bashrc"
 echo "Masuk ke folder: cd $TARGET_DIR"
 if [ "$platform" = "termux" ]; then
-  echo "Jalankan: bun run start"
+  echo "Jalankan: npm run start:node"
 else
   echo "Start Bot: pm2 start src/index.ts --name seaaveybot --interpreter ~/.bun/bin/bun"
 fi

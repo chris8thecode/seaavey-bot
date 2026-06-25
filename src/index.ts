@@ -19,6 +19,7 @@ import { startSchedulers } from "@/infra/scheduler";
 let isRestarting = false;
 let restartAttempts = 0;
 let currentSock: ReturnType<typeof makeWASocket> | null = null;
+let cachedPairingNumber: string | null = null;
 
 process.on("unhandledRejection", (err) => {
   logger.error({ err }, "Unhandled rejection — connection handler will recover");
@@ -30,8 +31,6 @@ process.on("uncaughtException", (err) => {
 });
 
 async function startBot() {
-  await loadCommands();
-
   // Cleanup old socket before creating a new one
   if (currentSock) {
     try {
@@ -70,29 +69,37 @@ async function startBot() {
   sock.ev.on("creds.update", saveCreds);
 
   if (!state.creds.registered && !state.creds.me?.id) {
-    const rl = createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-    const pairingNumber = await new Promise<string>((r) =>
-      rl.question("Masukkan nomor WhatsApp (contoh: 62123456789): ", r),
-    );
-    rl.close();
+    let pairingNumber = cachedPairingNumber;
+    if (pairingNumber === null) {
+      const rl = createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+      const input = await new Promise<string>((r) =>
+        rl.question("Masukkan nomor WhatsApp untuk pairing code (kosongkan untuk QR code): ", r),
+      );
+      rl.close();
+      pairingNumber = input.trim();
+      cachedPairingNumber = pairingNumber;
+    }
 
-    try {
-      await sock.waitForSocketOpen();
-      const code = await sock.requestPairingCode(pairingNumber);
-      logger.info(`\n📱 Pairing code: ${code}`);
-      process.stdout.write(`\n📱 Pairing code: ${code}\n\n`);
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : String(error);
-      logger.error({ error }, "Gagal mendapatkan pairing code");
-      process.stdout.write(`\n❌ Error: ${msg}\n\n`);
+    if (pairingNumber) {
+      try {
+        await sock.waitForSocketOpen();
+        const code = await sock.requestPairingCode(pairingNumber);
+        logger.info(`\n📱 Pairing code: ${code}`);
+        process.stdout.write(`\n📱 Pairing code: ${code}\n\n`);
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        logger.error({ error }, "Gagal mendapatkan pairing code");
+        process.stdout.write(`\n❌ Error: ${msg}\n\n`);
+        cachedPairingNumber = null;
+      }
     }
   }
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
-    if (qr) {
+    if (qr && !cachedPairingNumber) {
       await QRCode.toFile("qr.png", qr);
       logger.info("QR code saved to qr.png");
     }
@@ -170,4 +177,9 @@ async function startBot() {
   sock.ev.on("messages.update", (updates) => handleMessagesUpdate(sock, updates));
 }
 
-startBot();
+async function main() {
+  await loadCommands();
+  await startBot();
+}
+
+main();

@@ -20,7 +20,7 @@ describe("youtube downloader", () => {
     } else {
       // Expected failure without cookies
       expect(result.error).toBeDefined();
-      expect(result.error!.length).toBeGreaterThan(0);
+      expect(result.error?.length ?? 0).toBeGreaterThan(0);
     }
   }, 120_000);
 
@@ -34,7 +34,7 @@ describe("youtube downloader", () => {
       expect(result.data.downloadUrl.length).toBeGreaterThan(0);
     } else {
       expect(result.error).toBeDefined();
-      expect(result.error!.length).toBeGreaterThan(0);
+      expect(result.error?.length ?? 0).toBeGreaterThan(0);
     }
   }, 120_000);
 

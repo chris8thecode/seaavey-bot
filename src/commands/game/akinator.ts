@@ -43,7 +43,10 @@ async function translateToId(text: string): Promise<string> {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=id&dt=t&q=${encodeURIComponent(text)}`;
     const { data } = await axios.get(url);
     if (data && data[0] && data[0][0] && data[0][0][0]) {
-      return (data[0] as unknown[]).map((x: unknown) => (x as string[])[0]).join("").trim();
+      return (data[0] as unknown[])
+        .map((x: unknown) => (x as string[])[0])
+        .join("")
+        .trim();
     }
     return text;
   } catch {
@@ -66,7 +69,9 @@ export default defineCommand({
 
     const startRes = await akinatorStart();
     if (!startRes.status) {
-      return msg.reply(`❌ Gagal memulai game Akinator: ${startRes.error || "Error tidak dikenal"}`);
+      return msg.reply(
+        `❌ Gagal memulai game Akinator: ${startRes.error || "Error tidak dikenal"}`,
+      );
     }
 
     const session = startRes.data;
@@ -85,7 +90,9 @@ export default defineCommand({
 
     state.timeout = setTimeout(() => {
       sessions.delete(key);
-      sock.sendMessage(msg.jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+      sock.sendMessage(msg.jid, {
+        text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas.",
+      });
     }, 120_000);
 
     sessions.set(key, state);
@@ -140,11 +147,17 @@ export async function checkAkinator(
       option = 0;
     } else if (["1", "no", "tidak", "n", "t", "tdk"].includes(inputLower)) {
       option = 1;
-    } else if (["2", "i don't know", "tidak tahu", "dont know", "gatau", "ga tau", "tahu"].includes(inputLower)) {
+    } else if (
+      ["2", "i don't know", "tidak tahu", "dont know", "gatau", "ga tau", "tahu"].includes(
+        inputLower,
+      )
+    ) {
       option = 2;
     } else if (["3", "probably", "mungkin", "mngkin"].includes(inputLower)) {
       option = 3;
-    } else if (["4", "probably not", "mungkin tidak", "mngkin tdk", "kayaknya gak"].includes(inputLower)) {
+    } else if (
+      ["4", "probably not", "mungkin tidak", "mngkin tdk", "kayaknya gak"].includes(inputLower)
+    ) {
       option = 4;
     }
 
@@ -158,7 +171,9 @@ export async function checkAkinator(
       clearTimeout(state.timeout);
       state.timeout = setTimeout(() => {
         sessions.delete(key);
-        state.sock.sendMessage(jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+        state.sock.sendMessage(jid, {
+          text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas.",
+        });
       }, 120_000);
       state.lastActive = Date.now();
 
@@ -249,7 +264,9 @@ Apakah ini benar? (ya/tidak)`;
         clearTimeout(state.timeout);
         state.timeout = setTimeout(() => {
           sessions.delete(key);
-          state.sock.sendMessage(jid, { text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas." });
+          state.sock.sendMessage(jid, {
+            text: "⏰ Sesi Akinator telah berakhir karena tidak ada aktivitas.",
+          });
         }, 120_000);
         state.lastActive = Date.now();
 

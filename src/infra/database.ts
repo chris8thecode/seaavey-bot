@@ -40,12 +40,6 @@ export {
   reschedule,
 } from "@/infra/repositories/schedule-repo";
 export {
-  addToxicWord,
-  getToxicWords,
-  isToxicMessage,
-  removeToxicWord,
-} from "@/infra/repositories/toxic-repo";
-export {
   addHit,
   addLevel,
   addXp,

@@ -23,206 +23,47 @@
 
 ---
 
-## Fitur
+## Features
 
-- 🔄 **Auto-reconnect** — Otomatis menyambung ulang saat putus
-- 📱 **QR & Pairing Code** — Login via kode QR atau pairing code
-- ⚡ **Hot-reload** — Reload instan perintah di mode development
-- 🧩 **Extensible** — Mudah menambah perintah dengan auto-loading dari filesystem
-- 🛡️ **Middleware Pipeline** — Anti-link, anti-spam, anti-toxic, anti-viewonce, AFK, auto-reply, dan intersepsi jawaban game
-- 📂 **13 Kategori Perintah** — 155+ perintah terorganisir per kategori
-- 🎮 **19 Game** — Trivia, TicTacToe, Hangman, Word Chain, dan 16 game tebak kata dengan data JSON
-- 💰 **Sistem Ekonomi** — Dompet, bank, reward harian, toko, transfer aman
-- 📊 **Leveling & XP** — Dapatkan XP per perintah, naik level dengan kartu rank gambar (Sharp canvas)
-- 🤖 **Integrasi AI** — Google Gemini 2.5 Flash untuk pembuatan/editing gambar
-- 🗳️ **Voting Grup** — Poll dan Votekick dengan anti-vote ganda
-- ⚠️ **Sistem Peringatan** — Max peringatan yang dapat dikonfigurasi per grup
-- 📢 **Status AFK** — Auto-respons dan hapus status saat aktif
-- 🖼️ **Konversi Media** — Gambar/Video ke stiker, stiker ke gambar, video/audio ke MP3
-- 🅰️ **Scheduler** — Pengingat dan pesan terjadwal dengan dukungan pengulangan
+- **159 perintah** di 13 kategori (pengunduh, manajemen grup, alat media, ekonomi, produktivitas, dan lainnya).
+- **30 game** termasuk Tic-Tac-Toe, Hangman, Word Chain, dan 17 game tebak kata berbasis data JSON.
+- **Sistem ekonomi** dengan dompet virtual, bank, reward harian, toko, dan transfer antar pengguna.
+- **Leveling & XP** per perintah dengan pembuatan kartu rank dinamis menggunakan Sharp.
+- **Middleware pipeline** fitur anti-link, anti-spam, anti-viewonce, AFK, dan balasan otomatis berbasis kata kunci.
+- **Integrasi database** menggunakan database SQLite persisten melalui `bun:sqlite` dalam mode WAL.
+- **Konektivitas tangguh** dengan pemulihan koneksi otomatis serta autentikasi via kode QR atau kode pairing.
 
-## Persyaratan
+> [!NOTE]
+> Untuk katalog perintah lengkap, skema database, arsitektur proyek, dan detail konfigurasi tingkat lanjut, silakan merujuk ke [Panduan Developer & Perintah (AGENTS.md)](AGENTS.md).
+
+## Requirements
 
 - [Bun](https://bun.sh) v1.0+
-- [FFmpeg](https://ffmpeg.org/)
+- [FFmpeg](https://ffmpeg.org/) (untuk konversi media)
+- [libvips](https://libvips.org/) (dibutuhkan oleh Sharp)
 
-## Instalasi
+## Installation
 
-### Quick Start (VPS / Linux)
+### Automated Script (Linux / Termux)
 
 ```bash
-git clone https://github.com/seaavey/seaavey-bot.git
-cd seaavey-bot
-bash setup_vps.sh
+curl -fsSL https://raw.githubusercontent.com/seaavey/seaavey-bot/main/install.sh | bash
 ```
 
-### Quick Start (Termux / Android)
+### Manual Installation
 
 ```bash
+# Klon repositori
 git clone https://github.com/seaavey/seaavey-bot.git
 cd seaavey-bot
-bash setup_termux.sh
-```
 
-### Instalasi Manual
-
-```bash
-bun install
+# Instal dependensi dan konfigurasi lingkungan
 cp .env.example .env
-# Edit .env dengan OWNER_NUMBER kamu
+bun install
+
+# Jalankan bot
 bun run start
 ```
-
-Pindai kode QR dari `qr.png` atau masukkan nomor telepon untuk pairing code.
-
----
-
-## Arsitektur (Deep Dive)
-
-### Struktur Proyek
-
-```
-src/
-├── index.ts                 # Titik masuk — menghubungkan WhatsApp, memuat perintah, memulai server
-├── core/
-│   ├── config.ts            # Konfigurasi global (prefix, owner, API keys)
-│   ├── types.ts             # Interface Command & defineCommand helper
-│   └── logger.ts            # Pino logger (console + file harian)
-├── commands/                # 13 kategori, 155+ perintah (auto-loaded)
-│   ├── general/             # Menu, ping, runtime, profile, level, dll.
-│   ├── converter/           # Encode, decode, toimg, tomp3
-│   ├── downloader/          # YouTube, TikTok, Instagram, Spotify, dll.
-│   ├── economy/             # Dompet, daily, toko, transfer
-│   ├── fun/                 # Meme, quotes, ship, zodiak, waifu, dll.
-│   ├── game/                # Trivia, TicTacToe, Hangman, Word Chain, dll.
-│   ├── group/               # Alat admin, antilink, welcome, poll, dll.
-│   ├── info/                # Cuaca, gempa, GitHub, npm, dll.
-│   ├── media/               # Stiker, QR, TTS, OCR, Carbon, dll.
-│   ├── owner/               # Perintah manajemen bot
-│   ├── productivity/        # Catatan, todo, pengingat, jadwal, AFK
-│   ├── search/              # Pinterest, SoundCloud, lirik
-│   └── tools/               # Kalkulator, translate, shortlink, pelacakan
-├── handlers/
-│   ├── message-handler.ts   # Pemrosesan pesan masuk
-│   ├── command-dispatcher.ts# Resolusi perintah & deteksi level-up
-│   └── command-guards.ts    # Pemeriksaan izin & cooldown
-├── middleware/               # Pipeline yang dieksekusi per pesan
-│   ├── anti-link.ts         # Hapus otomatis link saat antilink aktif
-│   ├── anti-spam.ts         # Rate-limit: 5 pesan / 10 detik
-│   ├── anti-toxic.ts        # Filter kata toksik bawaan + kustom
-│   ├── anti-viewonce.ts     # Teruskan view-once ke owner
-│   ├── afk.ts               # Hapus otomatis AFK saat aktif; beri tahu jika disebut
-│   ├── auto-reply.ts        # Balasan otomatis berbasis keyword SQLite
-│   └── game-answer.ts       # Tangkap jawaban game dari teks apa pun
-├── services/
-│   ├── command-service.ts   # Daftar/cari/aktif-nonaktifkan perintah (untuk API)
-│   └── group-service.ts     # Daftar/ambil/perbarui grup (untuk API)
-├── game/
-│   ├── game.ts              # Dispatcher jawaban game pusat (19 game)
-│   └── word-game-factory.ts # Generator perintah game tebak kata generik
-├── canvas/
-│   ├── rankCard.ts          # Kartu rank level berbasis Sharp
-│   └── welcomeImage.ts      # Kartu selamat datang + selamat tinggal
-├── utils/
-│   ├── helper.ts            # Utilitas (random, format, profil pic)
-│   ├── convert.ts           # Konversi stiker/img/mp3 via ffmpeg
-│   ├── ai.ts                # Wrapper Google GenAI (gemini-2.5-flash)
-│   └── group-toggle.ts      # Factory perintah toggle on/off generik
-└── infra/
-    ├── loader.ts            # Auto-load perintah, hot-reload di dev
-    ├── database.ts          # Facade database
-    ├── scheduler.ts         # Poller 30 detik untuk pengingat & jadwal
-    ├── db/client.ts         # Singleton bun:sqlite (mode WAL)
-    └── repositories/        # 9 repositori data SQLite
-        ├── user-repo.ts     # Tabel users (xp, level, banned)
-        ├── economy-repo.ts  # Tabel economy (dompet, bank, daily)
-        ├── group-repo.ts    # groups + group_members
-        ├── afk-repo.ts      # Tabel afk
-        ├── autoreply-repo.ts# Tabel autoreplies
-        ├── poll-repo.ts     # Tabel polls
-        ├── warn-repo.ts     # Tabel warns
-        ├── toxic-repo.ts    # Tabel toxic_words
-        └── schedule-repo.ts # reminders + schedules
-```
-
-### Pipeline Middleware
-
-Setiap pesan masuk mengalir melalui pipeline ini secara berurutan:
-
-```
-Pesan → Anti-ViewOnce → Anti-Link → Anti-Spam → Anti-Toxic → AFK → Game Answer → Auto-Reply
-```
-
-Setiap middleware dapat menyela, memodifikasi, atau menghapus pesan. Pipeline berjalan sebelum dispatcher perintah.
-
-### Database
-
-SQLite bawaan via `bun:sqlite` dengan mode WAL. 11 tabel mencakup users, economy, groups, AFK, auto-replies, polls, warns, toxic words, reminders, dan schedules. Tidak perlu pengaturan database eksternal.
-
-### Sistem Game
-
-19 game termasuk:
-
-- **Game mandiri:** Trivia, Math, Family100, Coinflip, Dice, Duel, Hangman, Quiz, Slot, Suit, TebakAngka, TicTacToe, Word Chain
-- **Game tebak kata (16 file data JSON):** AsahOtak, CakLontong, SiapakahAku, SusunKata, TebakAnime, TebakBendera, TebakGambar, TebakKabupaten, TebakKalimat, TebakKimia, TebakLirik, TebakMemberJKT48, TebakTebakan, TebakWaifu, TekaTeki
-
-Semua game memiliki batas waktu 60 detik, sistem petunjuk, dan hadiah XP.
-
----
-
-## Kategori Perintah
-
-| Kategori       | Deskripsi                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------ |
-| `general`      | Menu, ping, runtime, profile, level, confess, dll.                                         |
-| `tools`        | Kalkulator, translate, shortlink, pelacakan                                                |
-| `converter`    | Encode, decode, gambar-ke-gambar, video-ke-mp3                                             |
-| `media`        | Pembuat stiker, kode QR, TTS, OCR, Carbon, tangkapan layar                                 |
-| `downloader`   | YouTube, TikTok, Instagram, Facebook, Twitter/X, Spotify, SoundCloud, Pinterest, MediaFire |
-| `fun`          | Meme, quotes, ship, zodiak, waifu, emojimix, fakta, dll.                                   |
-| `game`         | Trivia, TicTacToe, Hangman, Word Chain, Duel, Slot, dan 13+ game tebak kata                |
-| `economy`      | Dompet, daily, toko, transfer                                                              |
-| `productivity` | Catatan, todo, pengingat, jadwal, AFK                                                      |
-| `group`        | Alat admin (kick, promote, demote), antilink, welcome, poll, votekick, warn, sider         |
-| `info`         | Cuaca, gempa, GitHub, paket npm, jadwal sholat                                             |
-| `search`       | Pinterest, SoundCloud, lirik                                                               |
-| `owner`        | Manajemen bot (eval, broadcast, block, setprefix, dll.)                                    |
-
-## Skrip
-
-| Skrip                  | Deskripsi                                              |
-| ---------------------- | ------------------------------------------------------ |
-| `setup_vps.sh`         | Installer Ubuntu/Debian — Bun, FFmpeg, PM2, dependensi |
-| `setup_termux.sh`      | Installer Termux/Android — Bun, dependensi             |
-| `ecosystem.config.cjs` | Konfigurasi proses PM2                                 |
-
-### Development
-
-```bash
-bun run dev       # Jalankan dengan NODE_ENV=development (hot-reload aktif)
-bun run start     # Mode produksi
-bun run lint      # ESLint + pengecekan TypeScript
-bun run format    # Auto-format dengan Prettier
-```
-
-## Menambah Perintah
-
-Buat file di `src/commands/<kategori>/`:
-
-```ts
-// src/commands/general/hello.ts
-import { defineCommand } from "@/types";
-
-export default defineCommand({
-  name: "hello",
-  description: "Ucapkan halo",
-  handler: async (_sock, msg) => {
-    await msg.reply("Halo! 👋");
-  },
-});
-```
-
-Perintah di-load otomatis saat startup. Di mode dev, perubahan di-hot-reload.
 
 ## Docker
 
@@ -231,30 +72,22 @@ docker build -t seaaveybot .
 docker run -v ./auth:/app/auth -v ./data:/app/data seaaveybot
 ```
 
-## Konfigurasi
+## Development
 
-| Variabel         | Default       | Deskripsi                           |
-| ---------------- | ------------- | ----------------------------------- |
-| `NODE_ENV`       | `production`  | `development` atau `production`     |
-| `OWNER_NUMBER`   | `62123456789` | Nomor WhatsApp owner, dipisah koma  |
-| `API_KEY`        | —             | API key untuk api.seaavey.com       |
-| `GEMINI_API_KEY` | —             | API key Google AI Studio (fitur AI) |
+| Perintah         | Deskripsi                                                 |
+| ---------------- | --------------------------------------------------------- |
+| `bun run dev`    | Menjalankan bot dalam mode pengembangan dengan hot-reload |
+| `bun run start`  | Menjalankan bot dalam mode produksi                       |
+| `bun run lint`   | Menjalankan pemeriksaan ESLint dan kompilasi TypeScript   |
+| `bun run format` | Memformat kode menggunakan Prettier                       |
 
-Prefix default bot: `.` (dapat dikonfigurasi saat runtime via perintah `setprefix`)
+## Contributing
 
-## Kontribusi
+Kontribusi sangat terbuka. Silakan buka issue atau kirim pull request untuk saran atau perbaikan.
 
-Kontribusi diterima! Jangan ragu untuk membuka issue atau mengirim pull request.
+## License
 
-## Disclaimer
-
-> **Hanya untuk Tujuan Edukasi & Pembelajaran**
->
-> Proyek ini, termasuk semua scraper dan pengunduh media di `src/infra/scrapers/`, dibuat **hanya untuk tujuan edukasi dan pembelajaran** — untuk mempelajari teknik web scraping, pola integrasi API, dan konsep arsitektur perangkat lunak. **Bukan** untuk penggunaan komersial, distribusi, atau aktivitas apa pun yang melanggar Ketentuan Layanan pihak ketiga. Pengguna bertanggung jawab penuh untuk memastikan penggunaan kode ini mematuhi semua hukum dan kebijakan platform yang berlaku. Pengembang tidak bertanggung jawab atas penyalahgunaan apa pun.
-
-## Lisensi
-
-[MIT](LICENSE) © Muhammad Adriansyah (Seaavey)
+Proyek ini dilisensikan di bawah Lisensi MIT - lihat file [LICENSE](LICENSE) untuk detailnya.
 
 ## Star History
 

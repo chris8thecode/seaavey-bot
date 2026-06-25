@@ -11,12 +11,10 @@ bun run start          # production mode
 
 ### Environment variables
 
-| Variable         | Required | Description                                   |
-| ---------------- | -------- | --------------------------------------------- |
-| `OWNER_NUMBER`   | Yes      | Owner WhatsApp number(s), comma-separated     |
-| `API_KEY`        | No       | API key for api.seaavey.com                   |
-| `GEMINI_API_KEY` | No       | Google AI Studio key (Gemini 2.5 Flash)       |
-| `NODE_ENV`       | No       | `development` or `production` (default: prod) |
+| Variable       | Required | Description                                   |
+| -------------- | -------- | --------------------------------------------- |
+| `OWNER_NUMBER` | Yes      | Owner WhatsApp number(s), comma-separated     |
+| `NODE_ENV`     | No       | `development` or `production` (default: prod) |
 
 ## Commands
 
@@ -35,7 +33,7 @@ CI runs `lint` + `bunx tsc --noEmit` on push/PR to `main`.
 ```
 src/
 ├── index.ts                  # Entry point — WhatsApp connection, event wiring
-├── assets/                   # Static files (banner, thumbnail, toxic word list)
+├── assets/                   # Static files (banner, thumbnail)
 ├── commands/                 # 156 commands across 13 categories
 │   ├── converter/            # Media conversion (4)
 │   ├── downloader/           # Platform downloaders (12)
@@ -167,7 +165,6 @@ src/
 | `speed`      | `speed`             | Speed test               |
 | `status`     | `status`            | Bot status               |
 | `totalfitur` | `totalfitur`        | Total features count     |
-| `toxic`      | `toxic`             | Manage toxic word list   |
 
 ### group/
 
@@ -178,7 +175,6 @@ src/
 | `antidelete`   | `antidelete`         | Toggle anti-delete             |
 | `antilink`     | `antilink`           | Toggle anti-link               |
 | `antispam`     | `antispam`           | Toggle anti-spam               |
-| `antitoxic`    | `antitoxic`          | Toggle anti-toxic              |
 | `antiviewonce` | `antiviewonce`       | Toggle anti-view-once          |
 | `autoreply`    | `autoreply`          | Manage keyword auto-replies    |
 | `autosticker`  | `autosticker`        | Toggle auto-sticker            |
@@ -372,13 +368,12 @@ The `msg` parameter is a `MessageResolver` (see `src/utils/message-resolver.ts`)
 Incoming Message
   → resolveMessage()              [src/utils/message-resolver.ts]
   → runMiddlewares()              [src/middleware/index.ts]
-      → Anti-ViewOnce             [src/middleware/anti-viewonce.ts]
-      → Anti-Link                 [src/middleware/anti-link.ts]
-      → Anti-Spam                 [src/middleware/anti-spam.ts]
-      → Anti-Toxic                [src/middleware/anti-toxic.ts]
-      → AFK                       [src/middleware/afk.ts]
-      → Game Answer               [src/middleware/game-answer.ts]
-      → Auto-Reply                [src/middleware/auto-reply.ts]
+      → 1. Anti-ViewOnce          [src/middleware/anti-viewonce.ts]
+      → 2. Anti-Link              [src/middleware/anti-link.ts]
+      → 3. Anti-Spam              [src/middleware/anti-spam.ts]
+      → 4. AFK                    [src/middleware/afk.ts]
+      → 5. Game Answer            [src/middleware/game-answer.ts]
+      → 6. Auto-Reply             [src/middleware/auto-reply.ts]
   → dispatchCommand()            [src/handlers/command-dispatcher.ts]
       → checkGuards()            [src/handlers/command-guards.ts]
       → cmd.handler()
@@ -420,7 +415,6 @@ Incoming Message
 | `antilink`     | INTEGER | Anti-link enabled (0/1)       |
 | `antidelete`   | INTEGER | Anti-delete enabled (0/1)     |
 | `antispam`     | INTEGER | Anti-spam enabled (0/1)       |
-| `antitoxic`    | INTEGER | Anti-toxic enabled (0/1)      |
 | `mute`         | INTEGER | Muted (0/1)                   |
 | `autosticker`  | INTEGER | Auto-sticker enabled (0/1)    |
 | `onlyAdmin`    | INTEGER | Admin-only send (0/1)         |
@@ -488,14 +482,6 @@ Incoming Message
 | `reason`    | TEXT       | Warning reason    |
 | `timestamp` | INTEGER    | Warning time      |
 
-#### `toxic_words`
-
-| Column     | Type       | Description       |
-| ---------- | ---------- | ----------------- |
-| `id`       | INTEGER PK | Auto-increment ID |
-| `groupJid` | TEXT       | Group JID         |
-| `word`     | TEXT       | Toxic word        |
-
 #### `reminders`
 
 | Column      | Type       | Description           |
@@ -532,7 +518,6 @@ All repos are in `src/infra/repositories/` and re-exported via `src/infra/databa
 | `autoreply-repo` | `autoreply-repo.ts` | `addAutoReply()`, `removeAutoReply()`, `getAutoReplies()`, `findAutoReply()`                                                                                                         |
 | `poll-repo`      | `poll-repo.ts`      | `createPoll()`, `getPoll()`, `getPollOptions()`, `getPollVotes()`, `votePoll()`, `closePoll()`                                                                                       |
 | `warn-repo`      | `warn-repo.ts`      | `addWarn()`, `getWarns()`, `removeWarns()`                                                                                                                                           |
-| `toxic-repo`     | `toxic-repo.ts`     | `addToxicWord()`, `removeToxicWord()`, `getToxicWords()`, `isToxicMessage()`                                                                                                         |
 | `schedule-repo`  | `schedule-repo.ts`  | `addReminder()`, `getPendingReminders()`, `markReminderDone()`, `addSchedule()`, `getPendingSchedules()`, `markScheduleDone()`, `reschedule()`, `getSchedules()`, `deleteSchedule()` |
 
 ## Game system
@@ -583,10 +568,9 @@ Each middleware returns `"next"` to continue or `"stop"` to halt processing.
 | 1     | `anti-viewonce.ts` | Forwards view-once messages to owner (always continues)           |
 | 2     | `anti-link.ts`     | Deletes messages containing URLs when antilink is enabled         |
 | 3     | `anti-spam.ts`     | Rate-limits: 5 messages per 10-second window per user             |
-| 4     | `anti-toxic.ts`    | Filters built-in + custom toxic words (from `toxic.txt` + DB)     |
-| 5     | `afk.ts`           | Auto-clears AFK on activity; notifies if AFK user is mentioned    |
-| 6     | `game-answer.ts`   | Captures game answers from any text message (intercepts if match) |
-| 7     | `auto-reply.ts`    | SQLite-based keyword auto-replies per group                       |
+| 4     | `afk.ts`           | Auto-clears AFK on activity; notifies if AFK user is mentioned    |
+| 5     | `game-answer.ts`   | Captures game answers from any text message (intercepts if match) |
+| 6     | `auto-reply.ts`    | SQLite-based keyword auto-replies per group                       |
 
 ### Adding a middleware
 
@@ -679,18 +663,17 @@ Each scraper exports typed functions (e.g., `youtubeDownload(url)`, `spotifySear
 
 ## Key packages
 
-| Package              | Purpose                             |
-| -------------------- | ----------------------------------- |
-| baileys ^7.0.0-rc13  | WhatsApp Web protocol               |
-| sharp ^0.34.5        | Rank card / welcome image rendering |
-| @google/genai ^2.7.0 | Gemini AI                           |
-| axios ^1.16.1        | HTTP client                         |
-| cheerio ^1.2.0       | HTML parsing (web scraping)         |
-| node-webpmux ^3.2.1  | WebP metadata for stickers          |
-| pino-pretty ^13.1.3  | Pretty-printed log output           |
-| qrcode ^1.5.4        | QR code generation                  |
-| eslint ^10.5.0       | Linter                              |
-| prettier ^3.8.4      | Formatter (TS, JSON, Markdown)      |
+| Package             | Purpose                             |
+| ------------------- | ----------------------------------- |
+| baileys ^7.0.0-rc13 | WhatsApp Web protocol               |
+| sharp ^0.34.5       | Rank card / welcome image rendering |
+| axios ^1.16.1       | HTTP client                         |
+| cheerio ^1.2.0      | HTML parsing (web scraping)         |
+| node-webpmux ^3.2.1 | WebP metadata for stickers          |
+| pino-pretty ^13.1.3 | Pretty-printed log output           |
+| qrcode ^1.5.4       | QR code generation                  |
+| eslint ^10.5.0      | Linter                              |
+| prettier ^3.8.4     | Formatter (TS, JSON, Markdown)      |
 
 ## TypeScript quirks
 
@@ -712,7 +695,7 @@ Each scraper exports typed functions (e.g., `youtubeDownload(url)`, `spotifySear
 - **No `any`** — ESLint errors on `no-explicit-any`. Use `unknown` and narrow.
 - Bot prefix defaults to `.` (configurable at runtime via `setprefix`)
 - Owner numbers are comma-separated in `OWNER_NUMBER` env var
-- Env vars: `OWNER_NUMBER`, `API_KEY`, `GEMINI_API_KEY`, `NODE_ENV`
+- Env vars: `OWNER_NUMBER`, `NODE_ENV`
 - ESLint also errors on `no-unused-vars` and `no-unused-imports`; warns on `no-non-null-assertion`
 - **Use command guard properties** — never manually check `msg.isGroup`, `msg.isAdmin`, `msg.isBotAdmin`, or `msg.isOwner` inside handlers. Set `groupOnly`, `adminOnly`, `botAdmin`, `ownerOnly`, or `privateOnly` in `defineCommand()` instead. The `checkGuards()` system handles all of these uniformly.
 - **Unused args** — prefix with `_` (e.g., `_sock`) to satisfy ESLint's `no-unused-vars`

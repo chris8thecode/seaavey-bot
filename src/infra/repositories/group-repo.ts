@@ -9,7 +9,6 @@ db.run(`
     antilink INTEGER DEFAULT 0,
     antidelete INTEGER DEFAULT 0,
     antispam INTEGER DEFAULT 0,
-    antitoxic INTEGER DEFAULT 0,
     mute INTEGER DEFAULT 0,
     autosticker INTEGER DEFAULT 0,
     onlyAdmin INTEGER DEFAULT 0,
@@ -30,7 +29,6 @@ export interface Group {
   antilink: number;
   antidelete: number;
   antispam: number;
-  antitoxic: number;
   mute: number;
   autosticker: number;
   onlyAdmin: number;
