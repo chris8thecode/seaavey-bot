@@ -1,5 +1,5 @@
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
-import { proto, type WAMessage, type WASocket } from "baileys";
+import { proto, type WAMessage, type WASocket, isJidNewsletter, isJidBroadcast } from "baileys";
 
 import { isDev } from "@/core/config";
 import { dispatchCommand } from "@/handlers/command-dispatcher";
@@ -23,8 +23,7 @@ export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]
     if (msg.key.fromMe) continue;
 
     const jid = msg.key.remoteJid || "";
-    if (jid.endsWith("@newsletter")) continue;
-    if (jid === "status@broadcast") continue;
+    if (isJidNewsletter(jid) || isJidBroadcast(jid)) continue;
 
     if (msg.key.id) messageStore.set(msg.key.id, msg);
 
