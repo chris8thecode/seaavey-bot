@@ -1,7 +1,7 @@
 import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
 
-const p = config.prefix;
+const p = config.prefix[0];
 
 export default defineCommand({
   name: "Game Rules",

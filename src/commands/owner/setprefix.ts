@@ -7,9 +7,9 @@ export default defineCommand({
   description: "Change bot prefix (owner only)",
   ownerOnly: true,
   handler: async (_sock, msg) => {
-    if (!msg.args[0]) return msg.reply("Contoh: .setprefix !");
-
-    config.prefix = msg.args[0];
-    await msg.reply(`✅ Prefix berhasil diubah ke: ${config.prefix}`);
+    if (!msg.args[0]) return msg.reply("Contoh: .setprefix ! atau .setprefix .,!,#");
+    const newPrefixes = msg.args[0].split(",");
+    config.prefix = newPrefixes;
+    await msg.reply(`✅ Prefix berhasil diubah ke: ${config.prefix.join(", ")}`);
   },
 });

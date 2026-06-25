@@ -15,7 +15,7 @@ export default defineCommand({
       );
     const targetJid = `${target.replace(/[^0-9]/g, "")}@s.whatsapp.net`;
     await sock.sendMessage(targetJid, {
-      text: `💌 *Pesan Anonim*\n\n${message}\n\n_Balas dengan: ${config.prefix}confessreply <pesan>_`,
+      text: `💌 *Pesan Anonim*\n\n${message}\n\n_Balas dengan: ${config.prefix[0]}confessreply <pesan>_`,
     });
     await msg.reply("✅ Pesan anonim terkirim!");
   },

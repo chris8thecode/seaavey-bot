@@ -34,7 +34,7 @@ export default defineCommand({
       const trigger = cmd.command ?? cmd.name;
       list.push({
         title: cmd.name,
-        id: `${config.prefix}${trigger}`,
+        id: `${config.prefix[0]}${trigger}`,
         description: cmd.description || "No description",
       });
       categories.set(cmd.category, list);
@@ -86,7 +86,7 @@ export default defineCommand({
       const icon = categoryIcons[category] || "📂";
       categoryRows.push({
         title: `${icon} ${category.toUpperCase()}`,
-        id: `${config.prefix}menu ${category}`,
+        id: `${config.prefix[0]}menu ${category}`,
         description: `Tampilkan ${cmds.length} command di kategori ini`,
       });
     }

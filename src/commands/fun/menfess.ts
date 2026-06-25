@@ -21,7 +21,7 @@ export default defineCommand({
     if (!result?.[0]?.exists) return msg.reply("❌ Nomor tidak terdaftar di WhatsApp.");
 
     await sock.sendMessage(targetJid, {
-      text: `💌 *Menfess*\n\n"${message}"\n\n_Seseorang mengirim pesan rahasia untukmu melalui ${config.name}._\n_Balas dengan: ${config.prefix}menfessreply <pesan>_`,
+      text: `💌 *Menfess*\n\n"${message}"\n\n_Seseorang mengirim pesan rahasia untukmu melalui ${config.name}._\n_Balas dengan: ${config.prefix[0]}menfessreply <pesan>_`,
     });
 
     await msg.reply("✅ Menfess terkirim! Identitasmu tetap rahasia.");
