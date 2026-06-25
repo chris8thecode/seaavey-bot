@@ -43,7 +43,7 @@ describe("youtube downloader", () => {
 
     expect(result.status).toBe(false);
     expect(result.error).toBeDefined();
-  }, 30_000);
+  }, 120_000);
 
   it("should handle music.youtube.com URLs", async () => {
     const result = await ytmp3("https://music.youtube.com/watch?v=dQw4w9WgXcQ");

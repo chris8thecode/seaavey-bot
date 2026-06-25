@@ -33,8 +33,6 @@ export type { TwitterData } from "./twitter";
 export { twitterDl } from "./twitter";
 export type { SswebData } from "./ssweb";
 export { sswebDl } from "./ssweb";
-export type { WinkData } from "./wink";
-export { winkEnhance } from "./wink";
 export type { UpscaleData } from "./upscale";
 export { upscaleImage } from "./upscale";
 export type { RemoveBgData } from "./removebg";
@@ -46,12 +44,3 @@ export type {
   AkinatorAnswerResult,
 } from "./akinator";
 export { akinatorStart, akinatorAnswer, akinatorExclude } from "./akinator";
-export type {
-  PixivIllust,
-  PixivPage,
-  PixivRankingItem,
-  PixivRankingMode,
-  PixivSearchResult,
-} from "./pixiv";
-export { pixivDetail, pixivDownloadImage, pixivPages, pixivRanking, pixivSearch } from "./pixiv";
-export { webpToMp4 } from "./ezgif";

@@ -22,9 +22,12 @@ let mockTebakKata: MockGameChecker = () => null;
 let mockTrivia: MockGameChecker = () => null;
 
 beforeEach(() => {
-  g.__activeMockMathAnswer = (jid: string, text: string, sender: string) => mockMathAnswer(jid, text, sender);
-  g.__activeMockTebakKata = (jid: string, text: string, sender: string) => mockTebakKata(jid, text, sender);
-  g.__activeMockTrivia = (jid: string, text: string, sender: string) => mockTrivia(jid, text, sender);
+  g.__activeMockMathAnswer = (jid: string, text: string, sender: string) =>
+    mockMathAnswer(jid, text, sender);
+  g.__activeMockTebakKata = (jid: string, text: string, sender: string) =>
+    mockTebakKata(jid, text, sender);
+  g.__activeMockTrivia = (jid: string, text: string, sender: string) =>
+    mockTrivia(jid, text, sender);
 });
 
 afterEach(() => {

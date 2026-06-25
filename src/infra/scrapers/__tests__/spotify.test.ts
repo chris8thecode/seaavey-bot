@@ -10,14 +10,14 @@ describe("spotify", () => {
     expect(result.data).toHaveProperty("artist");
     expect(result.data).toHaveProperty("downloadUrl");
     expect(result.data.title.length).toBeGreaterThan(0);
-  });
+  }, 30000);
 
   it("should return error for invalid URL", async () => {
     const result = await spotify("https://invalid-url.com/track");
 
     expect(result.status).toBe(false);
     expect(result.error).toBeDefined();
-  });
+  }, 30000);
 });
 
 describe("spotifySearch", () => {
@@ -32,12 +32,12 @@ describe("spotifySearch", () => {
     expect(result.data.tracks[0]).toHaveProperty("title");
     expect(result.data.tracks[0]).toHaveProperty("artist");
     expect(result.data.tracks[0]).toHaveProperty("url");
-  }, 15000);
+  }, 30000);
 
   it("should handle limit parameter", async () => {
     const result = await spotifySearch("Alan Walker", 2);
 
     expect(result.status).toBe(true);
     expect(result.data.tracks.length).toBeLessThanOrEqual(2);
-  }, 15000);
+  }, 30000);
 });
