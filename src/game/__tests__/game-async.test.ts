@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, beforeAll } from "bun:test";
+import { describe, expect, it, mock, beforeAll, beforeEach, afterEach } from "bun:test";
 import type { WAMessage, WASocket } from "baileys";
 import type { MessageContext, MessageMiddleware } from "@/handlers/message-context";
 import type { MessageResolver } from "@/utils/message-resolver";
@@ -9,21 +9,50 @@ type MockGameChecker = (
   sender: string,
 ) => Promise<string | null> | string | null;
 
+interface CustomGlobal {
+  __activeMockMathAnswer?: MockGameChecker;
+  __activeMockTebakKata?: MockGameChecker;
+  __activeMockTrivia?: MockGameChecker;
+}
+
+const g = globalThis as unknown as CustomGlobal;
+
 let mockMathAnswer: MockGameChecker = () => null;
 let mockTebakKata: MockGameChecker = () => null;
 let mockTrivia: MockGameChecker = () => null;
 
+beforeEach(() => {
+  g.__activeMockMathAnswer = (jid: string, text: string, sender: string) => mockMathAnswer(jid, text, sender);
+  g.__activeMockTebakKata = (jid: string, text: string, sender: string) => mockTebakKata(jid, text, sender);
+  g.__activeMockTrivia = (jid: string, text: string, sender: string) => mockTrivia(jid, text, sender);
+});
+
+afterEach(() => {
+  delete g.__activeMockMathAnswer;
+  delete g.__activeMockTebakKata;
+  delete g.__activeMockTrivia;
+});
+
 // Mock the first three checkers using correct relative path from test file
 mock.module("../../commands/game/math", () => ({
-  checkMathAnswer: (jid: string, text: string, sender: string) => mockMathAnswer(jid, text, sender),
+  checkMathAnswer: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockMathAnswer;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 mock.module("../../commands/game/tebakkata", () => ({
-  checkTebakKata: (jid: string, text: string, sender: string) => mockTebakKata(jid, text, sender),
+  checkTebakKata: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockTebakKata;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 mock.module("../../commands/game/trivia", () => ({
-  checkTrivia: (jid: string, text: string, sender: string) => mockTrivia(jid, text, sender),
+  checkTrivia: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockTrivia;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 let checkGameAnswer: (jid: string, text: string, sender: string) => Promise<string | null>;

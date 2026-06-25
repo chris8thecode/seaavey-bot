@@ -1,4 +1,4 @@
-import { describe, expect, it, mock, beforeAll } from "bun:test";
+import { describe, expect, it, mock, beforeAll, beforeEach, afterEach } from "bun:test";
 import type { WAMessage, WASocket } from "baileys";
 import type { MessageContext } from "@/handlers/message-context";
 import type { MessageResolver } from "@/utils/message-resolver";
@@ -9,21 +9,50 @@ type GameCheckerFn = (
   sender: string,
 ) => Promise<string | null> | string | null;
 
+interface CustomGlobal {
+  __activeMockMathAnswer?: GameCheckerFn;
+  __activeMockTebakKata?: GameCheckerFn;
+  __activeMockTrivia?: GameCheckerFn;
+}
+
+const g = globalThis as unknown as CustomGlobal;
+
 let mockMathAnswer: GameCheckerFn = () => null;
 let mockTebakKata: GameCheckerFn = () => null;
 let mockTrivia: GameCheckerFn = () => null;
 
+beforeEach(() => {
+  g.__activeMockMathAnswer = (jid: string, text: string, sender: string) => mockMathAnswer(jid, text, sender);
+  g.__activeMockTebakKata = (jid: string, text: string, sender: string) => mockTebakKata(jid, text, sender);
+  g.__activeMockTrivia = (jid: string, text: string, sender: string) => mockTrivia(jid, text, sender);
+});
+
+afterEach(() => {
+  delete g.__activeMockMathAnswer;
+  delete g.__activeMockTebakKata;
+  delete g.__activeMockTrivia;
+});
+
 // Mock the checkers using relative paths
 mock.module("../../commands/game/math", () => ({
-  checkMathAnswer: (jid: string, text: string, sender: string) => mockMathAnswer(jid, text, sender),
+  checkMathAnswer: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockMathAnswer;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 mock.module("../../commands/game/tebakkata", () => ({
-  checkTebakKata: (jid: string, text: string, sender: string) => mockTebakKata(jid, text, sender),
+  checkTebakKata: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockTebakKata;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 mock.module("../../commands/game/trivia", () => ({
-  checkTrivia: (jid: string, text: string, sender: string) => mockTrivia(jid, text, sender),
+  checkTrivia: (jid: string, text: string, sender: string) => {
+    const activeMock = g.__activeMockTrivia;
+    return activeMock ? activeMock(jid, text, sender) : null;
+  },
 }));
 
 let gameAnswerMiddleware: (ctx: MessageContext) => Promise<"next" | "stop">;
