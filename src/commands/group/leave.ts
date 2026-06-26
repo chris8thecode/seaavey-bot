@@ -1,13 +1,14 @@
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Leave",
   command: "gleave",
-  description: "Bot keluar dari grup",
+  description: t("group.leave.description"),
   groupOnly: true,
   ownerOnly: true,
   handler: async (sock, msg) => {
-    await msg.reply("Bye bye 👋");
+    await msg.reply(t("group.leave.done"));
     await sock.groupLeave(msg.jid);
   },
 });

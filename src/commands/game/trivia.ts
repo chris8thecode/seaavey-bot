@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomItem } from "@/utils/helper";
@@ -25,21 +26,21 @@ const sessions = new Map<string, { answer: string; timeout: Timer; sender?: stri
 export default defineCommand({
   name: "Trivia",
   alias: ["trivia"],
-  description: "Quiz pengetahuan umum",
+  description: t("game.trivia.desc"),
   handler: async (sock, msg) => {
-    if (sessions.has(msg.jid)) return msg.reply("⏳ Masih ada soal yang belum dijawab!");
+    if (sessions.has(msg.jid)) return msg.reply(t("game.trivia.existing"));
 
     const item = getRandomItem(questions) as (typeof questions)[number];
 
     const jid = msg.jid;
     const timeout = setTimeout(() => {
       sessions.delete(jid);
-      sock.sendMessage(jid, { text: `⏰ Waktu habis! Jawabannya *${item.a}*` });
+      sock.sendMessage(jid, { text: t("game.trivia.timeout", { answer: item.a }) });
     }, 30_000);
 
     sessions.set(msg.jid, { answer: item.a, timeout });
 
-    await msg.reply(`❓ *Trivia*\n\n${item.q}\n\nJawab dalam 30 detik!`);
+    await msg.reply(t("game.trivia.question", { question: item.q }));
   },
 });
 
@@ -52,5 +53,5 @@ export function checkTrivia(jid: string, text: string, sender: string): string |
   clearTimeout(session.timeout);
   sessions.delete(jid);
   addXp(sender, 15);
-  return `✅ Benar! Jawabannya *${session.answer}* (+15 XP)`;
+  return t("game.trivia.correct", { answer: session.answer });
 }

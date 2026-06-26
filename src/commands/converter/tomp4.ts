@@ -1,4 +1,5 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { config } from "@/core/config";
 import { stickerToImage, stickerToVideo } from "@/utils/convert";
@@ -6,28 +7,26 @@ import { stickerToImage, stickerToVideo } from "@/utils/convert";
 export default defineCommand({
   name: "To MP4 / Image",
   alias: ["tomp4", "tovid", "tovideo", "stickertoimg", "stickertovideo"],
-  description: "Convert sticker to MP4 video or static image locally",
+  description: t("converter.tomp4.desc"),
   usage: "{prefix}tomp4",
   tags: ["converter"],
   handler: async (sock, msg) => {
     const sticker = msg.message?.stickerMessage || msg.quoted?.stickerMessage;
 
     if (!sticker) {
-      return msg.reply(
-        "❌ Balas atau kirim stiker dengan caption .tomp4, .tovid, atau .stickertoimg",
-      );
+      return msg.reply(t("converter.tomp4.noSticker"));
     }
 
     if (sticker.mimetype && sticker.mimetype !== "image/webp") {
-      return msg.reply("❌ Hanya mendukung stiker WebP (image/webp).");
+      return msg.reply(t("converter.tomp4.notWebp"));
     }
 
     if (!sticker.url && !sticker.directPath) {
-      return msg.reply("❌ Stiker tidak memiliki media path yang valid.");
+      return msg.reply(t("converter.tomp4.invalidPath"));
     }
 
     if (sticker.fileLength && Number(sticker.fileLength) === 0) {
-      return msg.reply("❌ Stiker kosong atau corrupt.");
+      return msg.reply(t("converter.tomp4.emptySticker"));
     }
 
     // Parse the actual trigger invoked by the user
@@ -47,31 +46,31 @@ export default defineCommand({
       const isStaticRequest = trigger === "stickertoimg" || !sticker.isAnimated;
 
       if (isStaticRequest) {
-        await msg.reply("⏳ Mengonversi stiker ke gambar...");
+        await msg.reply(t("converter.tomp4.convertingImage"));
         const buffer = (await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {
           host: "mmg.whatsapp.net",
         })) as Buffer;
 
-        if (!buffer) throw new Error("Gagal mengunduh stiker.");
+        if (!buffer) throw new Error(t("converter.tomp4.downloadFailed"));
         const image = stickerToImage(buffer);
         await msg.send({ image });
       } else {
-        await msg.reply("⏳ Mengonversi stiker animasi ke video...");
+        await msg.reply(t("converter.tomp4.convertingVideo"));
         const buffer = (await downloadMediaMessage(mediaMsg as WAMessage, "buffer", {
           host: "mmg.whatsapp.net",
         })) as Buffer;
 
-        if (!buffer) throw new Error("Gagal mengunduh stiker.");
+        if (!buffer) throw new Error(t("converter.tomp4.downloadFailed"));
         const video = stickerToVideo(buffer);
         await msg.send({
           video,
           mimetype: "video/mp4",
-          caption: "✅ Berhasil dikonversi ke video",
+          caption: t("converter.tomp4.successVideo"),
         });
       }
     } catch (error: unknown) {
       const err = error as Error;
-      await msg.reply(`❌ Gagal mengonversi stiker: ${err.message}`);
+      await msg.reply(t("converter.tomp4.failed", { error: err.message }));
     }
   },
 });

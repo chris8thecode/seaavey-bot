@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { createWordGame } from "@/game/word-game-factory";
 
 interface TebakKalimatData {
@@ -8,7 +9,7 @@ interface TebakKalimatData {
 const { command, checkAnswer } = createWordGame<TebakKalimatData>({
   name: "Tebak Kalimat",
   triggers: ["tebakkalimat", "tblm"],
-  description: "Lengkapi kalimat peribahasa/ungkapan (Ketik 'hint' untuk bantuan)",
+  description: t("game.tebakkalimat.desc"),
   dataFile: "tebakkalimat.json",
   emoji: "📖",
   reward: 15,

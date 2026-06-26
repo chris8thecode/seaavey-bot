@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -30,7 +31,7 @@ export async function fsaver(url: string): Promise<ScraperResult<FbdlData[]>> {
     );
 
     const token = challenge.data?.token;
-    if (!token) throw new Error("Token tidak ditemukan");
+    if (!token) throw new Error(t("scraper.fbdl.tokenNotFound"));
 
     const page = await axios.post(
       "https://fsaver.net/en/download",

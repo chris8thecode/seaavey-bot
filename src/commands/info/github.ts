@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { safeFetchJSON } from "@/utils/helper";
 
@@ -15,17 +16,25 @@ interface GitHubUser {
 export default defineCommand({
   name: "GitHub",
   alias: ["gh", "github"],
-  description: "Info profil GitHub. Contoh: .github seaavey",
+  description: t("info.github.desc"),
   handler: async (_sock, msg) => {
     const username = msg.args[0];
-    if (!username) return msg.reply("Format: .github <username>");
+    if (!username) return msg.reply(t("info.github.format"));
     const u = await safeFetchJSON<GitHubUser>(
       `https://api.github.com/users/${encodeURIComponent(username)}`,
     );
-    if (!u) return msg.reply("❌ User tidak ditemukan.");
+    if (!u) return msg.reply(t("info.github.notFound"));
     await msg.send({
       image: { url: u.avatar_url },
-      caption: `🐙 *GitHub — ${u.login}*\n\n👤 ${u.name || "-"}\n📝 ${u.bio || "-"}\n📦 Repos: ${u.public_repos}\n👥 Followers: ${u.followers} | Following: ${u.following}\n🔗 ${u.html_url}`,
+      caption: t("info.github.profile", {
+        login: u.login,
+        name: u.name || "-",
+        bio: u.bio || "-",
+        repos: u.public_repos,
+        followers: u.followers,
+        following: u.following,
+        url: u.html_url,
+      }),
     });
   },
 });

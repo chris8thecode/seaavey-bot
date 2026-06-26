@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomItem } from "@/utils/helper";
@@ -32,14 +33,14 @@ const sessions = new Map<string, { answer: number; timeout: Timer; sender?: stri
 export default defineCommand({
   name: "Quiz",
   alias: ["quiz"],
-  description: "Quiz pilihan ganda",
+  description: t("game.quiz.desc"),
   handler: async (sock, msg) => {
     if (sessions.has(msg.jid)) {
       const session = sessions.get(msg.jid);
       if (!session) return;
       const input = msg.args[0]?.toUpperCase();
       if (!input || !["A", "B", "C", "D"].includes(input))
-        return msg.reply("Jawab dengan A/B/C/D!");
+        return msg.reply(t("game.quiz.chooseLetter"));
 
       const idx = input.charCodeAt(0) - 65;
       clearTimeout(session.timeout);
@@ -47,9 +48,9 @@ export default defineCommand({
 
       if (idx === session.answer) {
         addXp(msg.sender, 15);
-        return msg.reply(`✅ Benar! Jawabannya *${input}* (+15 XP)`);
+        return msg.reply(t("game.quiz.correct", { input }));
       }
-      return msg.reply(`❌ Salah! Jawabannya *${String.fromCharCode(65 + session.answer)}*`);
+      return msg.reply(t("game.quiz.wrong", { answer: String.fromCharCode(65 + session.answer) }));
     }
 
     const item = getRandomItem(questions) as (typeof questions)[number];
@@ -59,11 +60,11 @@ export default defineCommand({
     const timeout = setTimeout(() => {
       sessions.delete(jid);
       sock.sendMessage(jid, {
-        text: `⏰ Waktu habis! Jawabannya *${String.fromCharCode(65 + item.a)}*`,
+        text: t("game.quiz.timeout", { answer: String.fromCharCode(65 + item.a) }),
       });
     }, 30_000);
     sessions.set(msg.jid, { answer: item.a, timeout });
 
-    await msg.reply(`📝 *Quiz*\n\n${item.q}\n\n${options}\n\nJawab: .quiz [A/B/C/D] (30 detik)`);
+    await msg.reply(t("game.quiz.question", { question: item.q, options }));
   },
 });

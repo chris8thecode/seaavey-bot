@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -50,7 +51,7 @@ export async function spotify(url: string): Promise<ScraperResult<SpotifyData>> 
     );
 
     const meta = res.data?.data?.metadata;
-    if (!meta?.name) throw new Error("Track tidak ditemukan");
+    if (!meta?.name) throw new Error(t("scraper.spotify.trackNotFound"));
 
     return scraperSuccess({
       title: meta.name || "",
@@ -77,7 +78,7 @@ export async function spotifySearch(
     });
 
     const data = res.data;
-    if (!data?.success) throw new Error("Search gagal");
+    if (!data?.success) throw new Error(t("scraper.spotify.searchFailed"));
 
     const tracks: SpotifyTrack[] = (data.results || []).map((t: Record<string, unknown>) => ({
       id: t.id || "",

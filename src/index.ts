@@ -8,6 +8,7 @@ import makeWASocket, {
   isJidStatusBroadcast,
 } from "baileys";
 import * as QRCode from "qrcode";
+import { t } from "@/core/translations";
 import { logger, createEventLogger } from "@/core/logger";
 import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
@@ -76,9 +77,9 @@ async function startBot() {
     messagesUpdate: createEventLogger("messages.update"),
   };
 
-  sock.ev.on("creds.update", (...args) => {
+  sock.ev.on("creds.update", () => {
     evLog.creds.info("menyimpan credentials");
-    saveCreds(...args);
+    saveCreds();
   });
 
   if (!state.creds.registered && !state.creds.me?.id) {
@@ -150,7 +151,7 @@ async function startBot() {
       if (call.status === "offer") {
         await sock.rejectCall(call.id, call.from);
         await sock.sendMessage(call.from, {
-          text: "🚫 Maaf, bot tidak menerima panggilan. Silakan kirim pesan teks.",
+          text: t("index.callRejected"),
         });
       }
     }

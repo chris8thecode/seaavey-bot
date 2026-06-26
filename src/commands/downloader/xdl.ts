@@ -1,15 +1,16 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { twitterDl } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "X (Twitter) DL",
   alias: ["xdl", "x(twitter)dl"],
-  description: "Download media dari X/Twitter",
+  description: t("downloader.xdl.desc"),
   handler: async (_sock, msg) => {
     const url = msg.args[0];
-    if (!url) return msg.reply("Kirim URL Twitter/X.\nContoh: .xdl https://x.com/user/status/...");
+    if (!url) return msg.reply(t("downloader.xdl.format"));
     if (!url.includes("x.com") && !url.includes("twitter.com"))
-      return msg.reply("❌ URL harus dari X/Twitter");
+      return msg.reply(t("downloader.xdl.invalidUrl"));
     await msg.reply("⏳ Downloading...");
     const res = await twitterDl(url);
     if (!res.status) return msg.reply(`❌ ${res.error}`);
@@ -25,7 +26,7 @@ export default defineCommand({
         caption: `🐦 ${author ? `@${author}` : ""}${title ? ` — ${title}` : ""}`,
       });
     } else {
-      await msg.reply("❌ Tidak ada media yang ditemukan di tweet ini");
+      await msg.reply(t("downloader.xdl.noMedia"));
     }
   },
 });

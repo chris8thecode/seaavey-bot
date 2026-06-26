@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -41,5 +42,5 @@ export async function sswebDl(
     // Fall through to error
   }
 
-  return scraperError("Gagal mengambil screenshot. Coba lagi nanti.");
+  return scraperError(t("scraper.ssweb.failed"));
 }

@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 import { getRandomNumber } from "@/utils/helper";
@@ -8,11 +9,11 @@ const emojis = { batu: "🪨", gunting: "✂️", kertas: "📄" };
 export default defineCommand({
   name: "Suit",
   alias: ["suit"],
-  description: "Batu gunting kertas lawan bot",
+  description: t("game.suit.desc"),
   handler: async (_sock, msg) => {
     const input = msg.args[0]?.toLowerCase();
     if (!input || !(choices as readonly string[]).includes(input)) {
-      return msg.reply("Contoh: .suit batu/gunting/kertas");
+      return msg.reply(t("game.suit.example"));
     }
 
     const player = input as (typeof choices)[number];
@@ -20,18 +21,18 @@ export default defineCommand({
 
     let result: string;
     if (player === bot) {
-      result = "🤝 Seri!";
+      result = t("game.suit.draw");
     } else if (
       (player === "batu" && bot === "gunting") ||
       (player === "gunting" && bot === "kertas") ||
       (player === "kertas" && bot === "batu")
     ) {
-      result = "🎉 Kamu menang! (+10 XP)";
+      result = t("game.suit.win");
       addXp(msg.sender, 10);
     } else {
-      result = "😢 Kamu kalah!";
+      result = t("game.suit.lose");
     }
 
-    await msg.reply(`${emojis[player]} vs ${emojis[bot]}\n\n${result}`);
+    await msg.reply(t("game.suit.result", { playerEmoji: emojis[player], botEmoji: emojis[bot], result }));
   },
 });

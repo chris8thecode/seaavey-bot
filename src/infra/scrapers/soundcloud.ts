@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -18,7 +19,7 @@ async function getClientId(): Promise<string> {
 
   const match = res.data.match(/window\.__sc_hydration\s*=\s*(\[.*?\]);/);
 
-  if (!match?.[1]) throw new Error("Gagal mengambil client_id");
+  if (!match?.[1]) throw new Error(t("scraper.soundcloud.clientIdError"));
 
   const hydration = JSON.parse(match[1]) as Array<{
     hydratable: string;
@@ -28,7 +29,7 @@ async function getClientId(): Promise<string> {
   const apiClient = hydration.find((h) => h.hydratable === "apiClient");
   const id = apiClient?.data?.id;
 
-  if (!id) throw new Error("Client ID tidak ditemukan");
+  if (!id) throw new Error(t("scraper.soundcloud.clientIdNotFound"));
 
   cachedClientId = id;
   return id;
@@ -137,7 +138,7 @@ export async function soundcloudDl(url: string): Promise<ScraperResult<SoundClou
       };
     };
 
-    if (!track?.id) throw new Error("Track tidak ditemukan");
+    if (!track?.id) throw new Error(t("scraper.soundcloud.trackNotFound"));
 
     const progressive = track.media?.transcodings?.find(
       (tr) => tr.format?.protocol === "progressive",

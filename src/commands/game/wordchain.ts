@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 
@@ -6,7 +7,7 @@ const sessions = new Map<string, { lastWord: string; used: Set<string>; timeout:
 export default defineCommand({
   name: "Word Chain",
   alias: ["wc", "wordchain"],
-  description: "Sambung kata (huruf terakhir = huruf pertama)",
+  description: t("game.wordchain.desc"),
   handler: async (sock, msg) => {
     const session = sessions.get(msg.jid);
     const word = msg.args[0]?.toLowerCase();
@@ -14,35 +15,33 @@ export default defineCommand({
     if (!word) {
       if (session)
         return msg.reply(
-          `🔗 Kata terakhir: *${session.lastWord}*\nSambung dengan huruf *${session.lastWord.slice(-1).toUpperCase()}*\n\nKetik .wordchain [kata]`,
+          t("game.wordchain.status", { word: session.lastWord, letter: session.lastWord.slice(-1).toUpperCase() }),
         );
       const jid = msg.jid;
       const timeout = setTimeout(() => {
         const s = sessions.get(jid);
         sessions.delete(jid);
         sock.sendMessage(jid, {
-          text: `⏰ Waktu habis! Word Chain selesai. Total ${s?.used.size ?? 0} kata.`,
+          text: t("game.wordchain.timeout", { count: s?.used.size ?? 0 }),
         });
       }, 120_000);
       sessions.set(msg.jid, { lastWord: "indonesia", used: new Set(["indonesia"]), timeout });
-      return msg.reply(
-        "🔗 *Word Chain* dimulai!\n\nKata pertama: *indonesia*\nSambung dengan huruf *A*\n\nKetik .wordchain [kata]",
-      );
+      return msg.reply(t("game.wordchain.start"));
     }
 
-    if (!session) return msg.reply("Ketik .wordchain untuk mulai game baru.");
+    if (!session) return msg.reply(t("game.wordchain.noSession"));
 
     if (word === "nyerah") {
       clearTimeout(session.timeout);
       sessions.delete(msg.jid);
-      return msg.reply(`🏳️ Menyerah! Total ${session.used.size} kata.`);
+      return msg.reply(t("game.wordchain.surrender", { count: session.used.size }));
     }
 
-    if (word.length < 3) return msg.reply("❌ Minimal 3 huruf!");
-    if (session.used.has(word)) return msg.reply("❌ Kata sudah dipakai!");
+    if (word.length < 3) return msg.reply(t("game.wordchain.tooShort"));
+    if (session.used.has(word)) return msg.reply(t("game.wordchain.used"));
     if (word[0] !== session.lastWord.slice(-1)) {
       return msg.reply(
-        `❌ Harus dimulai dengan huruf *${session.lastWord.slice(-1).toUpperCase()}*!`,
+        t("game.wordchain.wrongLetter", { letter: session.lastWord.slice(-1).toUpperCase() }),
       );
     }
 
@@ -54,13 +53,13 @@ export default defineCommand({
       const s = sessions.get(jid);
       sessions.delete(jid);
       sock.sendMessage(jid, {
-        text: `⏰ Waktu habis! Word Chain selesai. Total ${s?.used.size ?? 0} kata.`,
+        text: t("game.wordchain.timeout", { count: s?.used.size ?? 0 }),
       });
     }, 120_000);
 
     addXp(msg.sender, 3);
     await msg.reply(
-      `✅ *${word}* (+3 XP)\n\nSambung dengan huruf *${word.slice(-1).toUpperCase()}*`,
+      t("game.wordchain.correct", { word, letter: word.slice(-1).toUpperCase() }),
     );
   },
 });

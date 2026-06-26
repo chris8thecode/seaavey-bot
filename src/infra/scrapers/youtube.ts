@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -229,16 +230,13 @@ async function ytDlpDownload(
       ...(info.duration != null ? { duration: info.duration } : {}),
     });
   } catch {
-    return scraperError("yt-dlp gagal. Pastikan cookies.txt ada di root project.");
+    return scraperError(t("scraper.youtube.ytdlpFailed"));
   }
 }
 
 // ─── Public API ─────────────────────────────────────────────────────
 
-const ERROR_MSG =
-  "Gagal download YouTube. " +
-  "Buat bot, letakkan cookies.txt dari browser (sudah login YouTube) di root project. " +
-  'Cara export: install扩展 "Get cookies.txt LOCALLY" → buka youtube.com → export → simpan sebagai cookies.txt';
+const ERROR_MSG = t("scraper.youtube.errorMsg");
 
 async function runWithFallback(
   url: string,
@@ -287,7 +285,7 @@ async function loaderToDownload(url: string, format: string): Promise<ScraperRes
     };
 
     if (!start.success || !start.id || !start.progress_url) {
-      throw new Error(start.message || "Gagal memulai download");
+      throw new Error(start.message || t("scraper.youtube.downloadInitFailed"));
     }
 
     const progressUrl = start.progress_url;
@@ -320,12 +318,12 @@ async function loaderToDownload(url: string, format: string): Promise<ScraperRes
       }
 
       if (prog.success === 0 && prog.text && prog.text !== "Initialising") {
-        throw new Error("Download gagal");
+        throw new Error(t("scraper.youtube.downloadFailed"));
       }
     }
 
     if (!downloadUrl) {
-      throw new Error("Timeout: download tidak selesai");
+      throw new Error(t("scraper.youtube.timeout"));
     }
 
     return scraperSuccess({

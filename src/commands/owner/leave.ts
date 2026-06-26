@@ -1,9 +1,10 @@
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Leave",
   alias: ["leave"],
-  description: "Bot leave from current group (owner only)",
+  description: t("owner.leave.desc"),
   ownerOnly: true,
   groupOnly: true,
   handler: async (sock, msg) => {

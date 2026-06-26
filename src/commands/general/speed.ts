@@ -1,9 +1,10 @@
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Speed",
   alias: ["spd", "speed"],
-  description: "Cek response time bot",
+  description: t("general.speed.desc"),
   handler: async (_sock, msg) => {
     const start = Date.now();
     await msg.reply("🏓 Testing...");

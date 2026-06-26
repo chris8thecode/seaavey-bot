@@ -1,18 +1,19 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 
 export default defineCommand({
   name: "Calc",
   alias: ["calc"],
-  description: "Kalkulator. Contoh: .calc 2+2*5",
+  description: t("tools.calc.desc"),
   handler: async (_sock, msg) => {
     const expr = msg.args.join(" ");
-    if (!expr) return msg.reply("Format: .calc <ekspresi>\nContoh: .calc 2+2*5");
-    if (!/^[\d\s+\-*/().%^]+$/.test(expr)) return msg.reply("❌ Ekspresi tidak valid.");
+    if (!expr) return msg.reply(t("tools.calc.format"));
+    if (!/^[\d\s+\-*/().%^]+$/.test(expr)) return msg.reply(t("tools.calc.invalid"));
     try {
       const result = Function(`"use strict"; return (${expr.replace(/\^/g, "**")})`)();
-      await msg.reply(`🧮 *Kalkulator*\n\n${expr} = *${result}*`);
+      await msg.reply(t("tools.calc.result", { expr, result: String(result) }));
     } catch {
-      await msg.reply("❌ Ekspresi tidak valid.");
+      await msg.reply(t("tools.calc.invalid"));
     }
   },
 });

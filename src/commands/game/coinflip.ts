@@ -1,14 +1,15 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { addXp } from "@/infra/database";
 
 export default defineCommand({
   name: "Coin Flip",
   alias: ["cf", "flip", "coinflip"],
-  description: "Tebak heads atau tails",
+  description: t("game.coinflip.desc"),
   handler: async (_sock, msg) => {
     const input = msg.args[0]?.toLowerCase();
     if (!input || (input !== "heads" && input !== "tails")) {
-      return msg.reply("Contoh: .coinflip heads/tails");
+      return msg.reply(t("game.coinflip.example"));
     }
 
     const result = Math.random() < 0.5 ? "heads" : "tails";
@@ -16,9 +17,9 @@ export default defineCommand({
 
     if (input === result) {
       addXp(msg.sender, 5);
-      await msg.reply(`${emoji} *${result.toUpperCase()}*\n\n🎉 Tebakan benar! (+5 XP)`);
+      await msg.reply(t("game.coinflip.win", { emoji, result: result.toUpperCase() }));
     } else {
-      await msg.reply(`${emoji} *${result.toUpperCase()}*\n\n😢 Kamu tebak ${input}, salah!`);
+      await msg.reply(t("game.coinflip.lose", { emoji, result: result.toUpperCase(), input }));
     }
   },
 });

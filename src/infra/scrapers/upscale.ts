@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -45,14 +46,14 @@ async function getToken() {
     .filter((_, el) => $(el).html()?.includes("ilovepdfConfig =") ?? false)
     .html();
 
-  if (!script) throw new Error("Gagal mendapatkan config script");
+  if (!script) throw new Error(t("scraper.upscale.configError"));
 
   const jsonS = script.split("ilovepdfConfig = ")[1]?.split(";")[0];
-  if (!jsonS) throw new Error("Gagal parse config");
+  if (!jsonS) throw new Error(t("scraper.upscale.parseError"));
   const json = JSON.parse(jsonS) as { token?: string };
   const csrf = $("meta[name='csrf-token']").attr("content") ?? "";
 
-  if (!json.token || !csrf) throw new Error("Gagal mendapatkan token atau csrf");
+  if (!json.token || !csrf) throw new Error(t("scraper.upscale.tokenCsrfError"));
 
   return { token: json.token, csrf };
 }
@@ -79,7 +80,7 @@ async function uploadImage(
   });
 
   const serverFilename: string | undefined = res.data?.server_filename;
-  if (!serverFilename) throw new Error("Gagal upload gambar");
+  if (!serverFilename) throw new Error(t("scraper.upscale.uploadFailed"));
   return { server_filename: serverFilename };
 }
 
@@ -115,7 +116,7 @@ export async function upscaleImage(
       timeout: 120_000,
     });
 
-    if (!res.data) throw new Error("Tidak ada data dari server upscale");
+    if (!res.data) throw new Error(t("scraper.upscale.noData"));
 
     const buffer = Buffer.isBuffer(res.data) ? res.data : Buffer.from(res.data);
     return scraperSuccess({ buffer, scale, server });

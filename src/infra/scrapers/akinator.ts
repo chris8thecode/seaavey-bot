@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -23,9 +24,9 @@ function isNetworkError(err: unknown): boolean {
 }
 
 function friendlyError(err: unknown): string {
-  if (isNetworkError(err)) return "Koneksi ke server Akinator terputus, coba lagi nanti";
+  if (isNetworkError(err)) return t("scraper.akinator.connectionLost");
   const msg = err instanceof Error ? err.message : String(err);
-  return msg || "Gagal menghubungi server";
+  return msg || t("scraper.akinator.serverError");
 }
 
 async function withRetry<T>(fn: () => Promise<T>, retries = 2): Promise<T> {
@@ -78,7 +79,7 @@ function parseGameHtml(html: string): AkinatorSession {
   const question = $("#question-label").text().trim();
 
   if (!session || !signature || !question) {
-    throw new Error("Gagal parsing halaman game");
+    throw new Error(t("scraper.akinator.parseError"));
   }
 
   return {
@@ -149,7 +150,7 @@ export async function akinatorAnswer(
     );
 
     if (data.completion === "KO") {
-      return scraperError("Sesi tidak valid, mulai ulang game");
+      return scraperError(t("scraper.akinator.invalidSession"));
     }
 
     if (data.id_proposition) {

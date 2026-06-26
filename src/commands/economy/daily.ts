@@ -1,11 +1,12 @@
 import { defineCommand } from "@/core/types";
 import { addWallet, getEconomy, setLastDaily } from "@/infra/database";
 import { getRandomNumber } from "@/utils/helper";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Daily",
   alias: ["daily"],
-  description: "Klaim hadiah harian",
+  description: t("economy.daily.desc"),
   handler: async (_sock, msg) => {
     const eco = getEconomy(msg.sender);
     const now = Date.now();
@@ -14,7 +15,7 @@ export default defineCommand({
       const remaining = oneDay - (now - eco.lastDaily);
       const hours = Math.floor(remaining / 3600000);
       const mins = Math.floor((remaining % 3600000) / 60000);
-      return msg.reply(`⏰ Kamu sudah klaim hari ini. Coba lagi dalam ${hours}j ${mins}m.`);
+      return msg.reply(`⏰ You already claimed today. Try again in ${hours}h ${mins}m.`);
     }
     const reward = getRandomNumber(3000, 7999);
     addWallet(msg.sender, reward);

@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { getRandomItem } from "@/utils/helper";
 
@@ -19,11 +20,9 @@ const questions = [
 export default defineCommand({
   name: "Would You Rather",
   alias: ["wouldyourather"],
-  description: "Would You Rather — pilih salah satu!",
+  description: t("fun.wyr.description"),
   handler: async (_sock, msg) => {
     const q = getRandomItem(questions) as (typeof questions)[number];
-    await msg.reply(
-      `🤔 *Would You Rather?*\n\n🅰️ ${q.a}\n\natau\n\n🅱️ ${q.b}\n\n_Pilih A atau B!_`,
-    );
+    await msg.reply(t("fun.wyr.question", { a: q.a, b: q.b }));
   },
 });

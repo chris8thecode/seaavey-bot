@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { createWordGame } from "@/game/word-game-factory";
 
 interface MemberData {
@@ -9,7 +10,7 @@ interface MemberData {
 const { command, checkAnswer } = createWordGame<MemberData>({
   name: "Tebak Member JKT48",
   triggers: ["tebakmemberjkt48", "tmjkt", "tebakjkt"],
-  description: "Tebak nama member JKT48 dari foto",
+  description: t("game.tebakmemberjkt48.desc"),
   dataFile: "tebakmemberjkt48.json",
   emoji: "👩",
   reward: 20,
@@ -18,10 +19,8 @@ const { command, checkAnswer } = createWordGame<MemberData>({
   answer: (item) => item.jawaban,
   image: (item) => item.img,
   timeoutMessage: (item, _ans) =>
-    item.nama_panggilan
-      ? `⏰ Habis! Jawabannya: *${item.jawaban}* (${item.nama_panggilan})`
-      : `⏰ Habis! Jawabannya: *${item.jawaban}*`,
-  correctMessage: (item, _ans) => `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
+    t("game.tebakmemberjkt48.timeout", { answer: item.jawaban, nickname: item.nama_panggilan ? ` (${item.nama_panggilan})` : "" }),
+  correctMessage: (item, _ans) => t("game.tebakmemberjkt48.correct", { answer: item.jawaban }),
 });
 
 export default command;

@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { safeFetchJSON } from "@/utils/helper";
 
@@ -14,14 +15,21 @@ interface Gempa {
 export default defineCommand({
   name: "Gempa",
   alias: ["gempa"],
-  description: "Info gempa terkini dari BMKG",
+  description: t("info.gempa.desc"),
   handler: async (_sock, msg) => {
     const data = await safeFetchJSON<{ Infogempa?: { gempa?: Gempa } }>(
       "https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json",
     );
     const g = data?.Infogempa?.gempa;
-    if (!g) return msg.reply("❌ Data gempa tidak tersedia.");
-    const caption = `🌍 *Info Gempa Terkini*\n\n📅 ${g.Tanggal} ${g.Jam}\n📏 Magnitudo: ${g.Magnitude}\n📐 Kedalaman: ${g.Kedalaman}\n📍 Wilayah: ${g.Wilayah}\n⚠️ Potensi: ${g.Potensi}`;
+    if (!g) return msg.reply(t("info.gempa.noData"));
+    const caption = t("info.gempa.detail", {
+      date: g.Tanggal,
+      time: g.Jam,
+      magnitude: g.Magnitude,
+      depth: g.Kedalaman,
+      region: g.Wilayah,
+      potential: g.Potensi,
+    });
     await msg.send({
       image: { url: `https://data.bmkg.go.id/DataMKG/TEWS/${g.Shakemap}` },
       caption,

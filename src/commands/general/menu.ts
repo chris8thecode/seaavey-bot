@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { t } from "@/core/translations";
 import { config } from "@/core/config";
 import { type Command, defineCommand } from "@/core/types";
 import { sendInteractive } from "@/handlers/interactive";
@@ -23,7 +24,7 @@ const categoryIcons: Record<string, string> = {
 export default defineCommand({
   name: "Menu",
   alias: ["menu"],
-  description: "Tampilkan daftar command",
+  description: t("general.menu.desc"),
   handler: async (sock, msg) => {
     const seen = new Set<Command>();
     const categories = new Map<string, { title: string; id: string; description: string }[]>();
@@ -35,7 +36,7 @@ export default defineCommand({
       list.push({
         title: cmd.name,
         id: `${config.prefix[0]}${trigger}`,
-        description: cmd.description || "No description",
+        description: cmd.description || t("general.menu.noDesc"),
       });
       categories.set(cmd.category, list);
     }
@@ -45,7 +46,7 @@ export default defineCommand({
     if (targetCategory) {
       if (!categories.has(targetCategory)) {
         await msg.reply(
-          `❌ Kategori *${targetCategory}* tidak ditemukan.\nKategori tersedia: ${Array.from(categories.keys()).join(", ")}`,
+          `❌ Category *${targetCategory}* not found.\nAvailable categories: ${Array.from(categories.keys()).join(", ")}`,
         );
         return;
       }
@@ -76,7 +77,7 @@ export default defineCommand({
     caption += `┃ ⏱️ Uptime: ${hours}h ${mins}m\n`;
     caption += `┃ 📦 Total: ${commands.size} commands\n`;
     caption += `╰━━━━━━━━━━━━━━━━\n\n`;
-    caption += `_Silakan klik tombol di bawah untuk melihat daftar command._`;
+    caption += `_Tap the button below to browse the command list._`;
 
     const sections = [];
     const sorted = Array.from(categories.entries()).sort((a, b) => a[0].localeCompare(b[0]));
@@ -87,12 +88,12 @@ export default defineCommand({
       categoryRows.push({
         title: `${icon} ${category.toUpperCase()}`,
         id: `${config.prefix[0]}menu ${category}`,
-        description: `Tampilkan ${cmds.length} command di kategori ini`,
+        description: t("general.menu.categoryDesc", { count: cmds.length }),
       });
     }
 
     sections.push({
-      title: "Pilih Kategori",
+      title: "Choose Category",
       rows: categoryRows,
     });
 
@@ -107,7 +108,7 @@ export default defineCommand({
           {
             name: "single_select",
             params: {
-              title: "Tampilkan Menu",
+              title: "Show Menu",
               sections: sections,
             },
           },
@@ -122,7 +123,7 @@ export default defineCommand({
         mentions: [msg.sender],
       });
     } catch {
-      await msg.reply("❌ Gagal mengirim menu.");
+      await msg.reply("❌ Failed to send menu.");
     }
   },
 });

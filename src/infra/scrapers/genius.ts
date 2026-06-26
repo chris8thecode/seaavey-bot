@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -51,7 +52,7 @@ export async function geniusSearch(
       image: String(r.albumCover || ""),
     }));
 
-    if (!results.length) throw new Error("Lagu tidak ditemukan");
+    if (!results.length) throw new Error(t("scraper.genius.notFound"));
     return scraperSuccess(results);
   } catch (e: unknown) {
     const err = e as { message?: string };
@@ -82,7 +83,7 @@ export async function geniusLyrics(
     const d = res.data as Record<string, unknown>;
 
     const lyrics = String(d.plainLyrics || "");
-    if (!lyrics) throw new Error("Lirik tidak ditemukan");
+    if (!lyrics) throw new Error(t("scraper.genius.lyricsNotFound"));
 
     return scraperSuccess({
       title: String(d.trackName || ""),

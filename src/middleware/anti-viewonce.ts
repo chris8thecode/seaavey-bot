@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { config } from "@/core/config";
 import type { MessageMiddleware } from "@/handlers/message-context";
 import { getGroup } from "@/infra/repositories/group-repo";
@@ -13,7 +14,7 @@ export const antiViewOnce: MessageMiddleware = async (ctx) => {
   const sender = raw.key.participant || raw.key.remoteJid || "";
 
   await sock.sendMessage(ownerJid, {
-    text: `👁️ *View Once Detected*\n\n👤 ${sender}\n📍 ${raw.key.remoteJid}`,
+    text: t("antiViewonce.detected", { sender, chat: raw.key.remoteJid ?? "" }),
   });
   await sock.sendMessage(ownerJid, { forward: { key: raw.key, message: viewOnce } });
 
@@ -21,7 +22,7 @@ export const antiViewOnce: MessageMiddleware = async (ctx) => {
     const grp = getGroup(raw.key.remoteJid);
     if (grp.antiviewonce) {
       await sock.sendMessage(raw.key.remoteJid, {
-        text: `👁️ *View Once Opened*\n\n👤 @${getNumber(sender)} mengirim pesan view once:`,
+        text: t("antiViewonce.opened", { sender: getNumber(sender) }),
         mentions: [sender],
       });
       await sock.sendMessage(raw.key.remoteJid, {

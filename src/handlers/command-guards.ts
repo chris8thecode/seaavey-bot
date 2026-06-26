@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import type { WASocket } from "baileys";
 import type { Command } from "@/core/types";
 import type { MessageResolver } from "@/utils/message-resolver";
@@ -11,36 +12,32 @@ export async function checkGuards(
   cmd: Command,
 ): Promise<boolean> {
   if (cmd.enabled === false) {
-    await sock.sendMessage(parse.jid, { text: "⚠️ Command ini sedang dinonaktifkan." });
+    await sock.sendMessage(parse.jid, { text: t("guard.disabled") });
     return false;
   }
 
   if (cmd.ownerOnly && !parse.isOwner) {
-    await sock.sendMessage(parse.jid, { text: "⚠️ Command ini hanya untuk owner." });
+    await sock.sendMessage(parse.jid, { text: t("guard.ownerOnly") });
     return false;
   }
 
   if (cmd.groupOnly && !parse.isGroup) {
-    await sock.sendMessage(parse.jid, { text: "⚠️ Command ini hanya bisa digunakan di grup." });
+    await sock.sendMessage(parse.jid, { text: t("guard.groupOnly") });
     return false;
   }
 
   if (cmd.privateOnly && parse.isGroup) {
-    await sock.sendMessage(parse.jid, {
-      text: "⚠️ Command ini hanya bisa digunakan di private chat.",
-    });
+    await sock.sendMessage(parse.jid, { text: t("guard.privateOnly") });
     return false;
   }
 
   if (cmd.adminOnly && parse.isGroup && !parse.isAdmin) {
-    await sock.sendMessage(parse.jid, { text: "⚠️ Command ini hanya untuk admin grup." });
+    await sock.sendMessage(parse.jid, { text: t("guard.adminOnly") });
     return false;
   }
 
   if (cmd.botAdmin && parse.isGroup && !parse.isBotAdmin) {
-    await sock.sendMessage(parse.jid, {
-      text: "⚠️ Bot harus menjadi admin untuk menggunakan command ini.",
-    });
+    await sock.sendMessage(parse.jid, { text: t("guard.botAdmin") });
     return false;
   }
 
@@ -50,7 +47,7 @@ export async function checkGuards(
     if (lastUsed) {
       const remaining = Math.ceil((lastUsed + cmd.cooldown * 1000 - Date.now()) / 1000);
       if (remaining > 0) {
-        await sock.sendMessage(parse.jid, { text: `⏳ Tunggu ${remaining} detik lagi.` });
+        await sock.sendMessage(parse.jid, { text: t("guard.cooldown", { seconds: remaining }) });
         return false;
       }
     }

@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { getRandomItem } from "@/utils/helper";
 
@@ -22,9 +23,9 @@ const fakta = [
 export default defineCommand({
   name: "Fakta",
   alias: ["fakta"],
-  description: "Fakta random yang menarik",
+  description: t("fun.fakta.description"),
   handler: async (_sock, msg) => {
     const f = getRandomItem(fakta);
-    await msg.reply(`💡 *Tahukah Kamu?*\n\n${f}`);
+    await msg.reply(t("fun.fakta.message", { fact: f }));
   },
 });

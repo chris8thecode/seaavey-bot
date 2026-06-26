@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import type { WASocket } from "baileys";
 import { config } from "@/core/config";
 import { logger } from "@/core/logger";
@@ -42,7 +43,7 @@ export async function dispatchCommand(sock: WASocket, parse: MessageResolver) {
   const after = getUser(parse.sender);
   if (after && after.level > prevLevel) {
     await sock.sendMessage(parse.jid, {
-      text: `🎉 *Level Up!*\n\n@${getNumber(parse.sender)} naik ke level *${after.level}*! 🏆`,
+      text: t("levelUp.message", { user: getNumber(parse.sender), level: after.level }),
       mentions: [parse.sender],
     });
   }

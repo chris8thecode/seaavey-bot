@@ -1,13 +1,14 @@
 import { freemem, totalmem } from "node:os";
 import { defineCommand } from "@/core/types";
 import { formatSize, formatTime } from "@/utils/helper";
+import { t } from "@/core/translations";
 
 const startTime = Date.now();
 
 export default defineCommand({
   name: "Status",
   alias: ["sts", "status"],
-  description: "Cek status server dan bot",
+  description: t("general.status.desc"),
   handler: async (_sock, msg) => {
     const uptime = formatTime((Date.now() - startTime) / 1000);
     const totalMem = totalmem();

@@ -1,10 +1,11 @@
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 import db, { getSiders, updateMemberChat } from "@/infra/database";
 import { getNumber } from "@/utils/helper";
 export default defineCommand({
   name: "Sider",
   alias: ["sider"],
-  description: "List member yang tidak chat selama 3+ hari",
+  description: t("group.sider.description"),
   groupOnly: true,
   adminOnly: true,
   handler: async (sock, msg) => {
@@ -31,13 +32,13 @@ export default defineCommand({
     const allSiders = allMembers.filter((m) => inactiveSet.has(m));
 
     if (!allSiders.length) {
-      return msg.reply(`✅ Tidak ada sider! Semua member aktif dalam ${days} hari terakhir.`);
+      return msg.reply(t("group.sider.none", { days }));
     }
 
     const list = allSiders.map((jid, i) => `${i + 1}. @${getNumber(jid)}`).join("\n");
 
     await msg.send({
-      text: `🚶 *Daftar Sider (${days} hari)*\nTotal: ${allSiders.length}/${allMembers.length} member\n\n${list}`,
+      text: t("group.sider.list", { days, count: allSiders.length, total: allMembers.length, list }),
       mentions: allSiders,
     });
   },

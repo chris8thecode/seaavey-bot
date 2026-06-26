@@ -31,7 +31,7 @@
     "forceConsistentCasingInFileNames": true,
     "exactOptionalPropertyTypes": true,
 
-    // Relaxed (biar ga ribet pas develop)
+    // Relaxed (for smoother development)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false

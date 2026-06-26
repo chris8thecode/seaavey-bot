@@ -1,8 +1,9 @@
 import { toggleCommand } from "@/utils/group-toggle";
+import { t } from "@/core/translations";
 
 export default toggleCommand({
   name: "Anti Delete",
   alias: ["adel", "antidelete"],
   field: "antidelete",
-  description: "Toggle antidelete on/off",
+  description: t("group.antidelete.desc"),
 });

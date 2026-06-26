@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { getRandomItem } from "@/utils/helper";
 
@@ -30,22 +31,22 @@ const dares = [
 export default defineCommand({
   name: "Truth or Dare",
   alias: ["truthordare"],
-  description: "Truth or Dare random",
+  description: t("fun.tod.description"),
   handler: async (_sock, msg) => {
     const type = msg.args[0]?.toLowerCase();
     if (type === "truth" || type === "t") {
       const q = getRandomItem(truths);
-      return msg.reply(`🤔 *Truth:*\n\n${q}`);
+      return msg.reply(t("fun.tod.truth", { question: q }));
     }
     if (type === "dare" || type === "d") {
       const q = getRandomItem(dares);
-      return msg.reply(`🔥 *Dare:*\n\n${q}`);
+      return msg.reply(t("fun.tod.dare", { question: q }));
     }
     const isTruth = Math.random() > 0.5;
     const pool = isTruth ? truths : dares;
     const q = getRandomItem(pool);
     await msg.reply(
-      `${isTruth ? "🤔 *Truth:*" : "🔥 *Dare:*"}\n\n${q}\n\n_Pilih: .tod truth / .tod dare_`,
+      t("fun.tod.random", { type: isTruth ? "🤔 *Truth:*" : "🔥 *Dare:*", question: q }),
     );
   },
 });

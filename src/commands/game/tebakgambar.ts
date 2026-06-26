@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { createWordGame } from "@/game/word-game-factory";
 
 interface TBGData {
@@ -9,7 +10,7 @@ interface TBGData {
 const { command, checkAnswer } = createWordGame<TBGData>({
   name: "Tebak Gambar",
   triggers: ["tebakgambar", "tbg"],
-  description: "Tebak gambar yang dikirim bot",
+  description: t("game.tebakgambar.desc"),
   dataFile: "tebakgambar.json",
   emoji: "🖼️",
   reward: 20,
@@ -17,8 +18,8 @@ const { command, checkAnswer } = createWordGame<TBGData>({
   answer: (item) => item.jawaban,
   image: (item) => item.img,
   timeoutMessage: (item, _ans) =>
-    `⏰ Waktu habis!\n\nJawabannya: *${item.jawaban}*\nDeskripsi: ${item.deskripsi}`,
-  correctMessage: (item, _ans) => `✅ Benar! Jawabannya *${item.jawaban}* (+20 XP)`,
+    t("game.tebakgambar.timeout", { answer: item.jawaban, description: item.deskripsi }),
+  correctMessage: (item, _ans) => t("game.tebakgambar.correct", { answer: item.jawaban }),
 });
 
 export default command;

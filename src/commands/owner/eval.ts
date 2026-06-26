@@ -1,10 +1,11 @@
 import util from "node:util";
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Eval",
   command: ">",
-  description: "Eval JavaScript code",
+  description: t("owner.eval.desc"),
   ownerOnly: true,
   handler: async (sock, msg) => {
     const code = msg.body.slice(2).trim();

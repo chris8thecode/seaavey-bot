@@ -68,11 +68,11 @@ if [ "$platform" != "termux" ]; then
 fi
 
 echo "----------------------------------------"
-echo "Setup Selesai!"
-echo "Gunakan: source ~/.bashrc"
-echo "Masuk ke folder: cd $TARGET_DIR"
+echo "Setup Complete!"
+echo "Run: source ~/.bashrc"
+echo "Enter folder: cd $TARGET_DIR"
 if [ "$platform" = "termux" ]; then
-  echo "Jalankan: npm run start:node"
+  echo "Run: npm run start:node"
 else
   echo "Start Bot: pm2 start src/index.ts --name seaaveybot --interpreter ~/.bun/bin/bun"
 fi

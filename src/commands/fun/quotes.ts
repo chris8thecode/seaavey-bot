@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { getRandomItem } from "@/utils/helper";
 
@@ -19,9 +20,9 @@ const quotes = [
 export default defineCommand({
   name: "Quotes",
   alias: ["qts", "quotes"],
-  description: "Quotes motivasi random",
+  description: t("fun.quotes.description"),
   handler: async (_sock, msg) => {
     const q = getRandomItem(quotes);
-    await msg.reply(`💬 *Quote of the Day*\n\n_"${q}"_`);
+    await msg.reply(t("fun.quotes.message", { quote: q }));
   },
 });

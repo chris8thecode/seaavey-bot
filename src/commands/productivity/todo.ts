@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import db from "@/infra/database";
 
@@ -14,19 +15,19 @@ db.run(`
 export default defineCommand({
   name: "Todo",
   alias: ["todo"],
-  description: "Personal todo list. .todo add/list/done/del",
+  description: t("productivity.todo.desc"),
   handler: async (_sock, msg) => {
     const sub = msg.args[0]?.toLowerCase();
 
     if (sub === "add") {
       const task = msg.args.slice(1).join(" ");
-      if (!task) return msg.reply("Format: .todo add <task>");
+      if (!task) return msg.reply(t("productivity.todo.addFormat"));
       db.run("INSERT INTO todos (ownerJid, task, timestamp) VALUES (?, ?, ?)", [
         msg.sender,
         task,
         Date.now(),
       ]);
-      return msg.reply(`✅ Task ditambahkan: ${task}`);
+      return msg.reply(t("productivity.todo.added", { task }));
     }
 
     if (sub === "list") {
@@ -35,9 +36,9 @@ export default defineCommand({
           "SELECT id, task, done FROM todos WHERE ownerJid = ? AND done = 0 ORDER BY timestamp",
         )
         .all(msg.sender) as { id: number; task: string; done: number }[];
-      if (!todos.length) return msg.reply("📋 Todo list kosong!");
+      if (!todos.length) return msg.reply(t("productivity.todo.empty"));
       const list = todos.map((t, i) => `${i + 1}. ${t.task}`).join("\n");
-      return msg.reply(`📋 *Todo List*\n\n${list}\n\nSelesai: .todo done <nomor>`);
+      return msg.reply(t("productivity.todo.list", { list }));
     }
 
     if (sub === "done") {
@@ -46,16 +47,16 @@ export default defineCommand({
         .query("SELECT id FROM todos WHERE ownerJid = ? AND done = 0 ORDER BY timestamp")
         .all(msg.sender) as { id: number }[];
       const target = todos[idx - 1];
-      if (!target) return msg.reply("❌ Nomor tidak valid.");
+      if (!target) return msg.reply(t("productivity.todo.invalidNumber"));
       db.run("UPDATE todos SET done = 1 WHERE id = ?", [target.id]);
-      return msg.reply("✅ Task selesai!");
+      return msg.reply(t("productivity.todo.done"));
     }
 
     if (sub === "clear") {
       db.run("DELETE FROM todos WHERE ownerJid = ? AND done = 1", [msg.sender]);
-      return msg.reply("🗑️ Completed tasks dihapus.");
+      return msg.reply(t("productivity.todo.cleared"));
     }
 
-    await msg.reply("Format:\n.todo add <task>\n.todo list\n.todo done <nomor>\n.todo clear");
+    await msg.reply(t("productivity.todo.help"));
   },
 });

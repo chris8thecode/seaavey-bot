@@ -1,16 +1,17 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
 import { defineCommand } from "@/core/types";
 import { removeBackground } from "@/infra/scrapers";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Remove Background",
   alias: ["removebg", "rbg"],
-  description: "Remove image background",
+  description: t("converter.removebg.desc"),
   handler: async (sock, msg) => {
     const imageMsg = msg.message?.imageMessage || msg.quoted?.imageMessage;
 
     if (!imageMsg) {
-      return msg.reply("Kirim/reply gambar dengan caption .removebg");
+      return msg.reply("Send or reply to an image with caption .removebg");
     }
 
     const message = msg.quoted
@@ -26,7 +27,7 @@ export default defineCommand({
     const result = await removeBackground(buffer);
 
     if (!result.status) {
-      return msg.reply(result.error || "Gagal menghapus background.");
+      return msg.reply(result.error || "Failed to remove background.");
     }
 
     await msg.send({ image: result.data.buffer });

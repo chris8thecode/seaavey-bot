@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { GameManager } from "@/game/game-helper";
 import { getRandomItem, loadGameData } from "@/utils/helper";
@@ -9,24 +10,24 @@ const localData = loadGameData<{ soal: string; jawaban: string }>("asahotak.json
 export default defineCommand({
   name: "Asah Otak",
   alias: ["ao", "asahotak"],
-  description: "Game asah otak (Ketik 'hint' untuk bantuan)",
+  description: t("game.asahotak.desc"),
   handler: async (sock, msg) => {
     if (msg.args[0] === "hint") {
       const hint = gm.getHint(msg.jid);
-      return msg.reply(hint ? `💡 Hint: *${hint}*` : "❌ Tidak ada sesi aktif!");
+      return msg.reply(hint ? t("game.asahotak.hint", { hint }) : t("game.asahotak.noSession"));
     }
 
     const item = getRandomItem(localData);
     const success = gm.start(msg.jid, item.jawaban, msg.sender, () => {
-      sock.sendMessage(msg.jid, { text: `⏰ Habis! Jawabannya: *${item.jawaban}*` });
+      sock.sendMessage(msg.jid, { text: t("game.asahotak.timeout", { answer: item.jawaban }) });
     });
 
-    if (!success) return msg.reply("⏳ Selesaikan soal sebelumnya!");
-    await msg.reply(`🧠 *Asah Otak*\n\nSoal: ${item.soal}\n\nWaktu 60s!\n(Ketik *.asahotak hint*)`);
+    if (!success) return msg.reply(t("game.asahotak.finishPrevious"));
+    await msg.reply(t("game.asahotak.start", { question: item.soal }));
   },
 });
 
 export const checkAsahOtak = (jid: string, text: string, sender: string) => {
   const ans = gm.check(jid, text, sender);
-  return ans ? `✅ Benar! Jawabannya *${ans.toUpperCase()}* (+15 XP)` : null;
+  return ans ? t("game.asahotak.correct", { answer: ans.toUpperCase() }) : null;
 };

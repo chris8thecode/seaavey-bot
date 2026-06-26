@@ -1,23 +1,24 @@
 import { readFileSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { ytmp3 } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "YT MP3",
   alias: ["ytmp3"],
-  description: "Download audio dari YouTube",
+  description: t("downloader.ytmp3.desc"),
   cooldown: 30,
   handler: async (_sock, msg) => {
     const url = msg.args[0];
-    if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp3 https://youtu.be/...");
+    if (!url) return msg.reply(t("downloader.ytmp3.format"));
 
     await msg.reply("⏳ Downloading audio...");
 
     const result = await ytmp3(url);
 
     if (!result.status) {
-      return msg.reply(`❌ Gagal: ${result.error || "Tidak ada media ditemukan"}`);
+      return msg.reply(t("downloader.ytmp3.failed", { error: result.error || t("downloader.ytmp3.noMedia") }));
     }
 
     const { title, thumbnail, downloadUrl, format } = result.data;

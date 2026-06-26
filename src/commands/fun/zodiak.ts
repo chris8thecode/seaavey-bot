@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { getRandomItem } from "@/utils/helper";
 
@@ -67,15 +68,20 @@ const zodiak: Record<string, string[]> = {
 export default defineCommand({
   name: "Zodiak",
   alias: ["zod", "zodiak"],
-  description: "Ramalan zodiak. Contoh: .zodiak aries",
+  description: t("fun.zodiak.description"),
   handler: async (_sock, msg) => {
     const sign = msg.args[0]?.toLowerCase();
     if (!sign || !zodiak[sign]) {
       const list = Object.keys(zodiak).join(", ");
-      return msg.reply(`Format: .zodiak <zodiak>\nPilihan: ${list}`);
+      return msg.reply(t("fun.zodiak.format", { list }));
     }
     const predictions = zodiak[sign];
     const pred = getRandomItem(predictions);
-    await msg.reply(`🔮 *Zodiak ${sign.charAt(0).toUpperCase() + sign.slice(1)}*\n\n${pred}`);
+    await msg.reply(
+      t("fun.zodiak.prediction", {
+        sign: sign.charAt(0).toUpperCase() + sign.slice(1),
+        prediction: pred,
+      }),
+    );
   },
 });

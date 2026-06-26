@@ -1,17 +1,18 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { imageToSticker, videoToSticker } from "@/utils/convert";
 
 export default defineCommand({
   name: "Sticker",
   alias: ["stiker", "sticker", "s"],
-  description: "Convert image/video to sticker",
+  description: t("media.sticker.desc"),
   handler: async (sock, msg) => {
     const imageMsg = msg.message?.imageMessage || msg.quoted?.imageMessage;
     const videoMsg = msg.message?.videoMessage || msg.quoted?.videoMessage;
 
     if (!imageMsg && !videoMsg) {
-      return msg.reply("Kirim/reply gambar atau video (max 10s) dengan caption .sticker");
+      return msg.reply(t("media.sticker.noMedia"));
     }
 
     const message = msg.quoted

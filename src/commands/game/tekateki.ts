@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { createWordGame } from "@/game/word-game-factory";
 
 interface TTData {
@@ -8,13 +9,13 @@ interface TTData {
 const { command, checkAnswer } = createWordGame<TTData>({
   name: "Teka Teki",
   triggers: ["tekateki", "tt"],
-  description: "Game teka-teki",
+  description: t("game.tekateki.desc"),
   dataFile: "tekateki.json",
   emoji: "🧩",
   reward: 15,
   question: (item) => `Soal: ${item.soal}`,
   answer: (item) => item.jawaban,
-  correctMessage: (_item, _ans) => "✅ Benar! (+15 XP)",
+  correctMessage: (_item, _ans) => t("game.tekateki.correct"),
 });
 
 export default command;

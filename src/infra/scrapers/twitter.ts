@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { t } from "@/core/translations";
 import type { ScraperResult } from "./index";
 import { scraperError, scraperSuccess } from "./index";
 
@@ -34,11 +35,11 @@ export async function twitterDl(url: string): Promise<ScraperResult<TwitterData>
     );
 
     if (data.statusCode === 404) {
-      throw new Error(data.msg || "Video tidak ditemukan atau sudah dihapus");
+      throw new Error(data.msg || t("scraper.twitter.videoNotFound"));
     }
 
     if (data.status !== "ok" || !data.data) {
-      throw new Error("Gagal mengambil data dari Twitter/X");
+      throw new Error(t("scraper.twitter.fetchFailed"));
     }
 
     const result = data.data;

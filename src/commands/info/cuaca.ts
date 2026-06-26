@@ -1,13 +1,14 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { safeFetchJSON } from "@/utils/helper";
 
 export default defineCommand({
   name: "Cuaca",
   alias: ["cuaca"],
-  description: "Cek cuaca suatu kota. Contoh: .cuaca Jakarta",
+  description: t("info.cuaca.desc"),
   handler: async (_sock, msg) => {
     const city = msg.args.join(" ");
-    if (!city) return msg.reply("Format: .cuaca <nama kota>\nContoh: .cuaca Jakarta");
+    if (!city) return msg.reply(t("info.cuaca.format"));
     const data = await safeFetchJSON<{
       current_condition?: Array<{
         temp_C: string;
@@ -20,12 +21,19 @@ export default defineCommand({
         country: Array<{ value: string }>;
       }>;
     }>(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
-    if (!data) return msg.reply("❌ Kota tidak ditemukan.");
+    if (!data) return msg.reply(t("info.cuaca.notFound"));
     const cur = data.current_condition?.[0];
     const area = data.nearest_area?.[0];
-    if (!cur) return msg.reply("❌ Data cuaca tidak tersedia.");
+    if (!cur) return msg.reply(t("info.cuaca.noData"));
     await msg.reply(
-      `🌤️ *Cuaca ${area?.areaName[0]?.value || city}, ${area?.country[0]?.value || ""}*\n\n🌡️ Suhu: ${cur.temp_C}°C\n☁️ Kondisi: ${cur.weatherDesc[0]?.value}\n💧 Kelembaban: ${cur.humidity}%\n💨 Angin: ${cur.windspeedKmph} km/h`,
+      t("info.cuaca.weather", {
+        city: area?.areaName[0]?.value || city,
+        country: area?.country[0]?.value || "",
+        temp: cur.temp_C,
+        condition: cur.weatherDesc[0]?.value,
+        humidity: cur.humidity,
+        wind: cur.windspeedKmph,
+      }),
     );
   },
 });

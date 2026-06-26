@@ -1,27 +1,26 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { spotify, spotifySearch } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "Spotify",
   alias: ["spot", "spotify"],
-  description: "Search atau download lagu dari Spotify",
+  description: t("downloader.spotify.desc"),
   handler: async (_sock, msg) => {
     const input = msg.args.join(" ");
     if (!input) {
-      return msg.reply(
-        "Kirim URL atau judul lagu.\n\nContoh:\n• spotify https://open.spotify.com/track/...\n• spotify Faded Alan Walker",
-      );
+      return msg.reply(t("downloader.spotify.format"));
     }
 
     const isUrl = input.includes("open.spotify.com");
 
     if (isUrl) {
-      await msg.reply("⏳ Mengambil info lagu...");
+      await msg.reply(t("downloader.spotify.fetching"));
 
       const result = await spotify(input);
 
       if (!result.status) {
-        return msg.reply(`❌ Gagal: ${result.error}`);
+        return msg.reply(t("downloader.spotify.failed", { error: result.error }));
       }
 
       const { title, artist, album, duration, cover, downloadUrl } = result.data;
@@ -45,16 +44,16 @@ export default defineCommand({
         await msg.send({ audio: { url: downloadUrl }, mimetype: "audio/mpeg" });
       }
     } else {
-      await msg.reply("🔍 Mencari lagu...");
+      await msg.reply(t("downloader.spotify.searching"));
 
       const result = await spotifySearch(input, 5);
 
       if (!result.status) {
-        return msg.reply(`❌ Gagal: ${result.error}`);
+        return msg.reply(t("downloader.spotify.searchFailed", { error: result.error }));
       }
 
       if (result.data.tracks.length === 0) {
-        return msg.reply("❌ Lagu tidak ditemukan.");
+        return msg.reply(t("downloader.spotify.notFound"));
       }
 
       const tracks = result.data.tracks
@@ -62,7 +61,7 @@ export default defineCommand({
         .join("\n\n");
 
       await msg.reply(
-        `🔍 Hasil pencarian "*${result.data.query}*":\n\n${tracks}\n\nKirim nomor (1-${result.data.tracks.length}) untuk download.`,
+        t("downloader.spotify.searchResult", { query: result.data.query, tracks, max: String(result.data.tracks.length) }),
       );
     }
   },

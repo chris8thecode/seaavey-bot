@@ -1,20 +1,21 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { soundcloudDl } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "SoundCloud DL",
   alias: ["scdl", "soundclouddl"],
-  description: "Download lagu dari SoundCloud",
+  description: t("downloader.scdl.desc"),
   handler: async (_sock, msg) => {
     const url = msg.args[0];
-    if (!url) return msg.reply("Kirim URL SoundCloud.\nContoh: .scdl https://soundcloud.com/...");
+    if (!url) return msg.reply(t("downloader.scdl.format"));
 
     await msg.reply("⏳ Downloading...");
 
     const result = await soundcloudDl(url);
 
     if (!result.status) {
-      return msg.reply(`❌ Gagal: ${result.error || "Tidak ada media ditemukan"}`);
+      return msg.reply(t("downloader.scdl.failed", { error: result.error || t("downloader.scdl.noMedia") }));
     }
 
     const { title, artist, duration, artwork, streamUrl } = result.data;

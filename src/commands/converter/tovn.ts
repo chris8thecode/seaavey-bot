@@ -1,17 +1,18 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { toOpus } from "@/utils/convert";
 
 export default defineCommand({
   name: "To Voice Note",
   alias: ["tovn"],
-  description: "Convert video/audio to voice note",
+  description: t("converter.tovn.desc"),
   handler: async (sock, msg) => {
     const videoMsg = msg.message?.videoMessage || msg.quoted?.videoMessage;
     const audioMsg = msg.message?.audioMessage || msg.quoted?.audioMessage;
 
     if (!videoMsg && !audioMsg) {
-      return msg.reply("Kirim/reply video atau audio dengan caption .tovn");
+      return msg.reply(t("converter.tovn.noMedia"));
     }
 
     const message = msg.quoted

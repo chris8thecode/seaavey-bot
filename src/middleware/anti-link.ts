@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import type { MessageMiddleware } from "@/handlers/message-context";
 import { getNumber } from "@/utils/helper";
 
@@ -9,7 +10,7 @@ export const antiLink: MessageMiddleware = async (ctx) => {
 
   await sock.sendMessage(parse.jid, { delete: raw.key });
   await sock.sendMessage(parse.jid, {
-    text: `⚠️ @${getNumber(parse.sender)} link tidak diperbolehkan!`,
+    text: t("antiLink.warning", { user: getNumber(parse.sender) }),
     mentions: [parse.sender],
   });
   return "stop";

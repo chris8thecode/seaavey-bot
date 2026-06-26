@@ -1,10 +1,11 @@
 import { defineCommand } from "@/core/types";
 import { getUser } from "@/infra/database";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Level",
   alias: ["lvl", "level"],
-  description: "Cek level dan XP kamu",
+  description: t("general.level.desc"),
   handler: async (_sock, msg) => {
     const user = getUser(msg.sender);
     const level = user?.level ?? 1;

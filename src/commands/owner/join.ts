@@ -1,3 +1,4 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 
 const InviteUrlRe = /chat\.whatsapp\.com\/([A-Za-z0-9]+)/;
@@ -5,17 +6,12 @@ const InviteUrlRe = /chat\.whatsapp\.com\/([A-Za-z0-9]+)/;
 export default defineCommand({
   name: "Join",
   alias: ["join"],
-  description: "Join group via invite link (owner only)",
+  description: t("owner.join.desc"),
   ownerOnly: true,
   handler: async (sock, msg) => {
     const input = msg.args[0];
     if (!input)
-      return msg.reply(
-        "Masukkan link atau kode invite group.\n\n" +
-          "Contoh:\n" +
-          "• .join https://chat.whatsapp.com/xxx\n" +
-          "• .join xxx",
-      );
+      return msg.reply(t("owner.join.format"));
 
     const match = input.match(InviteUrlRe);
     const code = match ? (match[1] ?? input) : input;
@@ -25,10 +21,10 @@ export default defineCommand({
       if (!groupId) throw new Error("No group ID returned");
       const metadata = await sock.groupMetadata(groupId);
       await msg.reply(
-        `✅ Berhasil join *${metadata.subject}*.\n` + `👥 ${metadata.participants.length} anggota`,
+        t("owner.join.success", { subject: metadata.subject, count: String(metadata.participants.length) }),
       );
     } catch {
-      await msg.reply("❌ Gagal join group. Link tidak valid atau sudah expired.");
+      await msg.reply(t("owner.join.failed"));
     }
   },
 });

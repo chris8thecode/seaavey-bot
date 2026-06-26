@@ -1,32 +1,33 @@
 import { downloadMediaMessage, type WAMessage } from "baileys";
 import { defineCommand } from "@/core/types";
 import { stickerToImage } from "@/utils/convert";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "To Image",
   alias: ["toimage"],
-  description: "Convert sticker to image",
+  description: t("converter.toimg.desc"),
   handler: async (sock, msg) => {
     const sticker = msg.quoted?.stickerMessage;
 
     if (!sticker) {
-      return msg.reply("Reply sticker dengan caption .toimg");
+      return msg.reply("Reply to a sticker with caption .toimg");
     }
 
     if (sticker.mimetype && sticker.mimetype !== "image/webp") {
-      return msg.reply("Hanya support sticker WebP (image/webp).");
+      return msg.reply("Only WebP stickers (image/webp) are supported.");
     }
 
     if (!sticker.url && !sticker.directPath) {
-      return msg.reply("Sticker tidak memiliki media path yang valid.");
+      return msg.reply("Sticker doesn't have a valid media path.");
     }
 
     if (sticker.fileLength && Number(sticker.fileLength) === 0) {
-      return msg.reply("Sticker kosong atau corrupt.");
+      return msg.reply("Sticker is empty or corrupt.");
     }
 
     if (sticker.isAnimated) {
-      return msg.reply("Sticker animasi tidak bisa dikonversi ke gambar.");
+      return msg.reply("Animated stickers can't be converted to an image.");
     }
 
     const message = {

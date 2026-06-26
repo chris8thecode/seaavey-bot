@@ -1,28 +1,37 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { safeFetchJSON } from "@/utils/helper";
 
 export default defineCommand({
   name: "Kurs",
   alias: ["kurs"],
-  description: "Cek kurs mata uang terhadap IDR",
+  description: t("info.kurs.desc"),
   handler: async (_sock, msg) => {
     const currency = (msg.args[0] || "USD").toUpperCase();
     const data = await safeFetchJSON<{ result?: string; rates?: Record<string, number> }>(
       `https://open.er-api.com/v6/latest/${currency}`,
     );
     if (!data || data.result !== "success" || !data.rates)
-      return msg.reply("❌ Mata uang tidak ditemukan.");
+      return msg.reply(t("info.kurs.notFound"));
     const idr = data.rates.IDR;
     const usd = data.rates.USD;
     const eur = data.rates.EUR;
     const sgd = data.rates.SGD;
     if (currency === "IDR") {
       await msg.reply(
-        `💱 *Kurs IDR*\n\n🇺🇸 1 USD = Rp${(1 / (usd || 1)).toFixed(0)}\n🇪🇺 1 EUR = Rp${(1 / (eur || 1)).toFixed(0)}\n🇸🇬 1 SGD = Rp${(1 / (sgd || 1)).toFixed(0)}`,
+        t("info.kurs.idr", {
+          usd: (1 / (usd || 1)).toFixed(0),
+          eur: (1 / (eur || 1)).toFixed(0),
+          sgd: (1 / (sgd || 1)).toFixed(0),
+        }),
       );
     } else {
       await msg.reply(
-        `💱 *Kurs ${currency}*\n\n1 ${currency} = Rp${idr?.toLocaleString("id") || "?"}\n1 ${currency} = $${usd?.toFixed(4) || "?"}`,
+        t("info.kurs.rate", {
+          currency,
+          idr: idr?.toLocaleString("id") || "?",
+          usd: usd?.toFixed(4) || "?",
+        }),
       );
     }
   },

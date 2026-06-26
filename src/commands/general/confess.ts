@@ -1,22 +1,23 @@
 import { config } from "@/core/config";
 import { defineCommand } from "@/core/types";
+import { t } from "@/core/translations";
 
 export default defineCommand({
   name: "Confess",
   alias: ["confess"],
-  description: "Kirim pesan anonim ke seseorang. Gunakan di private chat.",
+  description: t("general.confess.desc"),
   privateOnly: true,
   handler: async (sock, msg) => {
     const target = msg.args[0];
     const message = msg.args.slice(1).join(" ");
     if (!target || !message)
       return msg.reply(
-        "Format: .confess <nomor> <pesan>\nContoh: .confess 6281234567890 Hai, aku suka kamu",
+        "Format: .confess <number> <message>\nExample: .confess 6281234567890 Hey, I like you",
       );
     const targetJid = `${target.replace(/[^0-9]/g, "")}@s.whatsapp.net`;
     await sock.sendMessage(targetJid, {
-      text: `💌 *Pesan Anonim*\n\n${message}\n\n_Balas dengan: ${config.prefix[0]}confessreply <pesan>_`,
+      text: `💌 *Anonymous Message*\n\n${message}\n\n_Reply with: ${config.prefix[0]}confessreply <message>_`,
     });
-    await msg.reply("✅ Pesan anonim terkirim!");
+    await msg.reply("✅ Anonymous message sent!");
   },
 });

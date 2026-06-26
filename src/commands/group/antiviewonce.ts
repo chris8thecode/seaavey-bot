@@ -1,8 +1,9 @@
+import { t } from "@/core/translations";
 import { toggleCommand } from "@/utils/group-toggle";
 
 export default toggleCommand({
   name: "Anti View Once",
   field: "antiviewonce",
   alias: ["avo", "antiviewonce"],
-  description: "Toggle anti-viewonce on/off. Pesan view once akan di-forward ulang.",
+  description: t("group.antiviewonce.description"),
 });

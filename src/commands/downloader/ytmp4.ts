@@ -1,21 +1,22 @@
+import { t } from "@/core/translations";
 import { defineCommand } from "@/core/types";
 import { ytmp4 } from "@/infra/scrapers";
 
 export default defineCommand({
   name: "YT MP4",
   alias: ["ytmp4"],
-  description: "Download video dari YouTube",
+  description: t("downloader.ytmp4.desc"),
   cooldown: 60,
   handler: async (_sock, msg) => {
     const url = msg.args[0];
-    if (!url) return msg.reply("Kirim URL YouTube.\nContoh: .ytmp4 https://youtu.be/...");
+    if (!url) return msg.reply(t("downloader.ytmp4.format"));
 
     await msg.reply("⏳ Downloading video...");
 
     const result = await ytmp4(url);
 
     if (!result.status) {
-      return msg.reply(`❌ Gagal: ${result.error || "Tidak ada media ditemukan"}`);
+      return msg.reply(t("downloader.ytmp4.failed", { error: result.error || t("downloader.ytmp4.noMedia") }));
     }
 
     const { title, thumbnail, downloadUrl, format } = result.data;
