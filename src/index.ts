@@ -8,7 +8,7 @@ import makeWASocket, {
   isJidStatusBroadcast,
 } from "baileys";
 import * as QRCode from "qrcode";
-import { logger } from "@/core/logger";
+import { logger, createEventLogger } from "@/core/logger";
 import { handleGroupParticipants } from "@/handlers/group-handler";
 import { handleMessagesUpdate, handleMessagesUpsert } from "@/handlers/message-handler";
 import { setGroup, updateMemberChat } from "@/infra/database";
@@ -66,7 +66,20 @@ async function startBot() {
     },
   });
   currentSock = sock;
-  sock.ev.on("creds.update", saveCreds);
+  const evLog = {
+    creds: createEventLogger("creds.update"),
+    connection: createEventLogger("connection.update"),
+    call: createEventLogger("call"),
+    groupsUpsert: createEventLogger("groups.upsert"),
+    groupParticipants: createEventLogger("group-participants.update"),
+    messagesUpsert: createEventLogger("messages.upsert"),
+    messagesUpdate: createEventLogger("messages.update"),
+  };
+
+  sock.ev.on("creds.update", (...args) => {
+    evLog.creds.info("menyimpan credentials");
+    saveCreds(...args);
+  });
 
   if (!state.creds.registered && !state.creds.me?.id) {
     let pairingNumber = cachedPairingNumber;
@@ -99,6 +112,7 @@ async function startBot() {
   }
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
+    evLog.connection.info({ connection, qr: !!qr }, "connection update received");
     if (qr && !cachedPairingNumber) {
       await QRCode.toFile("qr.png", qr);
       logger.info("QR code saved to qr.png");
@@ -126,22 +140,12 @@ async function startBot() {
       restartAttempts = 0;
       logger.info("Connected to WhatsApp!");
       startSchedulers(sock);
-
-      // Sync group names to database
-      try {
-        const groups = await sock.groupFetchAllParticipating();
-        for (const group of Object.values(groups)) {
-          if (group.subject) {
-            setGroup(group.id, "name", group.subject);
-          }
-        }
-        logger.info(`Synced ${Object.keys(groups).length} group names`);
-      } catch {}
     }
   });
 
   // Anti Call
   sock.ev.on("call", async (calls) => {
+    evLog.call.info({ count: calls.length }, "panggilan masuk");
     for (const call of calls) {
       if (call.status === "offer") {
         await sock.rejectCall(call.id, call.from);
@@ -154,6 +158,7 @@ async function startBot() {
 
   // Group Events
   sock.ev.on("groups.upsert", async (groups) => {
+    evLog.groupsUpsert.info({ count: groups.length }, "group baru/update");
     for (const group of groups) {
       invalidateGroupMetadata(group.id);
       setGroup(group.id, "name", group.subject || "");
@@ -164,17 +169,27 @@ async function startBot() {
     }
   });
 
-  sock.ev.on("group-participants.update", (data) =>
+  sock.ev.on("group-participants.update", (data) => {
+    evLog.groupParticipants.info(
+      { group: data.id, action: data.action, participants: data.participants.length },
+      "participant update",
+    );
     handleGroupParticipants(sock, {
       id: data.id,
       participants: data.participants.map((p) => p.id),
       action: data.action,
-    }),
-  );
+    });
+  });
 
   // Message Events
-  sock.ev.on("messages.upsert", ({ messages }) => handleMessagesUpsert(sock, messages));
-  sock.ev.on("messages.update", (updates) => handleMessagesUpdate(sock, updates));
+  sock.ev.on("messages.upsert", ({ messages }) => {
+    evLog.messagesUpsert.info({ count: messages.length }, "pesan masuk");
+    handleMessagesUpsert(sock, messages);
+  });
+  sock.ev.on("messages.update", (updates) => {
+    evLog.messagesUpdate.info({ count: updates.length }, "pesan diupdate");
+    handleMessagesUpdate(sock, updates);
+  });
 }
 
 async function main() {

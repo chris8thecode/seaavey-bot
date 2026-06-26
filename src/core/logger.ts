@@ -15,3 +15,25 @@ export const logger = pino({
     ],
   },
 });
+
+/**
+ * Creates a dedicated pino logger that writes to `dev/<eventName>.log`.
+ * Only active in dev mode — returns a silent (level "silent") logger in production.
+ */
+export function createEventLogger(eventName: string): pino.Logger {
+  if (!isDev) {
+    return pino({ level: "silent" });
+  }
+
+  mkdirSync("dev", { recursive: true });
+
+  return pino(
+    { level: "info" },
+    pino.transport({
+      targets: [
+        { target: "pino/file", options: { destination: `dev/${eventName}.log`, mkdir: true } },
+        { target: "pino-pretty", options: { colorize: true } },
+      ],
+    }),
+  );
+}
