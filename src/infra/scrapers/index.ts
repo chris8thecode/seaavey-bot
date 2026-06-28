@@ -44,3 +44,5 @@ export type {
   AkinatorAnswerResult,
 } from "./akinator";
 export { akinatorStart, akinatorAnswer, akinatorExclude } from "./akinator";
+export type { SpotitrackTrack, SpotitrackPlaylist } from "./spotitrack";
+export { spotitrackTrack, spotitrackPlaylist } from "./spotitrack";
