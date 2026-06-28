@@ -14,13 +14,16 @@
     },
     "tomp3": {
       "noMedia": "Send/reply video or audio with caption .tomp3",
+      "processing": "⏳ Converting to MP3...",
       "desc": "Convert video/audio to MP3"
     },
     "tovn": {
       "noMedia": "Send/reply video or audio with caption .tovn",
+      "processing": "⏳ Converting to voice note...",
       "desc": "Convert video/audio to voice note"
     },
     "toimg": {
+      "processing": "⏳ Converting sticker to image...",
       "desc": "Convert sticker to image"
     },
     "encode": {
@@ -30,6 +33,7 @@
       "desc": "Decode Base64 to text"
     },
     "removebg": {
+      "processing": "⏳ Removing background...",
       "desc": "Remove image background"
     }
   },
@@ -151,6 +155,7 @@
       "truth": "🤫 *Truth*\n\n{text}"
     },
     "waifu": {
+      "processing": "⏳ Searching for waifu...",
       "caption": "Nih waifu buat kamu!",
       "description": "Random waifu dari api waifu.pics",
       "error": "❌ Gagal mengambil gambar."
@@ -168,6 +173,7 @@
   "game": {
     "akinator": {
       "cancelled": "❌ Game stopped. Akinator session has been ended.",
+      "searching": "⏳ Starting Akinator...",
       "connectionError": "❌ Failed to process game: Connection to server lost, try again later",
       "desc": "Play Akinator game (Indonesian)",
       "existing": "❌ Akinator session already active! You must finish or stop it by typing *stop* or *quit*.",
@@ -672,24 +678,28 @@
   "info": {
     "cuaca": {
       "format": "Format: .cuaca <nama kota>",
+      "checking": "⏳ Checking weather...",
       "noData": "❌ Data cuaca tidak tersedia.",
       "notFound": "❌ Kota tidak ditemukan.",
       "weather": "🌤️ *Weather {city}, {country}*\n\n🌡️ Temperature: {temp}°C\n💧 Humidity: {humidity}%\n💨 Wind: {wind}\n📖 Description: {desc}",
       "desc": "Check weather for a city. Example: .cuaca Jakarta"
     },
     "gempa": {
+      "searching": "⏳ Fetching earthquake info...",
       "noData": "❌ Data gempa tidak tersedia.",
       "detail": "🌍 *Latest Earthquake Info*\n\n📅 {date} {time}\n📏 Magnitude: {magnitude}\n📐 Depth: {depth}\n📍 Region: {region}\n⚠️ Potential: {potential}",
       "desc": "Latest earthquake info from BMKG"
     },
     "github": {
       "format": "Format: .github <username>",
+      "searching": "⏳ Fetching GitHub data...",
       "notFound": "❌ User tidak ditemukan.",
       "profile": "👤 *{username}*\n\n📝 {bio}\n📦 Repos: {repos}\n👥 Followers: {followers}\n🔗 {url}",
       "desc": "GitHub profile info. Example: .github seaavey"
     },
     "jadwalsholat": {
       "format": "Format: .jadwalsholat <kota>",
+      "searching": "⏳ Fetching prayer schedule...",
       "notFound": "❌ Kota tidak ditemukan.",
       "schedule": "🕌 *Prayer Schedule {city}*\n\n{schedule}",
       "desc": "Today's prayer schedule. Example: .jadwalsholat Jakarta"
@@ -709,6 +719,7 @@
   },
   "media": {
     "carbon": {
+      "processing": "⏳ Creating carbon...",
       "failed": "❌ Gagal membuat carbon.",
       "format": "Format: .carbon <kode>",
       "desc": "Create aesthetic code screenshot. Example: .carbon console.log('hello')"
@@ -959,7 +970,8 @@
   "search": {
     "lirik": {
       "format": "Format: .lirik <judul lagu>",
-      "result": "🎵 *{title} Lyrics*\n\n{lyrics}",
+      "searching": "⏳ Searching lyrics...",
+      "result": "🎵 *{title} Lyrics*\\n\\n{lyrics}",
       "desc": "Search song lyrics. Example: .lirik Bohemian Rhapsody"
     },
     "pinterest": {

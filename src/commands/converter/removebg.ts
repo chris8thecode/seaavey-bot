@@ -14,6 +14,8 @@ export default defineCommand({
       return msg.reply("Send or reply to an image with caption .removebg");
     }
 
+    await msg.reply(t("converter.removebg.processing"));
+
     const message = msg.quoted
       ? ({
           key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },

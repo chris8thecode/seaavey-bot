@@ -9,6 +9,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const city = msg.args.join(" ");
     if (!city) return msg.reply(t("info.jadwalsholat.format"));
+    await msg.reply(t("info.jadwalsholat.searching"));
     const today = new Date();
     const date = `${String(today.getDate()).padStart(2, "0")}-${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
     const data = await safeFetchJSON<{

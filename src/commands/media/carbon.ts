@@ -8,6 +8,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const code = msg.args.join(" ");
     if (!code) return msg.reply(t("media.carbon.format"));
+    await msg.reply(t("media.carbon.processing"));
     const url = `https://carbonara.solopov.dev/api/cook?code=${encodeURIComponent(code)}&theme=monokai&language=auto`;
     const res = await fetch(url);
     if (!res.ok) return msg.reply(t("media.carbon.failed"));

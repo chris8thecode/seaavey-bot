@@ -9,6 +9,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const query = msg.args.join(" ");
     if (!query) return msg.reply(t("search.lirik.format"));
+    await msg.reply(t("search.lirik.searching"));
     const res = await geniusSearch(query, 5);
     if (!res.status) return msg.reply(`❌ ${res.error}`);
     const list = res.data

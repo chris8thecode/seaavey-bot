@@ -15,6 +15,8 @@ export default defineCommand({
       return msg.reply(t("converter.tomp3.noMedia"));
     }
 
+    await msg.reply(t("converter.tomp3.processing"));
+
     const message = msg.quoted
       ? ({
           key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },

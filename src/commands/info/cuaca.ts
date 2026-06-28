@@ -9,6 +9,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const city = msg.args.join(" ");
     if (!city) return msg.reply(t("info.cuaca.format"));
+    await msg.reply(t("info.cuaca.checking"));
     const data = await safeFetchJSON<{
       current_condition?: Array<{
         temp_C: string;

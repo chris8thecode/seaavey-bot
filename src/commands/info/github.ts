@@ -20,6 +20,7 @@ export default defineCommand({
   handler: async (_sock, msg) => {
     const username = msg.args[0];
     if (!username) return msg.reply(t("info.github.format"));
+    await msg.reply(t("info.github.searching"));
     const u = await safeFetchJSON<GitHubUser>(
       `https://api.github.com/users/${encodeURIComponent(username)}`,
     );

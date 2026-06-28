@@ -15,6 +15,8 @@ export default defineCommand({
       return msg.reply(t("converter.tovn.noMedia"));
     }
 
+    await msg.reply(t("converter.tovn.processing"));
+
     const message = msg.quoted
       ? ({
           key: { ...msg.key, id: msg.quoted.id, participant: msg.quoted.sender },

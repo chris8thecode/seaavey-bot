@@ -66,6 +66,8 @@ export default defineCommand({
       return msg.reply(t("game.akinator.existing"));
     }
 
+    await msg.reply(t("game.akinator.searching"));
+
     const startRes = await akinatorStart();
     if (!startRes.status) {
       return msg.reply(

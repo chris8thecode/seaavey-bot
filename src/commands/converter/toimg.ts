@@ -30,6 +30,8 @@ export default defineCommand({
       return msg.reply("Animated stickers can't be converted to an image.");
     }
 
+    await msg.reply(t("converter.toimg.processing"));
+
     const message = {
       key: { ...msg.key, id: msg.quoted?.id, participant: msg.quoted?.sender },
       message: { stickerMessage: sticker },

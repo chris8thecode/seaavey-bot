@@ -17,6 +17,7 @@ export default defineCommand({
   alias: ["gempa"],
   description: t("info.gempa.desc"),
   handler: async (_sock, msg) => {
+    await msg.reply(t("info.gempa.searching"));
     const data = await safeFetchJSON<{ Infogempa?: { gempa?: Gempa } }>(
       "https://data.bmkg.go.id/DataMKG/TEWS/autogempa.json",
     );
