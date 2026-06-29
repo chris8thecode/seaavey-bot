@@ -64,7 +64,6 @@ function watchCommands() {
     if (!filename?.endsWith(".ts")) return;
     const path = join(COMMANDS_DIR, filename);
     try {
-      delete require.cache[path];
       await loadFile(path);
       logger.info(`Hot-reloaded: ${filename}`);
     } catch {

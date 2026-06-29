@@ -10,7 +10,7 @@ export default defineCommand({
   alias: ["sts", "status"],
   description: t("general.status.desc"),
   handler: async (_sock, msg) => {
-    const uptime = formatTime((Date.now() - startTime) / 1000);
+    const uptime = formatTime(Date.now() - startTime);
     const totalMem = totalmem();
     const freeMem = freemem();
     const usedMem = totalMem - freeMem;

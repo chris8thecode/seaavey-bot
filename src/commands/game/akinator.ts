@@ -12,7 +12,7 @@ import {
   type AkinatorGuess,
 } from "@/infra/scrapers/akinator";
 
-export interface AkinatorSessionState {
+interface AkinatorSessionState {
   session: AkinatorSession;
   lastActive: number;
   timeout: ReturnType<typeof setTimeout>;
@@ -23,20 +23,6 @@ export interface AkinatorSessionState {
 }
 
 const sessions = new Map<string, AkinatorSessionState>();
-
-let lastKnownSetTimeout = global.setTimeout;
-
-function checkAndClearStaleSessions() {
-  if (global.setTimeout !== lastKnownSetTimeout) {
-    for (const state of sessions.values()) {
-      try {
-        clearTimeout(state.timeout);
-      } catch {}
-    }
-    sessions.clear();
-    lastKnownSetTimeout = global.setTimeout;
-  }
-}
 
 async function translateToId(text: string): Promise<string> {
   if (!text) return text;
@@ -60,7 +46,6 @@ export default defineCommand({
   alias: ["aki"],
   description: t("game.akinator.desc"),
   handler: async (sock, msg) => {
-    checkAndClearStaleSessions();
     const key = `${msg.jid}:${msg.sender}`;
     if (sessions.has(key)) {
       return msg.reply(t("game.akinator.existing"));
@@ -127,7 +112,6 @@ export async function checkAkinator(
   text: string,
   sender: string,
 ): Promise<string | null> {
-  checkAndClearStaleSessions();
   const key = `${jid}:${sender}`;
   const state = sessions.get(key);
   if (!state) return null;

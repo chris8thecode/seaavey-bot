@@ -10,6 +10,6 @@ export default defineCommand({
   description: t("general.runtime.desc"),
   handler: async (_sock, msg) => {
     const ms = Date.now() - startTime;
-    await msg.reply(`⏱️ Uptime: ${formatTime(ms / 1000)}`);
+    await msg.reply(`⏱️ Uptime: ${formatTime(ms)}`);
   },
 });

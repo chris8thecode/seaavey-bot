@@ -20,7 +20,7 @@ if (isDev) {
 
 export async function handleMessagesUpsert(sock: WASocket, messages: WAMessage[]) {
   for (const msg of messages) {
-    if (msg.key.fromMe) continue;
+    if (!isDev && msg.key.fromMe) continue;
 
     const jid = msg.key.remoteJid || "";
     // Ignore messages from channels/newsletters and status broadcasts to prevent the bot from processing them
